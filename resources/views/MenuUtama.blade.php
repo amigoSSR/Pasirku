@@ -1,168 +1,7 @@
-<!doctype html>
 
-<html class="light" lang="en">
-
-<head>
-  <meta charset="utf-8" />
-  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-  <title>Menu Utama</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-  <!-- Fonts -->
-
-  <link href="https://fonts.googleapis.com" rel="preconnect" />
-  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Public+Sans:wght@300;400;500;600&amp;display=swap"
-    rel="stylesheet" />
-  <!-- Material Symbols -->
-  <link
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
-    rel="stylesheet" />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
-    rel="stylesheet" />
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-  <script id="tailwind-config">
-    tailwind.config = {
-      darkMode: "class",
-      theme: {
-        extend: {
-          colors: {
-            "surface-variant": "#d3e4fe",
-            "on-surface": "#0b1c30",
-            "on-secondary-fixed-variant": "#623f18",
-            "primary-container": "#005fb8",
-            "on-background": "#0b1c30",
-            "on-tertiary-container": "#fcd1c4",
-            surface: "#f8f9ff",
-            "surface-dim": "#cbdbf5",
-            secondary: "#7d562d",
-            "surface-container-low": "#eff4ff",
-            "on-primary-fixed": "#001b3d",
-            "inverse-on-surface": "#eaf1ff",
-            "surface-tint": "#005db5",
-            "inverse-surface": "#213145",
-            outline: "#727783",
-            "on-primary-fixed-variant": "#00468b",
-            "on-tertiary-fixed-variant": "#5d4037",
-            "tertiary-container": "#78584e",
-            background: "#f8f9ff",
-            error: "#ba1a1a",
-            "on-primary": "#ffffff",
-            "surface-container-highest": "#d3e4fe",
-            "on-secondary": "#ffffff",
-            "primary-fixed": "#d6e3ff",
-            "on-secondary-container": "#7a532a",
-            "on-error-container": "#93000a",
-            "surface-container-lowest": "#ffffff",
-            "secondary-fixed-dim": "#f0bd8b",
-            "tertiary-fixed-dim": "#e7bdb1",
-            "on-primary-container": "#cadcff",
-            "error-container": "#ffdad6",
-            "on-secondary-fixed": "#2c1600",
-            "primary-fixed-dim": "#a8c8ff",
-            "surface-container": "#e5eeff",
-            "on-surface-variant": "#424752",
-            "secondary-container": "#ffca98",
-            "surface-container-high": "#dce9ff",
-            "on-tertiary-fixed": "#2c160e",
-            primary: "#00488d",
-            "outline-variant": "#c2c6d4",
-            "surface-bright": "#f8f9ff",
-            tertiary: "#5e4138",
-            "inverse-primary": "#a8c8ff",
-            "secondary-fixed": "#ffdcbd",
-            "on-tertiary": "#ffffff",
-            "tertiary-fixed": "#ffdbd0",
-            "on-error": "#ffffff",
-          },
-          borderRadius: {
-            DEFAULT: "0.125rem",
-            lg: "0.25rem",
-            xl: "0.5rem",
-            full: "0.75rem",
-          },
-          fontFamily: {
-            headline: ["Manrope"],
-            body: ["Public Sans"],
-            label: ["Public Sans"],
-          },
-        },
-      },
-    };
-  </script>
-  <style>
-    
-    .material-symbols-outlined {
-      font-variation-settings:
-        "FILL" 0,
-        "wght" 400,
-        "GRAD" 0,
-        "opsz" 24;
-    }
-
-    body {
-      font-family: "Public Sans", sans-serif;
-    }
-
-    h1,
-    h2,
-    h3,
-    .headline {
-      font-family: "Manrope", sans-serif;
-    }
-
-    .glass-nav {
-      backdrop-filter: blur(20px);
-    }
-  </style>
-</head>
 
 <body class="bg-surface text-on-surface overflow-x-hidden">
-  <!-- TopNavBar -->
-  <header
-    class="bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-lg fixed top-0 w-full z-[100] transition-transform duration-150 docked full-width">
-    <div class="flex justify-between items-center w-full px-4 py-3 max-w-7xl">
-      <div class="flex items-center gap-8">
-        <span class="text-xl font-black tracking-tighter text-blue-900 dark:text-blue-100 uppercase">Pasir Ku</span>
-        <!-- Desktop Nav Cluster -->
-        <nav class="hidden md:flex items-center gap-6">
-          <a class="text-blue-800 dark:text-blue-300 font-bold text-sm tracking-wide" href="#">Menu Utama</a>
-          <a class="text-slate-500 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 px-3 py-1 rounded transition-colors text-sm tracking-wide"
-            href="#">Checkout</a>
-          <a class="text-slate-500 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 px-3 py-1 rounded transition-colors text-sm tracking-wide"
-            href="#">Riwayat</a>
-        </nav>
-      </div>
-      <div class="flex items-center gap-4">
-        <div class="hidden sm:flex relative items-center">
-          <input
-            id="search-input"
-            class="bg-surface-container-high border-none rounded-lg px-4 py-2 text-sm w-64 focus:ring-2 focus:ring-primary transition-all"
-            placeholder="Cari toko pasir..." type="text" autocomplete="off" />
-          <span class="material-symbols-outlined absolute right-3 text-on-surface-variant text-lg"
-            data-icon="search">search</span>
-        </div>
-        <div class="flex items-center gap-2">
-          <button class="p-2 hover:bg-slate-200/50 rounded-full transition-all">
-            <span class="material-symbols-outlined text-blue-900 dark:text-blue-200"
-              data-icon="notifications">notifications</span>
-          </button>
-          <button class="p-2 hover:bg-slate-200/50 rounded-full transition-all">
-            <span class="material-symbols-outlined text-blue-900 dark:text-blue-200"
-              data-icon="chat_bubble">chat_bubble</span>
-          </button>
-          <div class="w-8 h-8 rounded-full bg-primary-container overflow-hidden ml-2 border-2 border-white shadow-sm">
-            <img href="profil.blade.php" alt="User profile photo" class="w-full h-full object-cover"
-              data-alt="professional headshot of an industrial project manager with a warm smile and sharp suit"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCpBHj5IV2Kn3qm24UVsbcdYBYQ89XXfIj4YbvJKRLj6WLp8H4Q9ZVekGNFKZ2mwLQsDcn1OvQtqY4jNHVI93cihWqIsObwhQnAiTdtzu5A0WdbcexbKokX7JXWiplAzj1I6vFnPQJwdk0t8ogkH3hL9BhLYezo57n8tqRFVw9fTUW7umYAx-9XYNzsjHt6ai42pUtB71acUJ9pBjK4qW7plGWOx3tuinjqVZbbLMoKQaDk1Qnd7VhIgGYmoeFMdYk6EguMZpY7Nw" />
-          </div>
-        </div>
-      </div>
-    </div>
-  </header>
+  @include('topbar')
   <div class="flex h-screen pt-[60px]">
     <!-- SideNavBar (Desktop Only) -->
     <aside class="hidden md:flex flex-col h-full w-64 bg-slate-100 dark:bg-slate-950 py-8 border-r-0 fixed left-0">
@@ -183,7 +22,7 @@
           <span>Menu Utama</span>
         </a>
         <a class="flex items-center px-6 py-4 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors group"
-          href="">
+          href="{{route('ordertracking')}}">
           <span class="material-symbols-outlined mr-4" data-icon="local_shipping">local_shipping</span>
           <span class="font-bold text-slate-500">Active Orders</span>
         </a>
@@ -193,16 +32,13 @@
           <span>Messages</span>
         </a>
         <a class="flex items-center gap-4 px-6 py-4 text-slate-500 dark:text-slate-400 hover:text-blue-800 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
-          href="">
+          href="{{ route('profil') }}">
           <span class="material-symbols-outlined" data-icon="person">person</span>
           <span>Profile</span>
         </a>
       </nav>
       <div class="px-6 mt-auto mb-16">
-        <!-- <button
-          class="w-full bg-gradient-to-br from-primary to-primary-container text-white py-4 rounded-xl font-bold text-sm tracking-wide shadow-lg shadow-primary/20 hover:scale-[0.98] transition-transform">
-          Register Quarry
-        </button> -->
+        
       </div>
     </aside>
     <!-- Main Content Canvas -->
@@ -355,58 +191,19 @@
 
       <div id="map" style="height: 100vh;" class="w-full h-full"></div>
 
+      <!-- Pass asset URL dari Blade ke Maps.js -->
+      <script>
+        window.MAP_CONFIG = {
+          iconUrl: '{{ asset("img/rumah1.png") }}'
+        };
+      </script>
+
+      <!-- Leaflet JS -->
       <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-      <script>
-        var map = L.map('map').setView([-5.167267, 119.412866], 13);
 
-        var googleStreets = L.tileLayer('http://{s}.google.com/vt?lyrs=m&x={x}&y={y}&z={z}', {
-          maxZoom: 20,
-          subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
-        });
-        googleStreets.addTo(map)
-
-        var icon2 = L.icon({
-        iconUrl: '{{ asset("img/rumah1.png") }}',
-        iconSize: [40, 40],
-
-        });
-
-        var kampus = L.marker([-5.166912,119.412656], { icon: icon2 }).bindPopup('This is kampus, CO.');
-        L.layerGroup([kampus]).addTo(map);
-
-        var marker = null;
-        var hasSetView = false;
-
-        if (!navigator.geolocation) {
-          console.log("Geolocation is not supported by this browser.");
-        } else {
-          setInterval(() => {
-            navigator.geolocation.getCurrentPosition(getPosition);
-          }, 1000);
-        }
-
-        function getPosition(position) {
-          var lat = position.coords.latitude;
-          var lon = position.coords.longitude;
-          var accuracy = position.coords.accuracy;
-          console.log(lat, lon, accuracy);
-
-          if (marker) {
-            // Pindahkan marker yang sudah ada, jangan buat baru
-            marker.setLatLng([lat, lon]);
-          } else {
-            // Buat marker hanya sekali
-            marker = L.marker([lat, lon]).addTo(map);
-          }
-
-          // Hanya sekali pindahkan view ke posisi user
-          if (!hasSetView) {
-            map.setView([lat, lon], 16);
-            hasSetView = true;
-          }
-        }
-      </script>
+      <!-- Maps Logic (external) -->
+      <script src="{{ asset('js/Maps.js') }}"></script>
 
       <script>
         // === Fitur Pencarian Shop Card ===

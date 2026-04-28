@@ -1,190 +1,36 @@
-<!DOCTYPE html>
-
-<html class="light" lang="en">
-
-<head>
-  <meta charset="utf-8" />
-  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-  <title>QUARRY DIRECT | Messages</title>
-  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Public+Sans:wght@400;500;600&display=swap"
-    rel="stylesheet" />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
-    rel="stylesheet" />
-  <style>
-   html {
-      font-size: 90%;
-    }
-    .material-symbols-outlined {
-      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-    }
-
-    body {
-      font-family: 'Public Sans', sans-serif;
-    }
-
-    h1, h2, h3, h4, .headline {
-      font-family: 'Manrope', sans-serif;
-    }
-
-    .strata-grid {
-      display: grid;
-      grid-template-columns: 256px 380px 1fr;
-      height: 100vh;
-    }
-
-    @media (max-width: 1024px) {
-      .strata-grid {
-        grid-template-columns: 80px 1fr;
-      }
-
-      .sidebar-text {
-        display: none;
-      }
-    }
-
-    @media (max-width: 768px) {
-      .strata-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .side-nav-desktop {
-        display: none;
-      }
-    }
-  </style>
-  <script id="tailwind-config">
-    tailwind.config = {
-      darkMode: "class",
-      theme: {
-        extend: {
-          colors: {
-            "surface-variant": "#d3e4fe",
-            "on-surface": "#0b1c30",
-            "on-secondary-fixed-variant": "#623f18",
-            "primary-container": "#005fb8",
-            "on-background": "#0b1c30",
-            "on-tertiary-container": "#fcd1c4",
-            "surface": "#f8f9ff",
-            "surface-dim": "#cbdbf5",
-            "secondary": "#7d562d",
-            "surface-container-low": "#eff4ff",
-            "on-primary-fixed": "#001b3d",
-            "inverse-on-surface": "#eaf1ff",
-            "surface-tint": "#005db5",
-            "inverse-surface": "#213145",
-            "outline": "#727783",
-            "on-primary-fixed-variant": "#00468b",
-            "on-tertiary-fixed-variant": "#5d4037",
-            "tertiary-container": "#78584e",
-            "background": "#f8f9ff",
-            "error": "#ba1a1a",
-            "on-primary": "#ffffff",
-            "surface-container-highest": "#d3e4fe",
-            "on-secondary": "#ffffff",
-            "primary-fixed": "#d6e3ff",
-            "on-secondary-container": "#7a532a",
-            "on-error-container": "#93000a",
-            "surface-container-lowest": "#ffffff",
-            "secondary-fixed-dim": "#f0bd8b",
-            "tertiary-fixed-dim": "#e7bdb1",
-            "on-primary-container": "#cadcff",
-            "error-container": "#ffdad6",
-            "on-secondary-fixed": "#2c1600",
-            "primary-fixed-dim": "#a8c8ff",
-            "surface-container": "#e5eeff",
-            "on-surface-variant": "#424752",
-            "secondary-container": "#ffca98",
-            "surface-container-high": "#dce9ff",
-            "on-tertiary-fixed": "#2c160e",
-            "primary": "#00488d",
-            "outline-variant": "#c2c6d4",
-            "surface-bright": "#f8f9ff",
-            "tertiary": "#5e4138",
-            "inverse-primary": "#a8c8ff",
-            "secondary-fixed": "#ffdcbd",
-            "on-tertiary": "#ffffff",
-            "tertiary-fixed": "#ffdbd0",
-            "on-error": "#ffffff",
-          },
-          borderRadius: {
-            "DEFAULT": "0.125rem",
-            "lg": "0.25rem",
-            "xl": "0.5rem",
-            "full": "0.75rem",
-          },
-          fontFamily: {
-            "headline": ["Manrope"],
-            "body": ["Public Sans"],
-            "label": ["Public Sans"],
-          },
-        },
-      },
-    };
-  </script>
-</head>
 
 <body class="bg-background text-on-background antialiased overflow-hidden">
 
-  <!-- TopNavBar -->
-  <header
-    class="fixed top-0 left-0 w-full z-50 bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-lg flex justify-between items-center px-6 py-3">
-    <div class="flex items-center gap-4">
-      <span class="text-xl font-black tracking-tighter text-blue-900 dark:text-blue-100">QUARRY DIRECT</span>
-    </div>
-    <div class="hidden md:flex items-center gap-8 flex-1 max-w-xl mx-12">
-      <div class="relative w-full">
-        <input
-          class="w-full bg-surface-container-high border-none rounded-xl px-4 py-2 text-on-surface-variant focus:ring-2 focus:ring-primary"
-          placeholder="Search orders or materials..." type="text" />
-      </div>
-    </div>
-    <div class="flex items-center gap-4">
-      <button
-        class="material-symbols-outlined p-2 text-blue-900 hover:bg-slate-200/50 rounded-full transition-transform duration-150 scale-95"
-        data-icon="notifications">notifications</button>
-      <button
-        class="material-symbols-outlined p-2 text-blue-900 bg-blue-100/50 rounded-full transition-transform duration-150 scale-95"
-        data-icon="chat_bubble">chat_bubble</button>
-      <div class="w-10 h-10 rounded-full bg-surface-container-highest overflow-hidden">
-        <img
-          alt="Profile"
-          src="https://lh3.googleusercontent.com/aida-public/AB6AXuBom06Nk1iSHcgqjxc4u9qswCF3jzOGMN-pGvQFg6Ue6g5Q_Q_z7M8TDKOEwUAGjxRn6e3IppPgvkFcUMv64g_zPhwZADCJnLxKhlrU8BiGXbwWeZs8RWwS9RY3dvD6qbIxWha_-niBsmZfmBjqg0YWR7z1RBiVyjK_xhA9gO6GGE6YCu0JSeNk1njxmZonOMRWiALP1o1HHdUNj3ZedH6HVMfhY-kmHm-C-HXZ1FTuYJWrzPNpIPilJCdfToCgVmXYV06h8Q55tw" />
-      </div>
-    </div>
-  </header>
+  @include('topbar')
 
-  <main class="strata-grid pt-[64px]">
+  <div class="flex h-screen pt-[64px]">
 
-    <!-- SideNavBar (Desktop Only) -->
-    <aside
-      class="side-nav-desktop hidden md:flex flex-col h-full py-8 bg-slate-100 dark:bg-slate-950 border-r-0 overflow-y-auto">
+    <!-- SideNavBar (Desktop Only) — fixed kiri -->
+    <aside class="hidden md:flex flex-col w-64 flex-shrink-0 bg-slate-100 dark:bg-slate-950 py-8 overflow-y-auto border-r border-slate-200">
       <div class="px-6 mb-8">
         <h2 class="text-2xl font-black text-blue-900 dark:text-white">Industrial Hub</h2>
         <p class="text-xs font-semibold text-slate-500 uppercase tracking-widest mt-1">Verified Seller</p>
       </div>
       <nav class="flex-1 space-y-1">
-        <a class="flex items-center px-6 py-4 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors group"
+        <a class="flex items-center px-6 py-4 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
           href="{{ route('home') }}">
           <span class="material-symbols-outlined mr-4" data-icon="storefront">storefront</span>
-          <span class="font-bold text-slate-500">Marketplace</span>
+          <span class="font-bold">Marketplace</span>
         </a>
-        <a class="flex items-center px-6 py-4 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors group"
+        <a class="flex items-center px-6 py-4 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
           href="#">
           <span class="material-symbols-outlined mr-4" data-icon="local_shipping">local_shipping</span>
-          <span class="font-bold text-slate-500">Active Orders</span>
+          <span class="font-bold">Active Orders</span>
         </a>
-        <a class="flex items-center px-6 py-4 text-blue-900 dark:text-white font-bold border-r-4 border-blue-900 dark:border-blue-400 bg-white/50 dark:bg-white/5 group"
+        <a class="flex items-center px-6 py-4 text-blue-900 dark:text-white font-bold border-r-4 border-blue-900 dark:border-blue-400 bg-white/50 dark:bg-white/5"
           href="#">
           <span class="material-symbols-outlined mr-4" data-icon="forum">forum</span>
-          <span class="sidebar-text">Messages</span>
+          <span>Messages</span>
         </a>
-        <a class="flex items-center px-6 py-4 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors group"
-          href="#">
-          <span class="material-symbols-outlined mr-4" data-icon="settings">settings</span>
-          <span class="font-bold text-slate-500">Settings</span>
+        <a class="flex items-center px-6 py-4 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
+          href="{{ route('profil') }}">
+          <span class="material-symbols-outlined mr-4" data-icon="person">person</span>
+          <span class="font-bold">Profile</span>
         </a>
       </nav>
       <div class="px-6 mt-auto">
@@ -194,6 +40,9 @@
         </button>
       </div>
     </aside>
+
+    <!-- Area Konten: Chat List + Chat Window -->
+    <main class="flex flex-1 overflow-hidden">
 
     <!-- Chat History Sidebar -->
     <section class="bg-surface-container-low flex flex-col h-full overflow-hidden">
@@ -397,8 +246,9 @@
 
     </section>
 
-  </main>
+    </main><!-- end area konten -->
 
+  </div><!-- end flex wrapper -->
   <!-- BottomNavBar (Mobile Only) -->
   <nav
     class="md:hidden fixed bottom-0 left-0 w-full z-50 bg-slate-50/80 backdrop-blur-xl flex justify-around items-center px-4 pb-6 pt-2 shadow-[0px_-8px_24px_rgba(11,28,48,0.05)] rounded-t-xl">
