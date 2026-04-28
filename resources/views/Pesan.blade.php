@@ -128,63 +128,36 @@
 
 <body class="bg-background text-on-background antialiased overflow-hidden">
 
-  <!-- TopNavBar -->
-  <header
-    class="fixed top-0 left-0 w-full z-50 bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-lg flex justify-between items-center px-6 py-3">
-    <div class="flex items-center gap-4">
-      <span class="text-xl font-black tracking-tighter text-blue-900 dark:text-blue-100">QUARRY DIRECT</span>
-    </div>
-    <div class="hidden md:flex items-center gap-8 flex-1 max-w-xl mx-12">
-      <div class="relative w-full">
-        <input
-          class="w-full bg-surface-container-high border-none rounded-xl px-4 py-2 text-on-surface-variant focus:ring-2 focus:ring-primary"
-          placeholder="Search orders or materials..." type="text" />
-      </div>
-    </div>
-    <div class="flex items-center gap-4">
-      <button
-        class="material-symbols-outlined p-2 text-blue-900 hover:bg-slate-200/50 rounded-full transition-transform duration-150 scale-95"
-        data-icon="notifications">notifications</button>
-      <button
-        class="material-symbols-outlined p-2 text-blue-900 bg-blue-100/50 rounded-full transition-transform duration-150 scale-95"
-        data-icon="chat_bubble">chat_bubble</button>
-      <div class="w-10 h-10 rounded-full bg-surface-container-highest overflow-hidden">
-        <img
-          alt="Profile"
-          src="https://lh3.googleusercontent.com/aida-public/AB6AXuBom06Nk1iSHcgqjxc4u9qswCF3jzOGMN-pGvQFg6Ue6g5Q_Q_z7M8TDKOEwUAGjxRn6e3IppPgvkFcUMv64g_zPhwZADCJnLxKhlrU8BiGXbwWeZs8RWwS9RY3dvD6qbIxWha_-niBsmZfmBjqg0YWR7z1RBiVyjK_xhA9gO6GGE6YCu0JSeNk1njxmZonOMRWiALP1o1HHdUNj3ZedH6HVMfhY-kmHm-C-HXZ1FTuYJWrzPNpIPilJCdfToCgVmXYV06h8Q55tw" />
-      </div>
-    </div>
-  </header>
+  @include('topbar')
 
-  <main class="strata-grid pt-[64px]">
+  <div class="flex h-screen pt-[64px]">
 
-    <!-- SideNavBar (Desktop Only) -->
-    <aside
-      class="side-nav-desktop hidden md:flex flex-col h-full py-8 bg-slate-100 dark:bg-slate-950 border-r-0 overflow-y-auto">
+    <!-- SideNavBar (Desktop Only) — fixed kiri -->
+    <aside class="hidden md:flex flex-col w-64 flex-shrink-0 bg-slate-100 dark:bg-slate-950 py-8 overflow-y-auto border-r border-slate-200">
       <div class="px-6 mb-8">
         <h2 class="text-2xl font-black text-blue-900 dark:text-white">Industrial Hub</h2>
         <p class="text-xs font-semibold text-slate-500 uppercase tracking-widest mt-1">Verified Seller</p>
       </div>
       <nav class="flex-1 space-y-1">
-        <a class="flex items-center px-6 py-4 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors group"
+        <a class="flex items-center px-6 py-4 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
           href="{{ route('home') }}">
           <span class="material-symbols-outlined mr-4" data-icon="storefront">storefront</span>
-          <span class="font-bold text-slate-500">Marketplace</span>
+          <span class="font-bold">Marketplace</span>
         </a>
-        <a class="flex items-center px-6 py-4 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors group"
+        <a class="flex items-center px-6 py-4 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
           href="#">
           <span class="material-symbols-outlined mr-4" data-icon="local_shipping">local_shipping</span>
-          <span class="font-bold text-slate-500">Active Orders</span>
+          <span class="font-bold">Active Orders</span>
         </a>
-        <a class="flex items-center px-6 py-4 text-blue-900 dark:text-white font-bold border-r-4 border-blue-900 dark:border-blue-400 bg-white/50 dark:bg-white/5 group"
+        <a class="flex items-center px-6 py-4 text-blue-900 dark:text-white font-bold border-r-4 border-blue-900 dark:border-blue-400 bg-white/50 dark:bg-white/5"
           href="#">
           <span class="material-symbols-outlined mr-4" data-icon="forum">forum</span>
-          <span class="sidebar-text">Messages</span>
+          <span>Messages</span>
         </a>
-        <a class="flex items-center px-6 py-4 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors group"
-          href="#">
-          <span class="material-symbols-outlined mr-4" data-icon="settings">settings</span>
-          <span class="font-bold text-slate-500">Settings</span>
+        <a class="flex items-center px-6 py-4 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
+          href="{{ route('profil') }}">
+          <span class="material-symbols-outlined mr-4" data-icon="person">person</span>
+          <span class="font-bold">Profile</span>
         </a>
       </nav>
       <div class="px-6 mt-auto">
@@ -195,8 +168,11 @@
       </div>
     </aside>
 
+    <!-- Area Konten: Chat List + Chat Window -->
+    <main class="flex flex-1 overflow-hidden">
+
     <!-- Chat History Sidebar -->
-    <section class="bg-surface-container-low flex flex-col h-full overflow-hidden">
+    <section class="bg-surface-container-low flex flex-col h-full overflow-hidden w-[380px] flex-shrink-0">
       <div class="p-6">
         <h3 class="headline text-2xl font-bold tracking-tight text-on-surface">Conversations</h3>
         <div class="mt-4 relative">
@@ -273,7 +249,7 @@
     </section>
 
     <!-- Active Chat Window -->
-    <section class="flex flex-col h-full bg-white">
+    <section class="flex flex-col flex-1 h-full bg-white">
 
       <!-- Chat Header -->
       <div class="px-8 py-5 flex justify-between items-center bg-white z-10">
@@ -397,8 +373,9 @@
 
     </section>
 
-  </main>
+    </main><!-- end area konten -->
 
+  </div><!-- end flex wrapper -->
   <!-- BottomNavBar (Mobile Only) -->
   <nav
     class="md:hidden fixed bottom-0 left-0 w-full z-50 bg-slate-50/80 backdrop-blur-xl flex justify-around items-center px-4 pb-6 pt-2 shadow-[0px_-8px_24px_rgba(11,28,48,0.05)] rounded-t-xl">
