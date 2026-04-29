@@ -11,22 +11,28 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('informasi_toko', function (Blueprint $table) {
-            $table->integer('ID_Toko')->autoIncrement()->primary();
+        Schema::create('pesanan', function (Blueprint $table) {
+            $table->integer('ID_Pesanan')->autoIncrement()->primary();
             $table->integer('ID_Akun');
-            $table->string('Nama_Toko');
-            $table->bigInteger('Nomer_Telepon_Toko');
-            $table->string('Email_Toko');
-            $table->string('Lokasi_Toko');
+            $table->integer('ID_Toko');
             $table->string('Username');
-            $table->integer('Pendapatan_Toko')->default(0);
-            $table->integer('Total_Pembelian')->default(0);
-            $table->integer('Komisi_Admin')->default(0);
+            $table->string('Nama_Toko');
+            $table->string('Lokasi_Toko');
+            $table->string('Lokasi_Pengantaran');
+            $table->integer('Harga_Pasir');
+            $table->integer('Volume_Pasir'); // dalam m³
+            $table->string('Status_Pembayaran');
+            $table->string('Status_Pesanan');
             $table->timestamps();
 
             $table->foreign('ID_Akun')
                   ->references('ID_Akun')
                   ->on('informasi_akun')
+                  ->onDelete('cascade');
+
+            $table->foreign('ID_Toko')
+                  ->references('ID_Toko')
+                  ->on('informasi_toko')
                   ->onDelete('cascade');
         });
     }
@@ -36,6 +42,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('informasi_toko');
+        Schema::dropIfExists('pesanan');
     }
 };

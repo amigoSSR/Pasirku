@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             InformasiAkunSeeder::class,
             InformasiTokoSeeder::class,
             IsiTokoSeeder::class,
+            PesananSeeder::class,
         ]);
     }
 }
