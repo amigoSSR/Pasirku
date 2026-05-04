@@ -14,12 +14,19 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+use App\Http\Controllers\MessageController;
+
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/MenuUtama', fn() => view('MenuUtama'))->name('MenuUtama');
     Route::get('/keranjang', fn() => view('keranjang'))->name('keranjang');
     Route::get('/Pesan', fn() => view('Pesan'))->name('Pesan');
     Route::get('/ordertracking', fn() => view('ordertracking'))->name('ordertracking');
     Route::get('/Profil', fn() => view('profil'))->name('Profil');
+
+    // Chat API Routes
+    Route::get('/chat/contacts', [MessageController::class, 'getContacts'])->name('chat.contacts');
+    Route::get('/chat/messages/{user}', [MessageController::class, 'getMessages'])->name('chat.messages');
+    Route::post('/chat/send', [MessageController::class, 'sendMessage'])->name('chat.send');
 });
 
 Route::middleware('auth')->group(function () {
