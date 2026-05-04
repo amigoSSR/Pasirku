@@ -115,27 +115,24 @@
 </div>
 </div>
 <nav class="flex-1 space-y-1">
-<a class="flex items-center gap-3 px-6 py-3 text-slate-500 hover:bg-slate-200 transition-colors" href="#">
+<a href="{{ route('MenuUtama') }}" class="flex items-center gap-3 px-6 py-3 text-slate-500 hover:bg-slate-200 transition-colors" >
 <span class="material-symbols-outlined">storefront</span>
-<span class="font-medium">Marketplace</span>
+<span class="font-medium">Menu Utama</span>
 </a>
-<a class="flex items-center gap-3 px-6 py-3 text-slate-500 hover:bg-slate-200 transition-colors" href="#">
+<a href="{{ route('ordertracking') }}" class="flex items-center gap-3 px-6 py-3 text-slate-500 hover:bg-slate-200 transition-colors" >
 <span class="material-symbols-outlined">local_shipping</span>
 <span class="font-medium">Active Orders</span>
 </a>
-<a class="flex items-center gap-3 px-6 py-3 text-slate-500 hover:bg-slate-200 transition-colors" href="#">
+<a href="{{ route('Pesan') }}"class="flex items-center gap-3 px-6 py-3 text-slate-500 hover:bg-slate-200 transition-colors" href="#">
 <span class="material-symbols-outlined">forum</span>
 <span class="font-medium">Messages</span>
 </a>
 <a class="flex items-center gap-3 px-6 py-3 text-blue-900 font-bold border-r-4 border-blue-900 bg-white/50" href="#">
-<span class="material-symbols-outlined">settings</span>
-<span class="font-medium">Settings</span>
+<span class="material-symbols-outlined">account_circle</span>
+<span class="font-medium">Profil</span>
 </a>
 </nav>
 <div class="px-6 mt-auto">
-<button class="w-full bg-gradient-to-br from-primary to-primary-container text-white py-3 rounded-md font-bold shadow-lg active:scale-95 transition-transform">
-                    Register Quarry
-                </button>
 </div>
 </aside>
 <!-- Main Content Canvas -->
@@ -147,7 +144,7 @@
 </div>
 <div class="md:col-span-8 pb-4">
 <span class="font-label text-secondary uppercase tracking-widest text-sm mb-2 block">Account Overview</span>
-<h1 class="font-headline text-5xl font-extrabold tracking-tighter text-on-surface mb-4">Aditya Wijaya</h1>
+<h1 class="font-headline text-5xl font-extrabold tracking-tighter text-on-surface mb-4">{{ Auth::user()->Username ?? 'Pengguna' }}</h1>
 <div class="flex gap-4">
 <div class="bg-surface-container-highest px-4 py-2 rounded-lg">
 <p class="text-xs text-on-surface-variant font-medium uppercase">Total Orders</p>
@@ -195,47 +192,23 @@
 <p class="text-on-surface-variant text-sm leading-relaxed">Manage your catalog, update pricing for sand, stone, and aggregates.</p>
 </a>
 <!-- Logout (Large Span) -->
-<button class="md:col-span-3 flex items-center justify-between bg-surface-container-lowest border-2 border-error/10 p-6 rounded-xl group hover:bg-error/5 transition-colors">
-<div class="flex items-center gap-4">
-<div class="p-2 bg-error/10 text-error rounded-lg">
-<span class="material-symbols-outlined">logout</span>
-</div>
-<div class="text-left">
-<span class="font-headline font-bold text-on-surface block">Logout</span>
-<span class="text-xs text-on-surface-variant">Securely end your session</span>
-</div>
-</div>
-<span class="material-symbols-outlined text-error opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
-</button>
+<form method="POST" action="{{ route('profil.logout') }}" class="md:col-span-3">
+    @csrf
+    <button type="submit" class="w-full flex items-center justify-between bg-surface-container-lowest border-2 border-error/10 p-6 rounded-xl group hover:bg-error/5 transition-colors">
+        <div class="flex items-center gap-4">
+            <div class="p-2 bg-error/10 text-error rounded-lg">
+                <span class="material-symbols-outlined">logout</span>
+            </div>
+            <div class="text-left">
+                <span class="font-headline font-bold text-on-surface block">Logout</span>
+                <span class="text-xs text-on-surface-variant">Securely end your session</span>
+            </div>
+        </div>
+        <span class="material-symbols-outlined text-error opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+    </button>
+</form>
 </div>
 <!-- Profile Details Section (Asymmetric) -->
-<section class="mt-16 grid grid-cols-1 md:grid-cols-2 gap-12">
-<div class="space-y-6">
-<h4 class="font-headline text-xl font-bold text-on-surface border-b-2 border-secondary w-fit pb-1">Technical Specifications</h4>
-<div class="space-y-4">
-<div class="flex justify-between items-center py-2 border-b border-outline-variant/20">
-<span class="text-on-surface-variant text-sm">Account Type</span>
-<span class="font-semibold text-primary">Commercial Tier 1</span>
-</div>
-<div class="flex justify-between items-center py-2 border-b border-outline-variant/20">
-<span class="text-on-surface-variant text-sm">Location</span>
-<span class="font-semibold">Jakarta, ID</span>
-</div>
-<div class="flex justify-between items-center py-2 border-b border-outline-variant/20">
-<span class="text-on-surface-variant text-sm">Member Since</span>
-<span class="font-semibold">Oct 2021</span>
-</div>
-</div>
-</div>
-<div class="bg-secondary-container/30 p-8 rounded-xl relative overflow-hidden">
-<span class="material-symbols-outlined absolute -right-4 -bottom-4 text-9xl text-secondary/10">shield_person</span>
-<h4 class="font-headline text-xl font-bold text-on-secondary-container mb-4">Verification Status</h4>
-<p class="text-on-secondary-container/80 text-sm mb-6 leading-relaxed">Your profile is fully verified for high-volume transactions up to 500 tons per delivery. Contact support for heavy-industry upgrades.</p>
-<button class="text-sm font-bold text-secondary flex items-center gap-2 hover:gap-3 transition-all">
-                        View Certificate <span class="material-symbols-outlined text-sm">description</span>
-</button>
-</div>
-</section>
 </main>
 </div>
 <!-- BottomNavBar Shell (Mobile) -->

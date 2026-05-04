@@ -36,6 +36,19 @@ class ProfileController extends Controller
     }
 
     /**
+     * Log the user out of the application.
+     */
+    public function logout(Request $request): RedirectResponse
+    {
+        Auth::logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return Redirect::route('login');
+    }
+
+    /**
      * Delete the user's account.
      */
     public function destroy(Request $request): RedirectResponse
