@@ -121,16 +121,16 @@
 </head>
 <!-- TopNavBar (Shared Component) -->
 <header
-  class="bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-lg fixed top-0 w-full z-[100] transition-transform duration-150 docked full-width flex justify-center">
+  class="bg-slate-50/80 backdrop-blur-lg fixed top-0 w-full z-[100] transition-transform duration-150 docked full-width flex justify-center">
   <div class="flex justify-between items-center w-full px-4 py-3 max-w-7xl mx-auto">
     <div class="flex items-center gap-8">
-      <span class="text-xl font-black tracking-tighter text-blue-900 dark:text-blue-100 uppercase">Pasir Ku</span>
+      <span class="text-xl font-black tracking-tighter text-blue-900 uppercase">Pasir Ku</span>
       <!-- Desktop Nav Cluster -->
       <nav class="hidden md:flex items-center gap-6">
-        <a class="text-blue-800 dark:text-blue-300 font-bold text-sm tracking-wide" href="{{ route('home') }}">Menu Utama</a>
-        <a class="text-slate-500 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 px-3 py-1 rounded transition-colors text-sm tracking-wide"
+        <a class="text-blue-800 font-bold text-sm tracking-wide" href="{{ route('MenuUtama') }}">Menu Utama</a>
+        <a class="text-slate-500 hover:bg-slate-200/50 px-3 py-1 rounded transition-colors text-sm tracking-wide"
           href="{{ route('keranjang') }}">Checkout</a>
-        <a class="text-slate-500 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 px-3 py-1 rounded transition-colors text-sm tracking-wide"
+        <a class="text-slate-500 hover:bg-slate-200/50 px-3 py-1 rounded transition-colors text-sm tracking-wide"
           href="{{ route('Pesan') }}">Pesan</a>
       </nav>
     </div>
@@ -145,15 +145,15 @@
       </div>
       <div class="flex items-center gap-2">
         <button class="p-2 hover:bg-slate-200/50 rounded-full transition-all">
-          <span class="material-symbols-outlined text-blue-900 dark:text-blue-200"
+          <span class="material-symbols-outlined text-blue-900"
             data-icon="notifications">notifications</span>
         </button>
         <button class="p-2 hover:bg-slate-200/50 rounded-full transition-all">
-          <span class="material-symbols-outlined text-blue-900 dark:text-blue-200"
+          <span class="material-symbols-outlined text-blue-900"
             data-icon="chat_bubble">chat_bubble</span>
         </button>
         <div class="w-8 h-8 rounded-full bg-primary-container overflow-hidden ml-2 border-2 border-white shadow-sm">
-          <a href="{{ route('profil') }}"><img alt="User profile photo" class="w-full h-full object-cover"
+          <a href="{{ route('Profil') }}"><img alt="User profile photo" class="w-full h-full object-cover"
             src="https://lh3.googleusercontent.com/aida-public/AB6AXuCpBHj5IV2Kn3qm24UVsbcdYBYQ89XXfIj4YbvJKRLj6WLp8H4Q9ZVekGNFKZ2mwLQsDcn1OvQtqY4jNHVI93cihWqIsObwhQnAiTdtzu5A0WdbcexbKokX7JXWiplAzj1I6vFnPQJwdk0t8ogkH3hL9BhLYezo57n8tqRFVw9fTUW7umYAx-9XYNzsjHt6ai42pUtB71acUJ9pBjK4qW7plGWOx3tuinjqVZbbLMoKQaDk1Qnd7VhIgGYmoeFMdYk6EguMZpY7Nw" /></a>
         </div>
       </div>

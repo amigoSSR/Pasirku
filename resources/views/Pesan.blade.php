@@ -133,29 +133,29 @@
   <div class="flex h-screen pt-[64px]">
 
     <!-- SideNavBar (Desktop Only) — fixed kiri -->
-    <aside class="hidden md:flex flex-col w-64 flex-shrink-0 bg-slate-100 dark:bg-slate-950 py-8 overflow-y-auto border-r border-slate-200">
+    <aside class="hidden md:flex flex-col w-64 flex-shrink-0 bg-slate-100 py-8 overflow-y-auto border-r border-slate-200">
       <div class="px-6 mb-8">
-        <h2 class="text-2xl font-black text-blue-900 dark:text-white">Industrial Hub</h2>
+        <h2 class="text-2xl font-black text-blue-900">Industrial Hub</h2>
         <p class="text-xs font-semibold text-slate-500 uppercase tracking-widest mt-1">Verified Seller</p>
       </div>
       <nav class="flex-1 space-y-1">
-        <a class="flex items-center px-6 py-4 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
-          href="{{ route('home') }}">
+        <a class="flex items-center px-6 py-4 text-slate-500 hover:bg-slate-200 transition-colors"
+          href="{{ route('MenuUtama') }}">
           <span class="material-symbols-outlined mr-4" data-icon="storefront">storefront</span>
           <span class="font-bold">Marketplace</span>
         </a>
-        <a class="flex items-center px-6 py-4 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
+        <a class="flex items-center px-6 py-4 text-slate-500 hover:bg-slate-200 transition-colors"
           href="#">
           <span class="material-symbols-outlined mr-4" data-icon="local_shipping">local_shipping</span>
           <span class="font-bold">Active Orders</span>
         </a>
-        <a class="flex items-center px-6 py-4 text-blue-900 dark:text-white font-bold border-r-4 border-blue-900 dark:border-blue-400 bg-white/50 dark:bg-white/5"
+        <a class="flex items-center px-6 py-4 text-blue-900 font-bold border-r-4 border-blue-900 bg-white/50"
           href="#">
           <span class="material-symbols-outlined mr-4" data-icon="forum">forum</span>
           <span>Messages</span>
         </a>
-        <a class="flex items-center px-6 py-4 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
-          href="{{ route('profil') }}">
+        <a class="flex items-center px-6 py-4 text-slate-500 hover:bg-slate-200 transition-colors"
+          href="{{ route('Profil') }}">
           <span class="material-symbols-outlined mr-4" data-icon="person">person</span>
           <span class="font-bold">Profile</span>
         </a>
