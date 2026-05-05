@@ -12,9 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('informasi_akun', function (Blueprint $table) {
-            $table->integer('ID_Akun')->autoIncrement()->primary();
+            $table->integer('ID_Akun')->autoIncrement();
             $table->string('Username');
-            $table->bigInteger('Nomer_Telepon');
+            $table->string('Nomer_Telepon');
             $table->string('Email');
             $table->string('Password');
             $table->timestamps();

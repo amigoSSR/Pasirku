@@ -107,9 +107,9 @@
 
   <div class="flex pt-[60px] min-h-screen">
 
-<aside class="hidden md:flex flex-col h-full w-64 bg-slate-100 dark:bg-slate-950 py-8 border-r-0 fixed left-0">
+<aside class="hidden md:flex flex-col h-full w-64 bg-slate-100 py-8 border-r-0 fixed left-0">
       <div class="px-6 pb-8">
-        <h2 class="text-sm font-bold text-blue-900 dark:text-white uppercase tracking-widest opacity-50">
+        <h2 class="text-sm font-bold text-blue-900 uppercase tracking-widest opacity-50">
           Industrial Hub
         </h2>
         <div class="flex items-center mt-2 gap-2">
@@ -119,23 +119,23 @@
         </div>
       </div>
       <nav class="flex-1 space-y-1">
-        <a class="flex items-center gap-4 px-6 py-4 text-blue-900 dark:text-white font-bold border-r-4 border-blue-900 dark:border-blue-400 bg-white/50 dark:bg-white/5 transition-colors"
+        <a class="flex items-center gap-4 px-6 py-4 text-blue-900 font-bold border-r-4 border-blue-900 bg-white/50 transition-colors"
           href="#">
           <span class="material-symbols-outlined" data-icon="storefront">storefront</span>
           <span>Menu Utama</span>
         </a>
-        <a class="flex items-center px-6 py-4 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors group"
+        <a class="flex items-center px-6 py-4 text-slate-500 hover:bg-slate-200 transition-colors group"
           href="{{route('ordertracking')}}">
           <span class="material-symbols-outlined mr-4" data-icon="local_shipping">local_shipping</span>
           <span class="font-bold text-slate-500">Active Orders</span>
         </a>
-        <a class="flex items-center gap-4 px-6 py-4 text-slate-500 dark:text-slate-400 hover:text-blue-800 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
+        <a class="flex items-center gap-4 px-6 py-4 text-slate-500 hover:text-blue-800 hover:bg-slate-200 transition-colors"
           href="{{ route('Pesan') }}">
           <span class="material-symbols-outlined" data-icon="forum">forum</span>
           <span>Messages</span>
         </a>
-        <a class="flex items-center gap-4 px-6 py-4 text-slate-500 dark:text-slate-400 hover:text-blue-800 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
-          href="{{ route('profil') }}">
+        <a class="flex items-center gap-4 px-6 py-4 text-slate-500 hover:text-blue-800 hover:bg-slate-200 transition-colors"
+          href="{{ route('Profil') }}">
           <span class="material-symbols-outlined" data-icon="person">person</span>
           <span>Profile</span>
         </a>
@@ -285,16 +285,16 @@
       </div>
 
       <!-- Mobile BottomNavBar -->
-      <nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-2 bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-xl shadow-[0px_-8px_24px_rgba(11,28,48,0.05)] rounded-t-xl">
-        <div class="flex flex-col items-center justify-center text-slate-500 dark:text-slate-400 px-6 py-1">
+      <nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-2 bg-slate-50/80 backdrop-blur-xl shadow-[0px_-8px_24px_rgba(11,28,48,0.05)] rounded-t-xl">
+        <div class="flex flex-col items-center justify-center text-slate-500 px-6 py-1">
           <span class="material-symbols-outlined">trolley</span>
           <span class="text-[10px] font-bold uppercase tracking-wider mt-1">Home</span>
         </div>
-        <div class="flex flex-col items-center justify-center bg-blue-100 dark:bg-blue-900/40 text-blue-900 dark:text-blue-100 rounded-xl px-6 py-1">
+        <div class="flex flex-col items-center justify-center bg-blue-100 text-blue-900 rounded-xl px-6 py-1">
           <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">shopping_cart</span>
           <span class="text-[10px] font-bold uppercase tracking-wider mt-1">Cart</span>
         </div>
-        <div class="flex flex-col items-center justify-center text-slate-500 dark:text-slate-400 px-6 py-1">
+        <div class="flex flex-col items-center justify-center text-slate-500 px-6 py-1">
           <span class="material-symbols-outlined">person</span>
           <span class="text-[10px] font-bold uppercase tracking-wider mt-1">Profile</span>
         </div>

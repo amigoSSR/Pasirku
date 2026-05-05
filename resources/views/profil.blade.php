@@ -1,139 +1,229 @@
+<!DOCTYPE html>
 
-<body class="bg-surface text-on-surface">
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Profile - QUARRY DIRECT</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Public+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-variant": "#d3e4fe",
+                        "on-surface": "#0b1c30",
+                        "on-secondary-fixed-variant": "#623f18",
+                        "primary-container": "#005fb8",
+                        "on-background": "#0b1c30",
+                        "on-tertiary-container": "#fcd1c4",
+                        "surface": "#f8f9ff",
+                        "surface-dim": "#cbdbf5",
+                        "secondary": "#7d562d",
+                        "surface-container-low": "#eff4ff",
+                        "on-primary-fixed": "#001b3d",
+                        "inverse-on-surface": "#eaf1ff",
+                        "surface-tint": "#005db5",
+                        "inverse-surface": "#213145",
+                        "outline": "#727783",
+                        "on-primary-fixed-variant": "#00468b",
+                        "on-tertiary-fixed-variant": "#5d4037",
+                        "tertiary-container": "#78584e",
+                        "background": "#f8f9ff",
+                        "error": "#ba1a1a",
+                        "on-primary": "#ffffff",
+                        "surface-container-highest": "#d3e4fe",
+                        "on-secondary": "#ffffff",
+                        "primary-fixed": "#d6e3ff",
+                        "on-secondary-container": "#7a532a",
+                        "on-error-container": "#93000a",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed-dim": "#f0bd8b",
+                        "tertiary-fixed-dim": "#e7bdb1",
+                        "on-primary-container": "#cadcff",
+                        "error-container": "#ffdad6",
+                        "on-secondary-fixed": "#2c1600",
+                        "primary-fixed-dim": "#a8c8ff",
+                        "surface-container": "#e5eeff",
+                        "on-surface-variant": "#424752",
+                        "secondary-container": "#ffca98",
+                        "surface-container-high": "#dce9ff",
+                        "on-tertiary-fixed": "#2c160e",
+                        "primary": "#00488d",
+                        "outline-variant": "#c2c6d4",
+                        "surface-bright": "#f8f9ff",
+                        "tertiary": "#5e4138",
+                        "inverse-primary": "#a8c8ff",
+                        "secondary-fixed": "#ffdcbd",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed": "#ffdbd0",
+                        "on-error": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Public Sans"],
+                        "label": ["Public Sans"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .tonal-shift-bg-slate-100 { background-color: #f1f5f9; }
+        .no-border-tonal-layering { border: none; }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface">
 
-  @include('topbar')
-
-  <main class="max-w-4xl mx-auto px-6 pt-24 pb-32">
-
-    <!-- Hero Profile Section -->
-    <section class="relative overflow-hidden rounded-xl bg-surface-container-low p-8 mb-8 flex flex-col md:flex-row items-center gap-8 shadow-sm">
-      <div class="relative z-10 w-32 h-32 rounded-full overflow-hidden bg-surface-container-high ring-4 ring-white shadow-lg">
-        <img alt="Guest User" class="w-full h-full object-cover"
-          src="https://lh3.googleusercontent.com/aida-public/AB6AXuBC7B34jIy7PFd-X_56HdgGJC0UAEY-CbQigZJAMMIKc752Kxqs-FSOEYrwA2dY3didkXrJeyTA1_25ucmJIAkP_j3oRYfnanCEzHVcX5FAXbFj9cNHxnpBMSwPJxYVHhwY1_MmvVVmgTw4G2LKz6UbwSMS-FOYdjE-5SIw9XBUDB2JuoMYxQ1OfzUfMTpl5VWUuPCrockvecnpoN9p6sEZbzjaNojH0qH7IDCgBnziHJDFfC59QIm1sGd7IY1nmbymGqVd5J52Aw" />
-      </div>
-      <div class="relative z-10 text-center md:text-left">
-        <span class="inline-block px-3 py-1 bg-secondary-container text-on-secondary-container text-xs font-bold rounded-full mb-3 tracking-widest uppercase">Guest User</span>
-        <h1 class="text-4xl font-extrabold text-on-surface tracking-tight mb-2">Welcome to Industrial Hub</h1>
-        <p class="text-on-surface-variant max-w-md">Log in to your account to manage your materials, track shipments, and communicate with verified sellers.</p>
-      </div>
-      <!-- Aesthetic Monolith Background Element -->
-      <div class="absolute -right-20 -bottom-20 w-64 h-64 bg-primary/5 rounded-full blur-3xl"></div>
-    </section>
-
-    <!-- Profile Actions: Strata Grid Style -->
-    <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
-
-      <!-- Primary Auth Column -->
-      <div class="md:col-span-4 flex flex-col gap-6">
-        <div class="bg-surface-container-lowest p-8 rounded-xl shadow-sm flex flex-col items-center text-center">
-          <h3 class="font-headline font-bold text-lg mb-4 text-primary">Join the Network</h3>
-          <p class="text-sm text-on-surface-variant mb-6">Access the largest marketplace for raw materials and quarry logistics.</p>
-          <button class="w-full bg-gradient-to-br from-primary to-primary-container text-white font-bold py-4 rounded-xl hover:shadow-lg transition-all active:scale-95">
-            Login
-          </button>
-          <button class="w-full mt-4 border-2 border-outline-variant text-on-surface font-semibold py-4 rounded-xl hover:bg-surface-container-low transition-colors">
-            Sign Up
-          </button>
-        </div>
-        <div class="bg-surface-container-low p-6 rounded-xl">
-          <div class="flex items-center gap-3 text-secondary mb-2">
-            <span class="material-symbols-outlined" data-icon="verified_user">verified_user</span>
-            <span class="font-bold text-sm tracking-wide uppercase">Security Notice</span>
-          </div>
-          <p class="text-xs leading-relaxed text-on-surface-variant">Your transaction security is our priority. Always communicate via Pasir Ku to stay protected.</p>
-        </div>
-      </div>
-
-      <!-- List Options Column -->
-      <div class="md:col-span-8 flex flex-col gap-4">
-
-        <!-- Communication Block -->
-        <div class="group relative bg-surface-container-lowest p-6 rounded-xl flex items-center justify-between hover:bg-surface-container-low transition-all cursor-pointer border-l-4 border-transparent hover:border-primary">
-          <div class="flex items-center gap-6">
-            <div class="w-14 h-14 rounded-xl bg-surface-container-high flex items-center justify-center text-primary">
-              <span class="material-symbols-outlined text-3xl" data-icon="chat_bubble">chat_bubble</span>
+<!-- TopNavBar Shell -->
+<header class="bg-slate-50/80 backdrop-blur-lg fixed top-0 w-full z-50 transition-transform duration-150">
+<div class="flex justify-between items-center w-full px-6 py-3 max-w-7xl mx-auto">
+<div class="text-xl font-black tracking-tighter text-blue-900">QUARRY DIRECT</div>
+<div class="hidden md:flex items-center space-x-8">
+<a class="text-slate-500 hover:bg-slate-200/50 px-3 py-1 rounded transition-colors" href="#">Home</a>
+<a class="text-slate-500 hover:bg-slate-200/50 px-3 py-1 rounded transition-colors" href="#">Cart</a>
+<a class="text-blue-800 font-bold px-3 py-1 rounded" href="#">Profile</a>
+</div>
+<div class="flex items-center space-x-4">
+<button class="material-symbols-outlined text-blue-900 hover:bg-slate-200/50 p-2 rounded-full transition-transform active:scale-95">notifications</button>
+<button class="material-symbols-outlined text-blue-900 hover:bg-slate-200/50 p-2 rounded-full transition-transform active:scale-95">chat_bubble</button>
+</div>
+</div>
+</header>
+<div class="flex min-h-screen pt-16 pb-24 md:pb-0">
+<!-- SideNavBar Shell (Desktop) -->
+<aside class="hidden md:flex flex-col h-[calc(100vh-64px)] w-64 fixed left-0 bg-slate-100 py-8 border-r-0">
+<div class="px-6 mb-8">
+<div class="flex items-center gap-3 mb-2">
+<img alt="User avatar" class="w-10 h-10 rounded-full object-cover" data-alt="professional portrait of a civil engineer wearing a white hard hat and blue vest against a clean architectural background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDyCBDfiVG0r8ull3YcIJn6c5JB_8L1_TiAL77PVoupsVSGlfKg8_OCCDXwMDjPAJGjOovMKrHIC9cRu3zGCoPcXkaDvcxwU9bKy9SfaiurzcYSTAMnwKMjyu63NUxzCYmtpJK5nN-rFX3UF8FOlgdocxhSIYUfsofQkoIAvqZoPMPJasn81p0HKYQUSExk6CRzuZTICD9OYGfQ2DKwPdCIx1QAOFOYRi3NMJ_KBb7h8hnccgDyfgUnX0DhKF_IqRsZWSKlVMUglg"/>
+<div>
+<p class="font-headline font-bold text-blue-900 leading-tight">Industrial Hub</p>
+<p class="text-xs text-slate-500">Verified Seller</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a href="{{ route('MenuUtama') }}" class="flex items-center gap-3 px-6 py-3 text-slate-500 hover:bg-slate-200 transition-colors" >
+<span class="material-symbols-outlined">storefront</span>
+<span class="font-medium">Menu Utama</span>
+</a>
+<a href="{{ route('ordertracking') }}" class="flex items-center gap-3 px-6 py-3 text-slate-500 hover:bg-slate-200 transition-colors" >
+<span class="material-symbols-outlined">local_shipping</span>
+<span class="font-medium">Active Orders</span>
+</a>
+<a href="{{ route('Pesan') }}"class="flex items-center gap-3 px-6 py-3 text-slate-500 hover:bg-slate-200 transition-colors" href="#">
+<span class="material-symbols-outlined">forum</span>
+<span class="font-medium">Messages</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-blue-900 font-bold border-r-4 border-blue-900 bg-white/50" href="#">
+<span class="material-symbols-outlined">account_circle</span>
+<span class="font-medium">Profil</span>
+</a>
+</nav>
+<div class="px-6 mt-auto">
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 md:ml-64 px-4 md:px-12 py-8 max-w-5xl mx-auto w-full">
+<!-- Strata Grid: Profile Header -->
+<section class="grid grid-cols-1 md:grid-cols-12 gap-8 mb-12 items-end">
+<div class="md:col-span-4 aspect-square bg-surface-container-low rounded-xl overflow-hidden shadow-sm">
+<img alt="Profile" class="w-full h-full object-cover" data-alt="close-up studio portrait of a professional man in his 40s with a confident smile, wearing a dark navy polo shirt" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA5PQtLotEWu5Gayn3BYAklIw_RIGZZ9W4Va4b6CgPo1Vc63rl0AsarywWh0O9JeqvGNBy29ZhR37zpxw7Q0D0wegVj9ndr7ki257XmzjvsTQy7_qy8VSbS_MHwpnPd9RerrDoWwWtRWGEmvoYFpJ01SL9PYZ2WPsMMI4oMTZ00pq-oQqnM6jidyCFcHRED5qU1xDteSLy8EbgbL9ZKOPqKvdE0WJ7tcwp7m8eEKUnZVhCh7I8yJyvHQBnB1Qi_SRypz1rveyUHZQ"/>
+</div>
+<div class="md:col-span-8 pb-4">
+<span class="font-label text-secondary uppercase tracking-widest text-sm mb-2 block">Account Overview</span>
+<h1 class="font-headline text-5xl font-extrabold tracking-tighter text-on-surface mb-4">{{ Auth::user()->Username ?? 'Pengguna' }}</h1>
+<div class="flex gap-4">
+<div class="bg-surface-container-highest px-4 py-2 rounded-lg">
+<p class="text-xs text-on-surface-variant font-medium uppercase">Total Orders</p>
+<p class="text-xl font-headline font-bold text-primary">124</p>
+</div>
+<div class="bg-surface-container-highest px-4 py-2 rounded-lg">
+<p class="text-xs text-on-surface-variant font-medium uppercase">Trust Score</p>
+<p class="text-xl font-headline font-bold text-secondary">9.8</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Strata Grid: Profile Options Bento -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Chat (History) -->
+<a class="group relative overflow-hidden bg-surface-container-lowest p-8 rounded-xl transition-all duration-300 hover:shadow-[0px_24px_48px_rgba(11,28,48,0.08)]" href="#">
+<div class="flex justify-between items-start mb-12">
+<div class="p-3 bg-blue-50 text-primary rounded-xl group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-3xl">forum</span>
+</div>
+<span class="material-symbols-outlined text-slate-300">arrow_outward</span>
+</div>
+<h3 class="font-headline text-2xl font-bold text-on-surface mb-2">Chat</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed">View your negotiation history and active inquiries with suppliers.</p>
+</a>
+<!-- Daftar sebagai Penjual -->
+<a class="group relative overflow-hidden bg-primary text-white p-8 rounded-xl transition-all duration-300 hover:shadow-[0px_24px_48px_rgba(0,72,141,0.2)]" href="#">
+<div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-3xl"></div>
+<div class="flex justify-between items-start mb-12">
+<div class="p-3 bg-white/20 rounded-xl group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-3xl">add_business</span>
+</div>
+</div>
+<h3 class="font-headline text-2xl font-bold mb-2">Daftar sebagai Penjual</h3>
+<p class="text-white/80 text-sm leading-relaxed">Expand your business reach. Register your quarry or logistics company today.</p>
+</a>
+<!-- Update Isi Toko -->
+<a class="group relative overflow-hidden bg-surface-container-low p-8 rounded-xl transition-all duration-300 border-2 border-transparent hover:border-primary-container" href="#">
+<div class="flex justify-between items-start mb-12">
+<div class="p-3 bg-white text-secondary rounded-xl group-hover:rotate-12 transition-transform">
+<span class="material-symbols-outlined text-3xl">inventory_2</span>
+</div>
+</div>
+<h3 class="font-headline text-2xl font-bold text-on-surface mb-2">Update Isi Toko</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed">Manage your catalog, update pricing for sand, stone, and aggregates.</p>
+</a>
+<!-- Logout (Large Span) -->
+<form method="POST" action="{{ route('profil.logout') }}" class="md:col-span-3">
+    @csrf
+    <button type="submit" class="w-full flex items-center justify-between bg-surface-container-lowest border-2 border-error/10 p-6 rounded-xl group hover:bg-error/5 transition-colors">
+        <div class="flex items-center gap-4">
+            <div class="p-2 bg-error/10 text-error rounded-lg">
+                <span class="material-symbols-outlined">logout</span>
             </div>
-            <div>
-              <h4 class="font-headline font-bold text-on-surface">Chat</h4>
-              <p class="text-sm text-on-surface-variant">Sign in to contact sellers and view messages</p>
+            <div class="text-left">
+                <span class="font-headline font-bold text-on-surface block">Logout</span>
+                <span class="text-xs text-on-surface-variant">Securely end your session</span>
             </div>
-          </div>
-          <span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors" data-icon="chevron_right">chevron_right</span>
         </div>
-
-        <!-- Seller Registration Block -->
-        <div class="group relative bg-surface-container-lowest p-6 rounded-xl flex items-center justify-between hover:bg-surface-container-low transition-all cursor-pointer border-l-4 border-transparent hover:border-secondary">
-          <div class="flex items-center gap-6">
-            <div class="w-14 h-14 rounded-xl bg-secondary-container flex items-center justify-center text-on-secondary-container">
-              <span class="material-symbols-outlined text-3xl" data-icon="storefront">storefront</span>
-            </div>
-            <div>
-              <h4 class="font-headline font-bold text-on-surface">Daftar sebagai Penjual</h4>
-              <p class="text-sm text-on-surface-variant">Start selling your materials to verified contractors</p>
-            </div>
-          </div>
-          <span class="material-symbols-outlined text-outline-variant group-hover:text-secondary transition-colors" data-icon="chevron_right">chevron_right</span>
-        </div>
-
-        <!-- Seller Update Block (Locked) -->
-        <div class="relative bg-surface-container-lowest p-6 rounded-xl flex items-center justify-between opacity-60 border-l-4 border-slate-300">
-          <div class="flex items-center gap-6">
-            <div class="w-14 h-14 rounded-xl bg-slate-200 flex items-center justify-center text-slate-500">
-              <span class="material-symbols-outlined text-3xl" data-icon="inventory_2">inventory_2</span>
-            </div>
-            <div>
-              <h4 class="font-headline font-bold text-slate-400">Update Isi Toko</h4>
-              <p class="text-sm text-slate-400 italic">Seller access only</p>
-            </div>
-          </div>
-          <span class="material-symbols-outlined text-slate-300" data-icon="lock">lock</span>
-        </div>
-
-        <!-- Support/Info Grid -->
-        <div class="grid grid-cols-2 gap-4 mt-2">
-          <div class="p-6 rounded-xl bg-surface-container-low flex flex-col gap-3 hover:bg-surface-container-high transition-colors cursor-pointer">
-            <span class="material-symbols-outlined text-primary" data-icon="help">help</span>
-            <span class="font-bold text-sm text-on-surface">Pusat Bantuan</span>
-          </div>
-          <div class="p-6 rounded-xl bg-surface-container-low flex flex-col gap-3 hover:bg-surface-container-high transition-colors cursor-pointer">
-            <span class="material-symbols-outlined text-primary" data-icon="policy">policy</span>
-            <span class="font-bold text-sm text-on-surface">Syarat &amp; Ketentuan</span>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </main>
-
-  <!-- Bottom Navigation Bar (Mobile only) -->
-  <nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-2 bg-slate-50/80 backdrop-blur-xl shadow-[0px_-8px_24px_rgba(11,28,48,0.05)] rounded-t-xl">
-    <a class="flex flex-col items-center justify-center text-slate-500 px-6 py-1" href="{{ route('home') }}">
-      <span class="material-symbols-outlined" data-icon="trolley">trolley</span>
-      <span class="text-[10px] font-medium tracking-wider mt-1 uppercase">Home</span>
-    </a>
-    <a class="flex flex-col items-center justify-center text-slate-500 px-6 py-1" href="#">
-      <span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
-      <span class="text-[10px] font-medium tracking-wider mt-1 uppercase">Cart</span>
-    </a>
-    <a class="flex flex-col items-center justify-center bg-blue-100 text-blue-900 rounded-xl px-6 py-1" href="">
-      <span class="material-symbols-outlined" data-icon="person" style="font-variation-settings: 'FILL' 1;">person</span>
-      <span class="text-[10px] font-bold tracking-wider mt-1 uppercase">Profile</span>
-    </a>
-  </nav>
-
-  <!-- Footer (Desktop only) -->
-  <footer class="hidden md:block py-12 bg-surface">
-    <div class="max-w-7xl mx-auto px-6 border-t border-surface-container-high pt-12 flex justify-between items-center">
-      <div class="text-sm text-on-surface-variant">
-        © 2024 Pasir Ku. The Tectonic Standard in Materials.
-      </div>
-      <div class="flex gap-8 text-sm font-bold text-primary">
-        <a class="hover:underline" href="#">Legal</a>
-        <a class="hover:underline" href="#">API Docs</a>
-        <a class="hover:underline" href="#">Fleet Logistics</a>
-      </div>
-    </div>
-  </footer>
-
-</body>
-</html>
+        <span class="material-symbols-outlined text-error opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+    </button>
+</form>
+</div>
+<!-- Profile Details Section (Asymmetric) -->
+</main>
+</div>
+<!-- BottomNavBar Shell (Mobile) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-2 bg-slate-50/80 backdrop-blur-xl shadow-[0px_-8px_24px_rgba(11,28,48,0.05)] rounded-t-xl">
+<a class="flex flex-col items-center justify-center text-slate-500 px-6 py-1 hover:text-blue-700" href="#">
+<span class="material-symbols-outlined">trolley</span>
+<span class="text-[10px] font-bold uppercase tracking-wider mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-500 px-6 py-1 hover:text-blue-700" href="#">
+<span class="material-symbols-outlined">shopping_cart</span>
+<span class="text-[10px] font-bold uppercase tracking-wider mt-1">Cart</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-blue-100 text-blue-900 rounded-xl px-6 py-1 active:scale-90 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">person</span>
+<span class="text-[10px] font-bold uppercase tracking-wider mt-1">Profile</span>
+</a>
+</nav>
+</body></html>
