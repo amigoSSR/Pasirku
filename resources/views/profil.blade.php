@@ -87,54 +87,11 @@
 </head>
 <body class="bg-surface font-body text-on-surface">
 
-<!-- TopNavBar Shell -->
-<header class="bg-slate-50/80 backdrop-blur-lg fixed top-0 w-full z-50 transition-transform duration-150">
-<div class="flex justify-between items-center w-full px-6 py-3 max-w-7xl mx-auto">
-<div class="text-xl font-black tracking-tighter text-blue-900">QUARRY DIRECT</div>
-<div class="hidden md:flex items-center space-x-8">
-<a class="text-slate-500 hover:bg-slate-200/50 px-3 py-1 rounded transition-colors" href="#">Home</a>
-<a class="text-slate-500 hover:bg-slate-200/50 px-3 py-1 rounded transition-colors" href="#">Cart</a>
-<a class="text-blue-800 font-bold px-3 py-1 rounded" href="#">Profile</a>
-</div>
-<div class="flex items-center space-x-4">
-<button class="material-symbols-outlined text-blue-900 hover:bg-slate-200/50 p-2 rounded-full transition-transform active:scale-95">notifications</button>
-<button class="material-symbols-outlined text-blue-900 hover:bg-slate-200/50 p-2 rounded-full transition-transform active:scale-95">chat_bubble</button>
-</div>
-</div>
-</header>
-<div class="flex min-h-screen pt-16 pb-24 md:pb-0">
-<!-- SideNavBar Shell (Desktop) -->
-<aside class="hidden md:flex flex-col h-[calc(100vh-64px)] w-64 fixed left-0 bg-slate-100 py-8 border-r-0">
-<div class="px-6 mb-8">
-<div class="flex items-center gap-3 mb-2">
-<img alt="User avatar" class="w-10 h-10 rounded-full object-cover" data-alt="professional portrait of a civil engineer wearing a white hard hat and blue vest against a clean architectural background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDyCBDfiVG0r8ull3YcIJn6c5JB_8L1_TiAL77PVoupsVSGlfKg8_OCCDXwMDjPAJGjOovMKrHIC9cRu3zGCoPcXkaDvcxwU9bKy9SfaiurzcYSTAMnwKMjyu63NUxzCYmtpJK5nN-rFX3UF8FOlgdocxhSIYUfsofQkoIAvqZoPMPJasn81p0HKYQUSExk6CRzuZTICD9OYGfQ2DKwPdCIx1QAOFOYRi3NMJ_KBb7h8hnccgDyfgUnX0DhKF_IqRsZWSKlVMUglg"/>
-<div>
-<p class="font-headline font-bold text-blue-900 leading-tight">Industrial Hub</p>
-<p class="text-xs text-slate-500">Verified Seller</p>
-</div>
-</div>
-</div>
-<nav class="flex-1 space-y-1">
-<a href="{{ route('MenuUtama') }}" class="flex items-center gap-3 px-6 py-3 text-slate-500 hover:bg-slate-200 transition-colors" >
-<span class="material-symbols-outlined">storefront</span>
-<span class="font-medium">Menu Utama</span>
-</a>
-<a href="{{ route('ordertracking') }}" class="flex items-center gap-3 px-6 py-3 text-slate-500 hover:bg-slate-200 transition-colors" >
-<span class="material-symbols-outlined">local_shipping</span>
-<span class="font-medium">Active Orders</span>
-</a>
-<a href="{{ route('Pesan') }}"class="flex items-center gap-3 px-6 py-3 text-slate-500 hover:bg-slate-200 transition-colors" href="#">
-<span class="material-symbols-outlined">forum</span>
-<span class="font-medium">Messages</span>
-</a>
-<a class="flex items-center gap-3 px-6 py-3 text-blue-900 font-bold border-r-4 border-blue-900 bg-white/50" href="#">
-<span class="material-symbols-outlined">account_circle</span>
-<span class="font-medium">Profil</span>
-</a>
-</nav>
-<div class="px-6 mt-auto">
-</div>
-</aside>
+@include('topbar')
+
+<div class="flex min-h-screen pt-[60px] pb-24 md:pb-0">
+<!-- SideNavBar Shell (Desktop) — shared component -->
+<x-sidebar />
 <!-- Main Content Canvas -->
 <main class="flex-1 md:ml-64 px-4 md:px-12 py-8 max-w-5xl mx-auto w-full">
 <!-- Strata Grid: Profile Header -->

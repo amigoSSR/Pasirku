@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\MenuUtamaController;
+use App\Http\Controllers\MarketPlaceController;
 use Illuminate\Support\Facades\Route;
 
 use Illuminate\Support\Facades\Auth;
@@ -17,7 +19,7 @@ Route::get('/', function () {
 use App\Http\Controllers\MessageController;
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/MenuUtama', fn() => view('MenuUtama'))->name('MenuUtama');
+    Route::get('/MenuUtama', [MenuUtamaController::class, 'index'])->name('MenuUtama');
     Route::get('/keranjang', fn() => view('keranjang'))->name('keranjang');
     Route::get('/Pesan', fn() => view('Pesan'))->name('Pesan');
     Route::get('/ordertracking', fn() => view('ordertracking'))->name('ordertracking');
@@ -35,5 +37,10 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::post('/profil/logout', [ProfileController::class, 'logout'])->name('profil.logout');
 });
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/MarketPlace/{id}', [MarketPlaceController::class, 'show'])->name('MarketPlace');
+});
+
 
 require __DIR__.'/auth.php';

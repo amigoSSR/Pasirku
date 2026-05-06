@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('Nomer_Telepon');
             $table->string('Email');
             $table->string('Password');
+            $table->string('Role');
             $table->timestamps();
         });
     }
