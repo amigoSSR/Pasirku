@@ -36,4 +36,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/profil/logout', [ProfileController::class, 'logout'])->name('profil.logout');
 });
 
+Route::get('/daftarPenjual', fn() => view('daftarPenjual'))->name('daftarPenjual');
+
 require __DIR__.'/auth.php';

@@ -171,7 +171,7 @@
 <p class="text-on-surface-variant text-sm leading-relaxed">View your negotiation history and active inquiries with suppliers.</p>
 </a>
 <!-- Daftar sebagai Penjual -->
-<a class="group relative overflow-hidden bg-primary text-white p-8 rounded-xl transition-all duration-300 hover:shadow-[0px_24px_48px_rgba(0,72,141,0.2)]" href="#">
+<a class="group relative overflow-hidden bg-primary text-white p-8 rounded-xl transition-all duration-300 hover:shadow-[0px_24px_48px_rgba(0,72,141,0.2)]" href="{{ route('daftarPenjual') }}">
 <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-3xl"></div>
 <div class="flex justify-between items-start mb-12">
 <div class="p-3 bg-white/20 rounded-xl group-hover:scale-110 transition-transform">

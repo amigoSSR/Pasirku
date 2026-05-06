@@ -120,12 +120,12 @@
       </div>
       <nav class="flex-1 space-y-1">
         <a class="flex items-center gap-4 px-6 py-4 text-blue-900 font-bold border-r-4 border-blue-900 bg-white/50 transition-colors"
-          href="#">
+          href="{{route('MenuUtama')}}">
           <span class="material-symbols-outlined" data-icon="storefront">storefront</span>
           <span>Menu Utama</span>
         </a>
         <a class="flex items-center px-6 py-4 text-slate-500 hover:bg-slate-200 transition-colors group"
-          href="{{route('ordertracking')}}">
+          href="">
           <span class="material-symbols-outlined mr-4" data-icon="local_shipping">local_shipping</span>
           <span class="font-bold text-slate-500">Active Orders</span>
         </a>
