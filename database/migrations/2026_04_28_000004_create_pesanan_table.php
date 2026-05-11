@@ -19,10 +19,12 @@ return new class extends Migration
             $table->string('Nama_Toko');
             $table->string('Lokasi_Toko');
             $table->string('Lokasi_Pengantaran');
-            $table->integer('Harga_Pasir');
+            $table->integer('Harga_PickUp');   // Harga per mobil pick up
+            $table->integer('Harga_Truck');    // Harga per truk
             $table->integer('Volume_Pasir'); // dalam m³
             $table->string('Status_Pembayaran');
             $table->string('Status_Pesanan');
+            $table->date('Jadwal_Pengiriman')->nullable();
             $table->timestamps();
 
             $table->foreign('ID_Akun')

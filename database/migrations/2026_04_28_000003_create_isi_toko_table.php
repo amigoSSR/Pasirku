@@ -15,8 +15,10 @@ return new class extends Migration
             $table->integer('ID_Isi_Toko')->autoIncrement();
             $table->integer('ID_Toko');
             $table->string('Nama_Pasir');
-            $table->integer('Harga_Pasir');
-            $table->integer('Stock_Pasir')->default(0);
+            $table->integer('Harga_PickUp');   // Harga per mobil pick up
+            $table->integer('Harga_Truck');    // Harga per truk
+            $table->integer('Stock_PickUp')->default(0);  // Stok tersedia untuk pick up
+            $table->integer('Stock_Truck')->default(0);   // Stok tersedia untuk truk
             $table->timestamps();
 
             $table->foreign('ID_Toko')

@@ -235,7 +235,23 @@
                 <p class="text-on-surface-variant text-[10px] uppercase font-black tracking-widest mb-1">Material</p>
                 <h4 class="text-on-surface font-bold text-lg">Pasir Cor Super (5m³)</h4>
               </div>
-              <span class="text-primary font-black text-xl">Rp 2.450.000</span>
+            </div>
+            <!-- Dual Price Display -->
+            <div class="grid grid-cols-2 gap-3 pt-2">
+              <div class="bg-blue-50 border border-blue-100 rounded-xl p-3 flex flex-col gap-1">
+                <div class="flex items-center gap-1.5">
+                  <span class="material-symbols-outlined text-[15px] text-blue-600">directions_car</span>
+                  <span class="text-[10px] font-bold text-blue-500 uppercase tracking-wide">Pick Up</span>
+                </div>
+                <span class="text-blue-800 font-black text-base">Rp 150.000</span>
+              </div>
+              <div class="bg-amber-50 border border-amber-100 rounded-xl p-3 flex flex-col gap-1">
+                <div class="flex items-center gap-1.5">
+                  <span class="material-symbols-outlined text-[15px] text-amber-600">local_shipping</span>
+                  <span class="text-[10px] font-bold text-amber-500 uppercase tracking-wide">Truk</span>
+                </div>
+                <span class="text-amber-800 font-black text-base">Rp 350.000</span>
+              </div>
             </div>
             <div class="pt-4 border-t border-slate-100 flex items-start gap-3">
               <span class="material-symbols-outlined text-secondary">location_on</span>
