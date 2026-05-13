@@ -118,6 +118,16 @@
       background: rgba(248, 249, 255, 0.8);
       backdrop-filter: blur(20px);
     }
+    /* Shimmer for empty state */
+    @keyframes shimmer {
+      0% { background-position: -400px 0; }
+      100% { background-position: 400px 0; }
+    }
+    .shimmer {
+      background: linear-gradient(90deg, #e5eeff 25%, #dce9ff 50%, #e5eeff 75%);
+      background-size: 800px 100%;
+      animation: shimmer 1.5s infinite;
+    }
   </style>
 </head>
 
@@ -127,15 +137,44 @@
 
   <main class="max-w-7xl mx-auto px-6 pt-24 pb-12">
 
+    <!-- Back link & header -->
+    <div class="mb-4">
+      <button onclick="history.back()" class="flex items-center gap-1.5 text-sm text-on-surface-variant hover:text-primary font-semibold transition-colors">
+        <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+        Kembali ke Toko
+      </button>
+    </div>
     <div class="mb-12">
       <p class="text-secondary font-bold uppercase tracking-widest text-xs mb-2">Finalisasi Pesanan</p>
       <h1 class="text-5xl font-extrabold tracking-tight text-on-surface">Checkout</h1>
+      <p id="checkout-store-name" class="mt-2 text-on-surface-variant font-medium"></p>
     </div>
 
     <div class="strata-grid">
 
       <!-- Left Column: Forms -->
       <div class="space-y-8">
+
+        <!-- Section: Item Summary (from cart) -->
+        <section class="bg-surface-container-low p-8 rounded-xl relative overflow-hidden" id="cart-items-section">
+          <div class="flex items-center gap-3 mb-6">
+            <span class="material-symbols-outlined text-primary">shopping_basket</span>
+            <h2 class="text-2xl font-bold">Item yang Dipesan</h2>
+          </div>
+          <div id="cart-items-list" class="space-y-3">
+            <!-- Populated by JS -->
+            <div class="shimmer h-16 rounded-xl"></div>
+            <div class="shimmer h-16 rounded-xl opacity-60"></div>
+          </div>
+          <!-- Empty cart notice -->
+          <div id="cart-empty-notice" class="hidden text-center py-8 text-on-surface-variant">
+            <span class="material-symbols-outlined text-5xl mb-3 block opacity-40">remove_shopping_cart</span>
+            <p class="font-semibold">Keranjang kosong.<br>Silakan pilih produk terlebih dahulu.</p>
+            <button onclick="history.back()" class="mt-4 bg-primary text-white px-6 py-2 rounded-full text-sm font-bold hover:bg-primary-container transition-colors">
+              Pilih Produk
+            </button>
+          </div>
+        </section>
 
         <!-- Section: Shipping Address -->
         <section class="bg-surface-container-low p-8 rounded-xl relative overflow-hidden">
@@ -188,29 +227,6 @@
           </div>
         </section>
 
-        <!-- Section: Material Selection Review -->
-        <div class="grid grid-cols-3 gap-4">
-          <div class="bg-surface-container-high aspect-video rounded-xl flex flex-col justify-end p-4 relative group cursor-pointer overflow-hidden">
-            <img alt="Sand Texture"
-              class="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-30 grayscale"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRVc8wBYMwhz6Z3nfXbagYl6IL-ISuls71Qn7thhIRk8gq1ZFW5HXviix2qGzOOVceSBpwJqqb1XydGwVY9xt1qMReXVRWuVTdCehwfP4C5uAJeI_5YsbsJCTeeWtNPs_OV6rmTiAaIuz8JaednsWjAjop2IvlPub26hzul6ifQ1Av_abclK1asG9Zh77ER4rLVaNjzUbxk4YXcWw1insz4sY6noFI4F1P3GHCKhBdx3suGtq6ej3mfD1mdHJ7pRR9YJdC4Jer8w" />
-            <span class="relative z-10 text-xs font-bold uppercase tracking-tighter opacity-70">Material</span>
-            <h4 class="relative z-10 font-black text-lg">Pasir Sungai Progo</h4>
-          </div>
-          <div class="bg-surface-container-high aspect-video rounded-xl flex flex-col justify-end p-4 relative group overflow-hidden">
-            <img alt="Dump Truck"
-              class="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-30 grayscale"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1eWakIa7-JPtuFz2IP-CQr64t1MN8sq3Pw8LBgHViPVNMhxdnUQADYkF6S8rrIeqpwYGZIj2s8eBcoPOZb5Ar8YrkUtFuvSefkbT5slJRyXtxlHxUg4kWxIO_tY6sS38VIVvwEgXCdPRH-G9FGnHFVpG5aDJFhNF7c3Q7RKW_HpHr9GioeM9LgTEth_ndzppFuv9juPxyQzfEG5Qvh-bwDpCWtAIBVzFUlrufk5e-EAD1onHq1pCZ0UKbK7itZhaneLuH6YVRow" />
-            <span class="relative z-10 text-xs font-bold uppercase tracking-tighter opacity-70">Volume</span>
-            <h4 class="relative z-10 font-black text-lg">24 m³ (3 Truk)</h4>
-          </div>
-          <div class="bg-surface-container-high aspect-video rounded-xl flex flex-col justify-end p-4 relative overflow-hidden">
-            <div class="absolute inset-0 bg-primary/10"></div>
-            <span class="relative z-10 text-xs font-bold uppercase tracking-tighter opacity-70">Status</span>
-            <h4 class="relative z-10 font-black text-lg text-primary">Siap Kirim</h4>
-          </div>
-        </div>
-
       </div>
 
       <!-- Right Column: Payment & Summary -->
@@ -223,34 +239,19 @@
               <span class="material-symbols-outlined text-9xl" style="font-variation-settings: 'wght' 700">receipt_long</span>
             </div>
             <h3 class="text-xs font-bold uppercase tracking-[0.2em] mb-6 text-surface-dim">Ringkasan Pembayaran</h3>
-            <div class="space-y-4 mb-8">
-              <div class="flex justify-between text-sm opacity-80 items-center">
-                <span class="flex items-center gap-1.5">
-                  <span class="material-symbols-outlined text-[14px]">directions_car</span>
-                  Pick Up (3 unit)
-                </span>
-                <span>Rp 450.000</span>
-              </div>
-              <div class="flex justify-between text-sm opacity-80 items-center">
-                <span class="flex items-center gap-1.5">
-                  <span class="material-symbols-outlined text-[14px]">local_shipping</span>
-                  Truk (2 unit)
-                </span>
-                <span>Rp 700.000</span>
-              </div>
-              <div class="flex justify-between text-sm opacity-80">
-                <span>Biaya Logistik</span>
-                <span>Rp 1.250.000</span>
-              </div>
-              <div class="flex justify-between text-sm opacity-80">
-                <span>Pajak (PPN 11%)</span>
-                <span>Rp 264.000</span>
-              </div>
+            <div id="payment-summary-lines" class="space-y-4 mb-8">
+              <!-- Populated by JS -->
             </div>
+
+            <!-- Ongkir Section -->
+            <div class="border-t border-white/10 pt-4 mb-4 space-y-3" id="ongkir-section">
+              <!-- Populated by JS -->
+            </div>
+
             <div class="border-t border-white/10 pt-6 mb-2">
               <div class="flex justify-between items-end">
                 <span class="text-sm font-bold uppercase">Total Tagihan</span>
-                <span class="text-3xl font-black text-primary-fixed">Rp 10.711.500</span>
+                <span id="grand-total" class="text-3xl font-black text-primary-fixed">Rp 0</span>
               </div>
             </div>
           </div>
@@ -309,6 +310,177 @@
       </div>
     </div>
   </footer>
+
+  <script>
+    function formatRupiah(angka) {
+      return 'Rp ' + angka.toLocaleString('id-ID');
+    }
+
+    function renderCheckout() {
+      const cartRaw     = sessionStorage.getItem('pasirku_cart');
+      const tokoRaw     = sessionStorage.getItem('pasirku_toko');
+
+      const cartItemsList    = document.getElementById('cart-items-list');
+      const paymentLines     = document.getElementById('payment-summary-lines');
+      const ongkirSection    = document.getElementById('ongkir-section');
+      const grandTotalEl     = document.getElementById('grand-total');
+      const emptyNotice      = document.getElementById('cart-empty-notice');
+      const storeName        = document.getElementById('checkout-store-name');
+
+      // No cart data
+      if (!cartRaw || !tokoRaw) {
+        cartItemsList.innerHTML = '';
+        emptyNotice.classList.remove('hidden');
+        paymentLines.innerHTML = '<p class="text-white/50 text-sm text-center">Tidak ada item</p>';
+        ongkirSection.innerHTML = '';
+        grandTotalEl.textContent = formatRupiah(0);
+        return;
+      }
+
+      const cartItems = JSON.parse(cartRaw);
+      const toko      = JSON.parse(tokoRaw);
+
+      // Store name
+      storeName.textContent = 'Toko: ' + toko.nama + ' · ' + toko.lokasi;
+
+      if (!cartItems || cartItems.length === 0) {
+        cartItemsList.innerHTML = '';
+        emptyNotice.classList.remove('hidden');
+        paymentLines.innerHTML = '<p class="text-white/50 text-sm text-center">Tidak ada item</p>';
+        ongkirSection.innerHTML = '';
+        grandTotalEl.textContent = formatRupiah(0);
+        return;
+      }
+
+      // --- Render Cart Items (left side) ---
+      cartItemsList.innerHTML = '';
+      let subtotalPickUp = 0;
+      let subtotalTruck  = 0;
+      let qtyPickUp      = 0;
+      let qtyTruck       = 0;
+      let subTotal       = 0;
+
+      cartItems.forEach(item => {
+        const lineTotal = item.harga * item.qty;
+        subTotal += lineTotal;
+
+        if (item.type === 'pickup') {
+          subtotalPickUp += lineTotal;
+          qtyPickUp      += item.qty;
+        } else {
+          subtotalTruck += lineTotal;
+          qtyTruck      += item.qty;
+        }
+
+        const typeLabel = item.type === 'pickup'
+          ? '<span class="inline-flex items-center gap-1 text-blue-600 font-bold text-xs bg-blue-50 px-2 py-0.5 rounded-full"><span class="material-symbols-outlined text-[13px]">directions_car</span>Pick Up</span>'
+          : '<span class="inline-flex items-center gap-1 text-amber-600 font-bold text-xs bg-amber-50 px-2 py-0.5 rounded-full"><span class="material-symbols-outlined text-[13px]">local_shipping</span>Truk</span>';
+
+        const row = document.createElement('div');
+        row.className = 'flex items-center justify-between bg-white rounded-xl px-4 py-3 shadow-sm border border-outline-variant/20';
+        row.innerHTML = `
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 bg-surface-container rounded-lg flex items-center justify-center flex-shrink-0">
+              <span class="material-symbols-outlined text-[18px] text-on-surface-variant">landscape</span>
+            </div>
+            <div>
+              <p class="font-bold text-sm text-on-surface leading-tight">${item.namaPasir}</p>
+              <div class="flex items-center gap-2 mt-0.5">${typeLabel} <span class="text-xs text-on-surface-variant">× ${item.qty}</span></div>
+            </div>
+          </div>
+          <div class="text-right">
+            <p class="font-black text-sm text-on-surface">${formatRupiah(lineTotal)}</p>
+            <p class="text-[10px] text-on-surface-variant">${formatRupiah(item.harga)} / unit</p>
+          </div>
+        `;
+        cartItemsList.appendChild(row);
+      });
+
+      // --- Ongkir calculation ---
+      // Ongkir dikenakan jika ada item jenis tersebut
+      const ongkirPickUpTotal = qtyPickUp > 0 ? toko.ongkirPickUp : 0;
+      const ongkirTruckTotal  = qtyTruck  > 0 ? toko.ongkirTruck  : 0;
+      const totalOngkir       = ongkirPickUpTotal + ongkirTruckTotal;
+      const grandTotal        = subTotal + totalOngkir;
+
+      // --- Payment Summary Lines (right side) ---
+      paymentLines.innerHTML = '';
+
+      if (qtyPickUp > 0) {
+        const row = document.createElement('div');
+        row.className = 'flex justify-between text-sm opacity-80 items-center';
+        row.innerHTML = `
+          <span class="flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[14px]">directions_car</span>
+            Pick Up (${qtyPickUp} unit)
+          </span>
+          <span>${formatRupiah(subtotalPickUp)}</span>
+        `;
+        paymentLines.appendChild(row);
+      }
+
+      if (qtyTruck > 0) {
+        const row = document.createElement('div');
+        row.className = 'flex justify-between text-sm opacity-80 items-center';
+        row.innerHTML = `
+          <span class="flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[14px]">local_shipping</span>
+            Truk (${qtyTruck} unit)
+          </span>
+          <span>${formatRupiah(subtotalTruck)}</span>
+        `;
+        paymentLines.appendChild(row);
+      }
+
+      // Subtotal divider
+      const subtotalRow = document.createElement('div');
+      subtotalRow.className = 'flex justify-between text-sm opacity-60 border-t border-white/10 pt-3 mt-1';
+      subtotalRow.innerHTML = `<span>Subtotal Produk</span><span>${formatRupiah(subTotal)}</span>`;
+      paymentLines.appendChild(subtotalRow);
+
+      // --- Ongkir section ---
+      ongkirSection.innerHTML = '';
+
+      if (ongkirPickUpTotal > 0) {
+        const r = document.createElement('div');
+        r.className = 'flex justify-between text-sm opacity-80 items-center';
+        r.innerHTML = `
+          <span class="flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[14px]">directions_car</span>
+            Ongkir Pick Up
+          </span>
+          <span>${formatRupiah(ongkirPickUpTotal)}</span>
+        `;
+        ongkirSection.appendChild(r);
+      }
+
+      if (ongkirTruckTotal > 0) {
+        const r = document.createElement('div');
+        r.className = 'flex justify-between text-sm opacity-80 items-center';
+        r.innerHTML = `
+          <span class="flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[14px]">local_shipping</span>
+            Ongkir Truk
+          </span>
+          <span>${formatRupiah(ongkirTruckTotal)}</span>
+        `;
+        ongkirSection.appendChild(r);
+      }
+
+      if (totalOngkir === 0) {
+        const r = document.createElement('div');
+        r.className = 'flex justify-between text-sm opacity-50 items-center';
+        r.innerHTML = `<span>Ongkos Kirim</span><span>–</span>`;
+        ongkirSection.appendChild(r);
+      }
+
+      // Grand Total
+      grandTotalEl.textContent = formatRupiah(grandTotal);
+    }
+
+    // Run on page load
+    document.addEventListener('DOMContentLoaded', renderCheckout);
+  </script>
 
 </body>
 </html>

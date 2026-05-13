@@ -23,6 +23,8 @@ return new class extends Migration
             $table->integer('Total_Pembelian')->default(0);
             $table->integer('Komisi_Admin')->default(0);
             $table->string('Status')->default('inactive');
+            $table->integer('Ongkir_PickUp')->default(0);
+            $table->integer('Ongkir_Truck')->default(0);
             $table->timestamps();
 
             $table->foreign('ID_Akun')

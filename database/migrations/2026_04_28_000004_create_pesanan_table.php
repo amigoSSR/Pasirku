@@ -22,6 +22,8 @@ return new class extends Migration
             $table->integer('Harga_PickUp');   // Harga per mobil pick up
             $table->integer('Harga_Truck');    // Harga per truk
             $table->integer('Volume_Pasir'); // dalam m³
+            $table->integer('Ongkir_PickUp');
+            $table->integer('Ongkir_Truck');
             $table->string('Status_Pembayaran');
             $table->string('Status_Pesanan');
             $table->date('Jadwal_Pengiriman')->nullable();
