@@ -15,7 +15,7 @@ class PesananSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('pesanan')->insert([
+        $pesananData = [
             // Pesanan dari budi_santoso ke Pasir Siti Jaya
             [
                 'ID_Akun'            => 1,
@@ -84,6 +84,14 @@ class PesananSeeder extends Seeder
                 'created_at'         => now(),
                 'updated_at'         => now(),
             ],
-        ]);
+        ];
+
+        foreach ($pesananData as &$data) {
+            $toko = DB::table('informasi_toko')->where('ID_Toko', $data['ID_Toko'])->first();
+            $data['Ongkir_PickUp'] = $toko ? $toko->Ongkir_PickUp : 0;
+            $data['Ongkir_Truck']  = $toko ? $toko->Ongkir_Truck : 0;
+        }
+
+        DB::table('pesanan')->insert($pesananData);
     }
 }
