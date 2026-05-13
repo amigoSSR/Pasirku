@@ -120,44 +120,8 @@
 <body class="bg-surface text-on-surface overflow-x-hidden">
   @include('topbar')
   <div class="flex h-screen pt-[60px]">
-    <!-- SideNavBar (Desktop Only) -->
-    <aside class="hidden md:flex flex-col h-full w-64 bg-slate-100 py-8 border-r-0 fixed left-0">
-      <div class="px-6 pb-8">
-        <h2 class="text-sm font-bold text-blue-900 uppercase tracking-widest opacity-50">
-          Industrial Hub
-        </h2>
-        <div class="flex items-center mt-2 gap-2">
-          <span class="material-symbols-outlined text-secondary" data-icon="verified"
-            style="font-variation-settings: &quot;FILL&quot; 1">verified</span>
-          <span class="text-xs font-semibold text-slate-500 uppercase tracking-tighter">Verified Seller</span>
-        </div>
-      </div>
-      <nav class="flex-1 space-y-1">
-        <a class="flex items-center gap-4 px-6 py-4 text-blue-900 font-bold border-r-4 border-blue-900 bg-white/50 transition-colors"
-          href="#">
-          <span class="material-symbols-outlined" data-icon="storefront">storefront</span>
-          <span>Menu Utama</span>
-        </a>
-        <a class="flex items-center px-6 py-4 text-slate-500 hover:bg-slate-200 transition-colors group"
-          href="{{route('ordertracking')}}">
-          <span class="material-symbols-outlined mr-4" data-icon="local_shipping">local_shipping</span>
-          <span class="font-bold text-slate-500">Active Orders</span>
-        </a>
-        <a class="flex items-center gap-4 px-6 py-4 text-slate-500 hover:text-blue-800 hover:bg-slate-200 transition-colors"
-          href="{{ route('Pesan') }}">
-          <span class="material-symbols-outlined" data-icon="forum">forum</span>
-          <span>Messages</span>
-        </a>
-        <a class="flex items-center gap-4 px-6 py-4 text-slate-500 hover:text-blue-800 hover:bg-slate-200 transition-colors"
-          href="{{ route('Profil') }}">
-          <span class="material-symbols-outlined" data-icon="person">person</span>
-          <span>Profile</span>
-        </a>
-      </nav>
-      <div class="px-6 mt-auto mb-16">
-        
-      </div>
-    </aside>
+    <!-- SideNavBar (Desktop Only) — shared component -->
+    <x-sidebar />
     <!-- Main Content Canvas -->
     <main class="flex-1 md:ml-64 flex flex-col md:flex-row overflow-hidden bg-surface">
       <!-- Left Side: Shop List -->
@@ -178,129 +142,54 @@
             <p class="text-slate-400 font-semibold">Toko tidak ditemukan</p>
             <p class="text-slate-300 text-sm mt-1">Coba kata kunci lain</p>
           </div>
-          <!-- Shop Card 1 -->
+
+          {{-- Loop data toko dari database --}}
+          @forelse ($tokoList as $toko)
           <div
             class="shop-card bg-surface-container-lowest p-5 rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.02)] group hover:translate-y-[-2px] transition-all cursor-pointer"
-            data-shop-name="toko berkah jaya">
+            data-shop-name="{{ strtolower($toko->Nama_Toko) }}">
             <div class="flex justify-between items-start mb-4">
-              <div class="w-16 h-16 rounded-lg bg-surface-container overflow-hidden">
-                <img alt="Sand sample" class="w-full h-full object-cover"
-                  data-alt="macro shot of clean building sand with golden hues and fine texture under bright sunlight"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuCRPmqkY9YaAmVnUhOdWP6PIEvE0y1BCfAO0a118FDRYN6QR91WZ6LcF4-2FTIwXfvYRriODv0SbKcpLe2jWyXWstMJQ2Hb8WKHrpgmLsuS-vMhJAyykAeq8fDcnrYCr3T9aQk1O8ljE0vL5ltSKenYcKcOW3G4iSg3f17ZFf3axisp2_U8AAMs775uaTVBd-r4eo3HAQOgbRLh0Kh7PPlGKMKctLYruIet2jdK60_aDkpMh-AiRn8xtOgv9PibMvJ8iUIPep_JRA" />
+              <div class="w-16 h-16 rounded-lg bg-surface-container flex items-center justify-center">
+                <span class="material-symbols-outlined text-3xl text-primary" style="font-variation-settings: 'FILL' 1">storefront</span>
               </div>
               <span class="text-xs font-bold bg-secondary/10 text-secondary px-3 py-1 rounded-full">Available Now</span>
             </div>
             <h3 class="text-xl font-bold text-blue-900 mb-1">
-              Toko Berkah Jaya
+              {{ $toko->Nama_Toko }}
             </h3>
-            <div class="flex items-center gap-3 text-sm text-on-surface-variant mb-4">
-              <div class="flex items-center gap-1">
-                <span class="material-symbols-outlined text-yellow-500 text-base" data-icon="star"
-                  style="font-variation-settings: &quot;FILL&quot; 1">star</span>
-                <span class="font-bold text-on-surface">4.9</span>
-              </div>
-              <span class="opacity-30">|</span>
+            <div class="flex flex-col gap-1 text-sm text-on-surface-variant mb-4">
               <div class="flex items-center gap-1">
                 <span class="material-symbols-outlined text-base" data-icon="location_on">location_on</span>
-                <span>2.4 miles</span>
+                <span>{{ $toko->Lokasi_Toko }}</span>
+              </div>
+              <div class="flex items-center gap-1">
+                <span class="material-symbols-outlined text-base" data-icon="call">call</span>
+                <span>{{ $toko->Nomer_Telepon_Toko }}</span>
+              </div>
+              <div class="flex items-center gap-1">
+                <span class="material-symbols-outlined text-base" data-icon="mail">mail</span>
+                <span>{{ $toko->Email_Toko }}</span>
               </div>
             </div>
             <div class="flex justify-between items-end border-t border-slate-100 pt-4 mt-2">
               <div>
-                <p class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-                  Starting at
-                </p>
+                <p class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Total Pembelian</p>
                 <p class="text-2xl font-black text-on-surface tracking-tighter">
-                  $42.50<span class="text-xs font-normal text-slate-400">/ton</span>
+                  {{ number_format($toko->Total_Pembelian) }}<span class="text-xs font-normal text-slate-400"> order</span>
                 </p>
               </div>
-              <button class="bg-surface-container-high p-3 rounded-lg hover:bg-primary hover:text-white transition-all">
+              <a href="{{ route('MarketPlace', $toko->ID_Toko) }}"
+                class="bg-surface-container-high p-3 rounded-lg hover:bg-primary hover:text-white transition-all inline-flex items-center justify-center">
                 <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
-              </button>
+              </a>
             </div>
           </div>
-          <!-- Shop Card 2 -->
-          <div
-            class="shop-card bg-surface-container-lowest p-5 rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.02)] group hover:translate-y-[-2px] transition-all cursor-pointer"
-            data-shop-name="toko sentosa abadi">
-            <div class="flex justify-between items-start mb-4">
-              <div class="w-16 h-16 rounded-lg bg-surface-container overflow-hidden">
-                <img alt="Quarry site" class="w-full h-full object-cover"
-                  data-alt="aerial drone photography of an active sand quarry showing heavy machinery and layered earth excavations"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuAxF9Hvyu16AWmgXgxSuyPh-hAsJdhyDQqEfJ9Ks71tlGMfK78kVwITVVlwVpxAn6eXsEGm9Z8zMLmI8edK6imuUyjoa0O2w4Fs0z32ZUPSffRB09QlYZQI1mXiFPMVwDIQhkGRGBxAkya2-4HkTfE3nFNdI1Oal2yFcSYGuDDIhdC0R6WtWDpps5nRrZ9mGyKvVbrYwKBAQuAoClNn7yHMQJVYHiDU-hfvPwdtZgOTlk3RHe8h33pW2znJznNjhJ6sQPpI34JEvA" />
-              </div>
-              <span class="text-xs font-bold bg-green-50 text-green-700 px-3 py-1 rounded-full">Fast Delivery</span>
-            </div>
-            <h3 class="text-xl font-bold text-blue-900 mb-1">
-              Toko Sentosa Abadi
-            </h3>
-            <div class="flex items-center gap-3 text-sm text-on-surface-variant mb-4">
-              <div class="flex items-center gap-1">
-                <span class="material-symbols-outlined text-yellow-500 text-base" data-icon="star"
-                  style="font-variation-settings: &quot;FILL&quot; 1">star</span>
-                <span class="font-bold text-on-surface">4.7</span>
-              </div>
-              <span class="opacity-30">|</span>
-              <div class="flex items-center gap-1">
-                <span class="material-symbols-outlined text-base" data-icon="location_on">location_on</span>
-                <span>5.1 miles</span>
-              </div>
-            </div>
-            <div class="flex justify-between items-end border-t border-slate-100 pt-4 mt-2">
-              <div>
-                <p class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-                  Starting at
-                </p>
-                <p class="text-2xl font-black text-on-surface tracking-tighter">
-                  $38.00<span class="text-xs font-normal text-slate-400">/ton</span>
-                </p>
-              </div>
-              <button class="bg-surface-container-high p-3 rounded-lg hover:bg-primary hover:text-white transition-all">
-                <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
-              </button>
-            </div>
+          @empty
+          <div class="text-center py-12">
+            <span class="material-symbols-outlined text-4xl text-slate-300 mb-3 block">store</span>
+            <p class="text-slate-400 font-semibold">Belum ada toko terdaftar</p>
           </div>
-          <!-- Shop Card 3 -->
-          <div
-            class="shop-card bg-surface-container-lowest p-5 rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.02)] group hover:translate-y-[-2px] transition-all cursor-pointer"
-            data-shop-name="toko pak somat">
-            <div class="flex justify-between items-start mb-4">
-              <div class="w-16 h-16 rounded-lg bg-surface-container overflow-hidden">
-                <img alt="Conveyor" class="w-full h-full object-cover"
-                  data-alt="industrial conveyor belt at a quarry carrying washed sand towards a large pile under hazy morning sky"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuBwgxJlBwpxwiwZloBC9FXuXF83Yo40GMGBzNRblxlgjuOV4jyf_eaJFlXPMJX2kyI_LO6JwrTQgreh7Gp6x3e3FheRsAkHWtB6l9zQ8KqUL6Rs9tBuT7Sb9jSV1kgGd2STo0xJPfBJEvbHVZklj2sStXFGASvk1xYzJR47-lacKOpQnB157KfFBfdusGJnmb-HdMLUghUGoe3InxjeF4-2PYHdKSM4tX6f3H8ppSdyPRBSRc3A08XQPuKIxj8voiufxEE19hqP1A" />
-              </div>
-              <span class="text-xs font-bold bg-slate-100 text-slate-500 px-3 py-1 rounded-full">Bulk Orders Only</span>
-            </div>
-            <h3 class="text-xl font-bold text-blue-900 mb-1">
-              Toko Pak Somat
-            </h3>
-            <div class="flex items-center gap-3 text-sm text-on-surface-variant mb-4">
-              <div class="flex items-center gap-1">
-                <span class="material-symbols-outlined text-yellow-500 text-base" data-icon="star"
-                  style="font-variation-settings: &quot;FILL&quot; 1">star</span>
-                <span class="font-bold text-on-surface">4.8</span>
-              </div>
-              <span class="opacity-30">|</span>
-              <div class="flex items-center gap-1">
-                <span class="material-symbols-outlined text-base" data-icon="location_on">location_on</span>
-                <span>8.7 miles</span>
-              </div>
-            </div>
-            <div class="flex justify-between items-end border-t border-slate-100 pt-4 mt-2">
-              <div>
-                <p class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-                  Starting at
-                </p>
-                <p class="text-2xl font-black text-on-surface tracking-tighter">
-                  $35.25<span class="text-xs font-normal text-slate-400">/ton</span>
-                </p>
-              </div>
-              <button class="bg-surface-container-high p-3 rounded-lg hover:bg-primary hover:text-white transition-all">
-                <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
-              </button>
-            </div>
-          </div>
+          @endforelse
         </div>
       </section>
       <!-- Sampe sini untuk toko dari database -->

@@ -15,10 +15,14 @@ return new class extends Migration
             $table->integer('ID_Toko')->autoIncrement();
             $table->integer('ID_Akun');
             $table->string('Nama_Toko');
-            $table->bigInteger('Nomer_Telepon_Toko');
+            $table->string('Nomer_Telepon_Toko');
             $table->string('Email_Toko');
             $table->string('Lokasi_Toko');
             $table->string('Username');
+            $table->integer('Pendapatan_Toko')->default(0);
+            $table->integer('Total_Pembelian')->default(0);
+            $table->integer('Komisi_Admin')->default(0);
+            $table->string('Status')->default('inactive');
             $table->timestamps();
 
             $table->foreign('ID_Akun')

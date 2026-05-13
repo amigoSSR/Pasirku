@@ -12,7 +12,7 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    protected $fillable = ['Username', 'Nomer_Telepon', 'Email', 'Password'];
+    protected $fillable = ['Username', 'Nomer_Telepon', 'Email', 'Password', 'Role'];
     protected $hidden = ['Password', 'remember_token'];
 
     /** @use HasFactory<UserFactory> */

@@ -131,20 +131,21 @@
 <span>VERIFIED PARTNER</span>
 </div>
 </div>
-<form action="#" class="space-y-8">
+<form action="{{ route('daftarPenjual.store') }}" method="POST" class="space-y-8">
+    @csrf
 <!-- Dual Column Fields -->
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 <div class="space-y-2">
 <label class="font-label text-xs font-bold uppercase tracking-wider text-on-surface-variant px-1">Nama Toko</label>
 <div class="group relative">
-<input class="w-full bg-surface-container-high border-none rounded-md px-4 py-3 text-on-surface placeholder:text-outline/50 focus:ring-0 transition-all duration-200" placeholder="Masukkan nama bisnis" type="text"/>
+<input name="Nama_Toko" class="w-full bg-surface-container-high border-none rounded-md px-4 py-3 text-on-surface placeholder:text-outline/50 focus:ring-0 transition-all duration-200" placeholder="Masukkan nama bisnis" type="text" required/>
 <div class="absolute bottom-0 left-0 h-0.5 w-0 bg-primary transition-all duration-300 group-focus-within:w-full"></div>
 </div>
 </div>
 <div class="space-y-2">
-<label class="font-label text-xs font-bold uppercase tracking-wider text-on-surface-variant px-1">Nama Pemilik</label>
+<label class="font-label text-xs font-bold uppercase tracking-wider text-on-surface-variant px-1">Username</label>
 <div class="group relative">
-<input class="w-full bg-surface-container-high border-none rounded-md px-4 py-3 text-on-surface placeholder:text-outline/50 focus:ring-0 transition-all duration-200" placeholder="Nama sesuai identitas" type="text"/>
+<input name="Username" class="w-full bg-surface-container-high border-none rounded-md px-4 py-3 text-on-surface placeholder:text-outline/50 focus:ring-0 transition-all duration-200" placeholder="Username akun Anda" type="text" required/>
 <div class="absolute bottom-0 left-0 h-0.5 w-0 bg-primary transition-all duration-300 group-focus-within:w-full"></div>
 </div>
 </div>
@@ -156,7 +157,7 @@
 <div class="absolute left-3 top-3.5 text-on-surface-variant">
 <span class="material-symbols-outlined text-xl">location_on</span>
 </div>
-<input class="w-full bg-surface-container-high border-none rounded-md pl-10 pr-4 py-3 text-on-surface placeholder:text-outline/50 focus:ring-0 transition-all duration-200" placeholder="Alamat lengkap operasional" type="text"/>
+<input name="Lokasi_Toko" class="w-full bg-surface-container-high border-none rounded-md pl-10 pr-4 py-3 text-on-surface placeholder:text-outline/50 focus:ring-0 transition-all duration-200" placeholder="Alamat lengkap operasional" type="text" required/>
 <div class="absolute bottom-0 left-0 h-0.5 w-0 bg-primary transition-all duration-300 group-focus-within:w-full"></div>
 </div>
 </div>
@@ -164,18 +165,42 @@
 <div class="space-y-2">
 <label class="font-label text-xs font-bold uppercase tracking-wider text-on-surface-variant px-1">Email Toko</label>
 <div class="group relative">
-<input class="w-full bg-surface-container-high border-none rounded-md px-4 py-3 text-on-surface placeholder:text-outline/50 focus:ring-0 transition-all duration-200" placeholder="official@business.com" type="email"/>
+<input name="Email_Toko" class="w-full bg-surface-container-high border-none rounded-md px-4 py-3 text-on-surface placeholder:text-outline/50 focus:ring-0 transition-all duration-200" placeholder="official@business.com" type="email" required/>
 <div class="absolute bottom-0 left-0 h-0.5 w-0 bg-primary transition-all duration-300 group-focus-within:w-full"></div>
 </div>
 </div>
 <div class="space-y-2">
 <label class="font-label text-xs font-bold uppercase tracking-wider text-on-surface-variant px-1">No HP Toko</label>
 <div class="group relative">
-<input class="w-full bg-surface-container-high border-none rounded-md px-4 py-3 text-on-surface placeholder:text-outline/50 focus:ring-0 transition-all duration-200" placeholder="+62 812 XXXX" type="tel"/>
+<input name="Nomer_Telepon_Toko" class="w-full bg-surface-container-high border-none rounded-md px-4 py-3 text-on-surface placeholder:text-outline/50 focus:ring-0 transition-all duration-200" placeholder="+62 812 XXXX" type="tel" required/>
 <div class="absolute bottom-0 left-0 h-0.5 w-0 bg-primary transition-all duration-300 group-focus-within:w-full"></div>
 </div>
 </div>
 </div>
+<!-- Additional Financial Fields -->
+<!-- <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="space-y-2">
+<label class="font-label text-xs font-bold uppercase tracking-wider text-on-surface-variant px-1">Pendapatan Toko</label>
+<div class="group relative">
+<input name="Pendapatan_Toko" class="w-full bg-surface-container-high border-none rounded-md px-4 py-3 text-on-surface placeholder:text-outline/50 focus:ring-0 transition-all duration-200" placeholder="0" type="number" value="0" required/>
+<div class="absolute bottom-0 left-0 h-0.5 w-0 bg-primary transition-all duration-300 group-focus-within:w-full"></div>
+</div>
+</div>
+<div class="space-y-2">
+<label class="font-label text-xs font-bold uppercase tracking-wider text-on-surface-variant px-1">Total Pembelian</label>
+<div class="group relative">
+<input name="Total_Pembelian" class="w-full bg-surface-container-high border-none rounded-md px-4 py-3 text-on-surface placeholder:text-outline/50 focus:ring-0 transition-all duration-200" placeholder="0" type="number" value="0" required/>
+<div class="absolute bottom-0 left-0 h-0.5 w-0 bg-primary transition-all duration-300 group-focus-within:w-full"></div>
+</div>
+</div>
+<div class="space-y-2">
+<label class="font-label text-xs font-bold uppercase tracking-wider text-on-surface-variant px-1">Komisi Tokoh</label>
+<div class="group relative">
+<input name="Komisi_Admin" class="w-full bg-surface-container-high border-none rounded-md px-4 py-3 text-on-surface placeholder:text-outline/50 focus:ring-0 transition-all duration-200" placeholder="0" type="number" value="0" required/>
+<div class="absolute bottom-0 left-0 h-0.5 w-0 bg-primary transition-all duration-300 group-focus-within:w-full"></div>
+</div>
+</div>
+</div> -->
 <!-- Agreement Checkbox -->
 <div class="flex items-start space-x-3 pt-2">
 <input class="mt-1 w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary-container" id="terms" type="checkbox"/>

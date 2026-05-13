@@ -224,17 +224,27 @@
             </div>
             <h3 class="text-xs font-bold uppercase tracking-[0.2em] mb-6 text-surface-dim">Ringkasan Pembayaran</h3>
             <div class="space-y-4 mb-8">
-              <div class="flex justify-between text-sm opacity-80">
-                <span>Subtotal Material</span>
-                <span>Rp 8.400.000</span>
+              <div class="flex justify-between text-sm opacity-80 items-center">
+                <span class="flex items-center gap-1.5">
+                  <span class="material-symbols-outlined text-[14px]">directions_car</span>
+                  Pick Up (3 unit)
+                </span>
+                <span>Rp 450.000</span>
+              </div>
+              <div class="flex justify-between text-sm opacity-80 items-center">
+                <span class="flex items-center gap-1.5">
+                  <span class="material-symbols-outlined text-[14px]">local_shipping</span>
+                  Truk (2 unit)
+                </span>
+                <span>Rp 700.000</span>
               </div>
               <div class="flex justify-between text-sm opacity-80">
-                <span>Biaya Logistik (3 Armada)</span>
+                <span>Biaya Logistik</span>
                 <span>Rp 1.250.000</span>
               </div>
               <div class="flex justify-between text-sm opacity-80">
                 <span>Pajak (PPN 11%)</span>
-                <span>Rp 1.061.500</span>
+                <span>Rp 264.000</span>
               </div>
             </div>
             <div class="border-t border-white/10 pt-6 mb-2">
