@@ -162,7 +162,7 @@
 </head>
 
 <body class="bg-surface text-on-surface overflow-x-hidden">
-  @include('topbar')
+  @include('tampilaUntukUser.topbar')
   <div class="flex h-screen pt-[60px]">
     <x-sidebar />
     <main class="flex-1 md:ml-64 flex flex-col p-4 md:p-8 overflow-y-auto bg-surface">
@@ -214,9 +214,13 @@
           <div class="group bg-surface-container-lowest rounded-3xl shadow-sm border border-outline-variant/30 hover:shadow-xl hover:border-primary/30 transition-all duration-300 flex flex-col overflow-hidden hover:-translate-y-1">
 
             <!-- Product Header -->
-            <div class="bg-gradient-to-br from-surface-container to-surface-container-high flex items-center justify-center relative overflow-hidden h-40 group-hover:from-primary-container/30 group-hover:to-primary-container/10 transition-colors duration-300 p-4">
-              <span class="material-symbols-outlined text-8xl text-primary/25 group-hover:text-primary/60 transition-all duration-300 group-hover:scale-110 transform">landscape</span>
-              <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-on-surface/60 to-transparent p-4">
+            <div class="bg-gradient-to-br from-surface-container to-surface-container-high flex items-center justify-center relative overflow-hidden h-40 group-hover:from-primary-container/30 group-hover:to-primary-container/10 transition-colors duration-300 p-0">
+              @if($produk->Gambar)
+                <img src="{{ asset('storage/' . $produk->Gambar) }}" alt="{{ $produk->Nama_Pasir }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+              @else
+                <span class="material-symbols-outlined text-8xl text-primary/25 group-hover:text-primary/60 transition-all duration-300 group-hover:scale-110 transform">landscape</span>
+              @endif
+              <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-4">
                 <h3 class="font-extrabold text-xl text-white tracking-tight drop-shadow-md">{{ $produk->Nama_Pasir }}</h3>
               </div>
             </div>
@@ -445,3 +449,4 @@
   </script>
 </body>
 </html>
+

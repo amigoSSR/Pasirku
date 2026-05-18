@@ -12,17 +12,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('isi_toko', function (Blueprint $table) {
-            $table->integer('Harga_PickUp')->default(0)->after('Nama_Pasir');
-            $table->integer('Harga_Truck')->default(0)->after('Harga_PickUp');
-            $table->integer('Stock_PickUp')->default(0)->after('Harga_Truck');
-            $table->integer('Stock_Truck')->default(0)->after('Stock_PickUp');
-        });
-
-        DB::table('isi_toko')->update([
-            'Harga_PickUp' => DB::raw('Harga_Pasir'),
-            'Stock_PickUp' => DB::raw('Stock_Pasir'),
-        ]);
+        // Kolom sudah ada di create_isi_toko_table
     }
 
     /**

@@ -34,6 +34,10 @@ class AuthenticatedSessionController extends Controller
             return redirect()->intended(route('admin.dashboard', absolute: false));
         }
 
+        if ($user->Role === 'store' || $user->Role === 'seller') {
+            return redirect()->intended(route('MenuUtamaStore', absolute: false));
+        }
+
         return redirect()->intended(route('MenuUtama', absolute: false));
     }
 

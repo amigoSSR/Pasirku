@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Column already added in base migration
+        // Columns already added in base migration
     }
 
     /**
@@ -20,7 +20,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('informasi_toko', function (Blueprint $table) {
-            $table->dropColumn('Status');
+            $table->dropColumn(['Ongkir_PickUp', 'Ongkir_Truck']);
         });
     }
 };

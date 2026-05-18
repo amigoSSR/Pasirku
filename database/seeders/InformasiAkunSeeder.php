@@ -16,6 +16,9 @@ class InformasiAkunSeeder extends Seeder
      */
     public function run(): void
     {
+        // Menghapus data lama beserta relasi yang on cascade
+        DB::table('informasi_akun')->delete();
+
         DB::table('informasi_akun')->insert([
             [
                 'Username'       => 'budi_santoso',

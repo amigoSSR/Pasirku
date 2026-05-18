@@ -131,6 +131,17 @@
 <span>VERIFIED PARTNER</span>
 </div>
 </div>
+
+@if ($errors->any())
+    <div class="mb-6 p-4 rounded-md bg-error-container text-on-error-container text-sm">
+        <ul class="list-disc pl-5">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
 <form action="{{ route('daftarPenjual.store') }}" method="POST" class="space-y-8">
     @csrf
 <!-- Dual Column Fields -->
