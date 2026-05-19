@@ -26,23 +26,34 @@
 
     {{-- Status Summary Cards --}}
     <div class="grid grid-cols-2 md:grid-cols-4 gap-5">
-      @php
-      $statuses = [
-        ['label'=>'Semua Pesanan','value'=>'284','icon'=>'list_alt','color_bg'=>'bg-primary/10','color_text'=>'text-primary'],
-        ['label'=>'Menunggu Konfirmasi','value'=>'12','icon'=>'pending','color_bg'=>'bg-amber-500/10','color_text'=>'text-amber-600'],
-        ['label'=>'Dalam Pengiriman','value'=>'57','icon'=>'local_shipping','color_bg'=>'bg-tertiary/10','color_text'=>'text-tertiary'],
-        ['label'=>'Selesai Hari Ini','value'=>'8','icon'=>'check_circle','color_bg'=>'bg-green-100','color_text'=>'text-green-600'],
-      ];
-      @endphp
-      @foreach($statuses as $s)
       <div class="stat-card bg-surface-container-lowest rounded-2xl p-5 shadow-sm border border-outline-variant/30 cursor-default">
-        <div class="w-11 h-11 {{ $s['color_bg'] }} rounded-xl flex items-center justify-center mb-3">
-          <span class="material-symbols-outlined {{ $s['color_text'] }}" style="font-variation-settings:'FILL' 1">{{ $s['icon'] }}</span>
+        <div class="w-11 h-11 bg-primary/10 rounded-xl flex items-center justify-center mb-3">
+          <span class="material-symbols-outlined text-primary" style="font-variation-settings:'FILL' 1">list_alt</span>
         </div>
-        <p class="text-2xl font-headline font-bold text-on-surface">{{ $s['value'] }}</p>
-        <p class="text-xs text-on-surface-variant mt-1 font-medium">{{ $s['label'] }}</p>
+        <p class="text-2xl font-headline font-bold text-on-surface">{{ $statuses['total'] }}</p>
+        <p class="text-xs text-on-surface-variant mt-1 font-medium">Semua Pesanan</p>
       </div>
-      @endforeach
+      <div class="stat-card bg-surface-container-lowest rounded-2xl p-5 shadow-sm border border-outline-variant/30 cursor-default">
+        <div class="w-11 h-11 bg-amber-500/10 rounded-xl flex items-center justify-center mb-3">
+          <span class="material-symbols-outlined text-amber-600" style="font-variation-settings:'FILL' 1">pending</span>
+        </div>
+        <p class="text-2xl font-headline font-bold text-on-surface">{{ $statuses['pending'] }}</p>
+        <p class="text-xs text-on-surface-variant mt-1 font-medium">Menunggu Konfirmasi</p>
+      </div>
+      <div class="stat-card bg-surface-container-lowest rounded-2xl p-5 shadow-sm border border-outline-variant/30 cursor-default">
+        <div class="w-11 h-11 bg-tertiary/10 rounded-xl flex items-center justify-center mb-3">
+          <span class="material-symbols-outlined text-tertiary" style="font-variation-settings:'FILL' 1">local_shipping</span>
+        </div>
+        <p class="text-2xl font-headline font-bold text-on-surface">{{ $statuses['dikirim'] }}</p>
+        <p class="text-xs text-on-surface-variant mt-1 font-medium">Dalam Pengiriman</p>
+      </div>
+      <div class="stat-card bg-surface-container-lowest rounded-2xl p-5 shadow-sm border border-outline-variant/30 cursor-default">
+        <div class="w-11 h-11 bg-green-100 rounded-xl flex items-center justify-center mb-3">
+          <span class="material-symbols-outlined text-green-600" style="font-variation-settings:'FILL' 1">check_circle</span>
+        </div>
+        <p class="text-2xl font-headline font-bold text-on-surface">{{ $statuses['selesai_hari_ini'] }}</p>
+        <p class="text-xs text-on-surface-variant mt-1 font-medium">Selesai Hari Ini</p>
+      </div>
     </div>
 
     {{-- Orders Table --}}
@@ -54,16 +65,19 @@
           {{-- Status Filter Tabs --}}
           <div class="flex gap-1 bg-surface-container-low rounded-xl p-1">
             @foreach(['Semua','Baru','Proses','Kirim','Selesai'] as $tab)
-            <button class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all {{ $tab === 'Semua' ? 'bg-surface-container-lowest shadow-sm text-on-surface' : 'text-on-surface-variant hover:text-on-surface' }}">
+            <a href="{{ route('ordertrackingStore', ['status' => $tab]) }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all {{ request('status', 'Semua') === $tab ? 'bg-surface-container-lowest shadow-sm text-on-surface' : 'text-on-surface-variant hover:text-on-surface' }}">
               {{ $tab }}
-            </button>
+            </a>
             @endforeach
           </div>
           {{-- Search --}}
-          <div class="relative">
-            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg">search</span>
-            <input type="text" placeholder="Cari pesanan..." class="pl-9 pr-4 py-2 text-sm border border-outline-variant rounded-xl bg-surface-container-low focus:ring-2 focus:ring-primary/20 focus:outline-none w-52 transition-all"/>
-          </div>
+          <form method="GET" action="{{ route('ordertrackingStore') }}" class="relative">
+            <input type="hidden" name="status" value="{{ request('status', 'Semua') }}">
+            <button type="submit" class="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg">
+              <span class="material-symbols-outlined">search</span>
+            </button>
+            <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari pesanan..." class="pl-9 pr-4 py-2 text-sm border border-outline-variant rounded-xl bg-surface-container-low focus:ring-2 focus:ring-primary/20 focus:outline-none w-52 transition-all"/>
+          </form>
         </div>
       </div>
 
@@ -82,60 +96,70 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-outline-variant/15">
-            @php
-            $orders = [
-              ['id'=>'#ORD-1042','customer'=>'Budi Santoso','product'=>'Pasir Cor 5m³','total'=>'Rp 350.000','status'=>'Baru','date'=>'14 Mei 2025','status_color'=>'bg-amber-50 text-amber-700'],
-              ['id'=>'#ORD-1041','customer'=>'Siti Rahayu','product'=>'Batu Split 3m³','total'=>'Rp 270.000','status'=>'Pengiriman','date'=>'14 Mei 2025','status_color'=>'bg-blue-50 text-blue-700'],
-              ['id'=>'#ORD-1040','customer'=>'Dewi Lestari','product'=>'Pasir Halus 2m³','total'=>'Rp 180.000','status'=>'Selesai','date'=>'13 Mei 2025','status_color'=>'bg-green-50 text-green-700'],
-              ['id'=>'#ORD-1039','customer'=>'Ahmad Fauzi','product'=>'Batu Kali 4m³','total'=>'Rp 420.000','status'=>'Dibatalkan','date'=>'13 Mei 2025','status_color'=>'bg-red-50 text-red-600'],
-              ['id'=>'#ORD-1038','customer'=>'Rizky Pratama','product'=>'Pasir Cor 8m³','total'=>'Rp 560.000','status'=>'Proses','date'=>'12 Mei 2025','status_color'=>'bg-purple-50 text-purple-700'],
-            ];
-            @endphp
-            @foreach($orders as $o)
-            <tr class="hover:bg-surface-container-low/60 transition-colors cursor-pointer">
-              <td class="px-5 py-4 font-mono text-xs font-semibold text-on-surface-variant">{{ $o['id'] }}</td>
+            @forelse($orders as $o)
+            <tr class="hover:bg-surface-container-low/60 transition-colors">
+              <td class="px-5 py-4 font-mono text-xs font-semibold text-on-surface-variant">#ORD-{{ str_pad($o->ID_Pesanan, 4, '0', STR_PAD_LEFT) }}</td>
               <td class="px-5 py-4">
                 <div class="flex items-center gap-3">
-                  <div class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container font-bold text-sm flex items-center justify-center shrink-0">{{ substr($o['customer'], 0, 1) }}</div>
-                  <span class="font-semibold text-on-surface">{{ $o['customer'] }}</span>
+                  <div class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container font-bold text-sm flex items-center justify-center shrink-0">{{ substr($o->nama_pembeli ?? $o->Username, 0, 1) }}</div>
+                  <span class="font-semibold text-on-surface">{{ $o->nama_pembeli ?? $o->Username }}</span>
                 </div>
               </td>
-              <td class="px-5 py-4 text-on-surface-variant">{{ $o['product'] }}</td>
-              <td class="px-5 py-4 font-semibold text-primary">{{ $o['total'] }}</td>
-              <td class="px-5 py-4">
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold {{ $o['status_color'] }}">{{ $o['status'] }}</span>
+              <td class="px-5 py-4 text-on-surface-variant">
+                <p class="truncate max-w-[200px]" title="{{ $o->nama_produk }}">{{ $o->nama_produk }}</p>
+                <p class="text-[10px] text-on-surface-variant">{{ $o->Lokasi_Pengantaran }}</p>
               </td>
-              <td class="px-5 py-4 text-xs text-on-surface-variant">{{ $o['date'] }}</td>
+              <td class="px-5 py-4 font-semibold text-primary">Rp {{ number_format($o->total_harga, 0, ',', '.') }}</td>
+              <td class="px-5 py-4">
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] uppercase font-black tracking-wider {{ $o->statusBadgeClass() }}">
+                  <span class="material-symbols-outlined text-[12px]">{{ $o->statusIcon() }}</span>
+                  {{ $o->statusLabel() }}
+                </span>
+              </td>
+              <td class="px-5 py-4 text-xs text-on-surface-variant">{{ $o->created_at->format('d M Y, H:i') }}</td>
               <td class="px-5 py-4 text-right">
-                <div class="flex gap-1 justify-end">
-                  <button class="p-1.5 text-on-surface-variant hover:text-primary hover:bg-primary/10 rounded-lg transition-colors" title="Lihat Detail">
-                    <span class="material-symbols-outlined text-lg">open_in_new</span>
-                  </button>
-                  <button class="p-1.5 text-on-surface-variant hover:text-secondary hover:bg-secondary/10 rounded-lg transition-colors" title="Update Status">
-                    <span class="material-symbols-outlined text-lg">edit</span>
-                  </button>
+                <div class="flex flex-wrap gap-1 justify-end">
+                  @if($o->Status_Pesanan === \App\Models\Pesanan::STATUS_PENDING)
+                    <form method="POST" action="{{ route('ordertrackingStore.updateStatus', $o->ID_Pesanan) }}">
+                      @csrf @method('PUT')
+                      <input type="hidden" name="status" value="{{ \App\Models\Pesanan::STATUS_DIPROSES }}">
+                      <button type="submit" class="px-2 py-1 text-[10px] font-bold bg-primary text-on-primary rounded hover:opacity-90">Terima</button>
+                    </form>
+                    <form method="POST" action="{{ route('ordertrackingStore.updateStatus', $o->ID_Pesanan) }}">
+                      @csrf @method('PUT')
+                      <input type="hidden" name="status" value="{{ \App\Models\Pesanan::STATUS_DIBATALKAN }}">
+                      <input type="hidden" name="alasan_tolak" value="Stok habis">
+                      <button type="submit" class="px-2 py-1 text-[10px] font-bold bg-red-100 text-red-600 rounded hover:bg-red-200">Tolak</button>
+                    </form>
+                  @elseif($o->Status_Pesanan === \App\Models\Pesanan::STATUS_DIPROSES)
+                    <form method="POST" action="{{ route('ordertrackingStore.updateStatus', $o->ID_Pesanan) }}">
+                      @csrf @method('PUT')
+                      <input type="hidden" name="status" value="{{ \App\Models\Pesanan::STATUS_DIKIRIM }}">
+                      <input type="hidden" name="info_pengiriman" value="Driver sedang menuju lokasi">
+                      <button type="submit" class="px-2 py-1 text-[10px] font-bold bg-tertiary text-on-tertiary rounded hover:opacity-90">Kirim</button>
+                    </form>
+                  @elseif($o->Status_Pesanan === \App\Models\Pesanan::STATUS_DIKIRIM)
+                    <form method="POST" action="{{ route('ordertrackingStore.updateStatus', $o->ID_Pesanan) }}">
+                      @csrf @method('PUT')
+                      <input type="hidden" name="status" value="{{ \App\Models\Pesanan::STATUS_SELESAI }}">
+                      <button type="submit" class="px-2 py-1 text-[10px] font-bold bg-green-500 text-white rounded hover:opacity-90">Selesai</button>
+                    </form>
+                  @endif
                 </div>
               </td>
             </tr>
-            @endforeach
+            @empty
+            <tr>
+              <td colspan="7" class="px-5 py-8 text-center text-on-surface-variant">Belum ada pesanan yang sesuai.</td>
+            </tr>
+            @endforelse
           </tbody>
         </table>
       </div>
 
       {{-- Pagination --}}
       <div class="px-5 py-4 border-t border-outline-variant/20 flex items-center justify-between text-sm">
-        <span class="text-on-surface-variant">Menampilkan 1–5 dari 284 pesanan</span>
-        <div class="flex gap-1">
-          <button class="px-3 py-1.5 rounded-lg border border-outline-variant text-on-surface-variant disabled:opacity-40" disabled>
-            <span class="material-symbols-outlined text-sm">chevron_left</span>
-          </button>
-          <button class="px-3 py-1.5 rounded-lg bg-primary text-on-primary font-semibold">1</button>
-          <button class="px-3 py-1.5 rounded-lg border border-outline-variant text-on-surface-variant hover:bg-surface-container-low transition-colors">2</button>
-          <button class="px-3 py-1.5 rounded-lg border border-outline-variant text-on-surface-variant hover:bg-surface-container-low transition-colors">3</button>
-          <button class="px-3 py-1.5 rounded-lg border border-outline-variant text-on-surface-variant hover:bg-surface-container-low transition-colors">
-            <span class="material-symbols-outlined text-sm">chevron_right</span>
-          </button>
-        </div>
+        {{ $orders->links() }}
       </div>
     </div>
 

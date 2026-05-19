@@ -15,20 +15,20 @@
       </div>
 
       <div class="flex-1 overflow-y-auto divide-y divide-outline-variant/10">
-        <template x-for="contact in filteredContacts" :key="contact.ID_Akun">
+        <template x-for="contact in filteredContacts" :key="contact.id">
           <div @click="selectContact(contact)"
-               :class="selectedContact && selectedContact.ID_Akun === contact.ID_Akun
+               :class="selectedContact && selectedContact.id === contact.id
                   ? 'bg-primary/5 border-l-4 border-l-primary'
                   : 'bg-transparent border-l-4 border-l-transparent hover:bg-surface-container-low'"
                class="px-5 py-4 cursor-pointer transition-all duration-200">
             <div class="flex items-center gap-3">
               <div class="relative shrink-0">
-                <div class="w-11 h-11 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-bold text-base uppercase shadow-sm" x-text="contact.Username.charAt(0)"></div>
+                <div class="w-11 h-11 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-bold text-base uppercase shadow-sm" x-text="contact.name.charAt(0)"></div>
                 <span class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-surface-container-lowest rounded-full"></span>
               </div>
               <div class="flex-1 min-w-0">
                 <div class="flex justify-between items-baseline mb-0.5">
-                  <h4 class="font-semibold text-on-surface truncate text-[14px]" :class="selectedContact && selectedContact.ID_Akun === contact.ID_Akun ? 'text-primary' : ''" x-text="contact.Username"></h4>
+                  <h4 class="font-semibold text-on-surface truncate text-[14px]" :class="selectedContact && selectedContact.id === contact.id ? 'text-primary' : ''" x-text="contact.name"></h4>
                   <span class="text-[10px] font-semibold text-on-surface-variant shrink-0 ml-2">Baru saja</span>
                 </div>
                 <p class="text-[12px] text-on-surface-variant truncate">Mulai percakapan...</p>
@@ -54,9 +54,9 @@
           {{-- Chat Header --}}
           <div class="px-6 py-4 flex justify-between items-center bg-surface-container-lowest border-b border-outline-variant/30 shadow-sm z-20">
             <div class="flex items-center gap-4">
-              <div class="w-10 h-10 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-bold uppercase shadow-sm" x-text="selectedContact.Username.charAt(0)"></div>
+              <div class="w-10 h-10 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-bold uppercase shadow-sm" x-text="selectedContact.name.charAt(0)"></div>
               <div>
-                <h3 class="font-headline text-base font-bold text-on-surface leading-tight" x-text="selectedContact.Username"></h3>
+                <h3 class="font-headline text-base font-bold text-on-surface leading-tight" x-text="selectedContact.name"></h3>
                 <p class="text-[11px] text-green-600 font-bold uppercase tracking-wider flex items-center gap-1 mt-0.5">
                   <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>Sedang Online
                 </p>
@@ -135,26 +135,29 @@
         messages: [], newMessage: '', isSending: false, pollingInterval: null,
         get filteredContacts() {
           if (!this.search) return this.contacts;
-          return this.contacts.filter(c => c.Username.toLowerCase().includes(this.search.toLowerCase()));
+          return this.contacts.filter(c => c.name.toLowerCase().includes(this.search.toLowerCase()));
         },
         init() { this.fetchContacts(); },
         fetchContacts() {
-          fetch('{{ route('chat.contacts') }}').then(r => r.json()).then(data => {
+          fetch('{{ route('chat.rooms') }}').then(r => r.json()).then(data => {
             this.contacts = data;
-            const saved = localStorage.getItem('chat_selected_contact_id');
-            if (saved) { const c = data.find(c => c.ID_Akun == saved); if (c) this.selectContact(c); }
+            const saved = localStorage.getItem('chat_selected_room_id');
+            if (saved) { const c = data.find(c => c.id == saved); if (c) this.selectContact(c); }
           });
         },
         selectContact(contact) {
           this.selectedContact = contact;
-          localStorage.setItem('chat_selected_contact_id', contact.ID_Akun);
+          localStorage.setItem('chat_selected_room_id', contact.id);
           this.fetchMessages(true);
           if (this.pollingInterval) clearInterval(this.pollingInterval);
           this.pollingInterval = setInterval(() => this.fetchMessages(false), 3000);
         },
         fetchMessages(scroll = true) {
           if (!this.selectedContact) return;
-          fetch(`/chat/messages/${this.selectedContact.ID_Akun}`).then(r => r.json()).then(data => {
+          const tokoParam = this.selectedContact.toko_id ? `&toko_id=${this.selectedContact.toko_id}` : '';
+          const userParam = this.selectedContact.user_id ? `&user_id=${this.selectedContact.user_id}` : '';
+          
+          fetch(`{{ route('chat.messages') }}?t=1${tokoParam}${userParam}`).then(r => r.json()).then(data => {
             const prev = this.messages.length; this.messages = data;
             if (scroll || prev !== data.length) setTimeout(() => {
               const el = document.getElementById('messages-container');
@@ -168,7 +171,11 @@
           fetch('{{ route('chat.send') }}', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
-            body: JSON.stringify({ receiver_id: this.selectedContact.ID_Akun, message: this.newMessage.trim() })
+            body: JSON.stringify({ 
+                receiver_id: this.selectedContact.user_id, 
+                toko_id: this.selectedContact.toko_id,
+                message: this.newMessage.trim() 
+            })
           }).then(r => r.json()).then(data => {
             this.messages.push(data); this.newMessage = ''; this.isSending = false;
             setTimeout(() => { const el = document.getElementById('messages-container'); if (el) el.scrollTop = el.scrollHeight; }, 50);

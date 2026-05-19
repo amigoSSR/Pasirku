@@ -12,7 +12,19 @@ class AdminController extends Controller
 {
     public function index()
     {
-        return view('tampilanUntukAdmin.MenuUtamaAdmin');
+        $stats = [
+            'total_toko'     => \App\Models\Toko::count(),
+            'toko_aktif'     => \App\Models\Toko::where('Status', 'active')->count(),
+            'toko_inactive'  => \App\Models\Toko::where('Status', 'inactive')->count(),
+            'total_users'    => \App\Models\User::where('Role', 'user')->count(),
+            'total_pendapatan' => \App\Models\Toko::sum('Pendapatan_Toko'),
+            'total_komisi'   => \App\Models\Toko::sum('Komisi_Admin'),
+            'total_pembelian'=> \App\Models\Toko::sum('Total_Pembelian'),
+        ];
+
+        $recentToko = \App\Models\Toko::latest()->take(5)->get();
+
+        return view('tampilanUntukAdmin.MenuUtamaAdmin', compact('stats', 'recentToko'));
     }
 
     /**
