@@ -8,6 +8,8 @@ use App\Http\Controllers\ShoopeRegistryController;
 use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\StokController;
 use App\Http\Controllers\PesananController;
+use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\OrderController;
 use Illuminate\Support\Facades\Route;
 
 use Illuminate\Support\Facades\Auth;
@@ -21,7 +23,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-use App\Http\Controllers\MessageController;
+use App\Http\Controllers\ChatController;
 
 Route::middleware(['auth', 'verified'])->group(function () {
 
@@ -30,7 +32,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/MenuUtamaStore', [MenuUtamaController::class, 'storeIndex'])->name('MenuUtamaStore');
         Route::get('/ProfilStore', fn() => view('tampilanPenjualStore.profilStore'))->name('ProfilStore');
         Route::get('/PesanStore', fn() => view('tampilanPenjualStore.PesanStore'))->name('PesanStore');
-        Route::get('/ordertrackingStore', fn() => view('tampilanPenjualStore.ordertrackingStore'))->name('ordertrackingStore');
+        Route::get('/ordertrackingStore', [OrderController::class, 'storeOrders'])->name('ordertrackingStore');
+        Route::put('/ordertrackingStore/{id}/status', [OrderController::class, 'updateStatus'])->name('ordertrackingStore.updateStatus');
         Route::get('/MonitoringPelangganStore', fn() => view('tampilanPenjualStore.MonitoringPelanggan'))->name('MonitoringPelangganStore');
         Route::get('/tambahProduk', [ProdukController::class, 'create'])->name('tambahProduk');
         Route::post('/tambahProduk', [ProdukController::class, 'store'])->name('tambahProduk.store');
@@ -48,6 +51,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/admin/shop-registration', [AdminController::class, 'shopeRegistry'])->name('ShopeRegistry');
         Route::get('/admin/user-registry', [ShoopeRegistryController::class, 'index'])->name('ShoopeRegistry');
         Route::get('/admin/profil', [AdminController::class, 'profile'])->name('ProfilAdmin');
+        Route::get('/admin/pesan', fn() => view('tampilanUntukAdmin.PesanAdmin'))->name('PesanAdmin');
         Route::put('/admin/shope-registry/{id}/toggle-status', [AdminController::class, 'toggleStatus'])
             ->name('admin.shope.toggleStatus');
     });
@@ -58,7 +62,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/keranjang', fn() => view('tampilaUntukUser.keranjang'))->name('keranjang');
         Route::post('/keranjang/konfirmasi', [PesananController::class, 'store'])->name('pesanan.store');
         Route::get('/Pesan', fn() => view('tampilaUntukUser.Pesan'))->name('Pesan');
-        Route::get('/ordertracking', fn() => view('tampilaUntukUser.ordertracking'))->name('ordertracking');
+        Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+        Route::get('/ordertracking', [OrderController::class, 'userOrders'])->name('ordertracking');
         Route::get('/Profil', fn() => view('tampilaUntukUser.profil'))->name('Profil');
         Route::get('/daftarPenjual', fn() => view('tampilaUntukUser.daftarPenjual'))->name('daftarPenjual');
         Route::post('/daftarPenjual', function (\Illuminate\Http\Request $request) {
@@ -89,9 +94,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     // Chat API Routes
-    Route::get('/chat/contacts', [MessageController::class, 'getContacts'])->name('chat.contacts');
-    Route::get('/chat/messages/{user}', [MessageController::class, 'getMessages'])->name('chat.messages');
-    Route::post('/chat/send', [MessageController::class, 'sendMessage'])->name('chat.send');
+    Route::get('/chat/rooms', [ChatController::class, 'getRooms'])->name('chat.rooms');
+    Route::get('/chat/messages', [ChatController::class, 'getMessages'])->name('chat.messages');
+    Route::post('/chat/send', [ChatController::class, 'sendMessage'])->name('chat.send');
+    Route::get('/chat/start/{id}', [ChatController::class, 'startChatWithToko'])->name('chat.start');
 });
 
 Route::middleware('auth')->group(function () {

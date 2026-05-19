@@ -1,246 +1,229 @@
-@include('tampilanUntukAdmin.topbarAdmin')
-<!-- Main Content -->
-<main class="md:ml-72 pt-24 px-6 pb-12 min-h-screen bg-surface transition-all duration-300">
-<!-- Header Section -->
-<div class="max-w-7xl mx-auto mb-10">
-<div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
-<div>
-<nav class="flex items-center gap-2 text-slate-500 text-sm mb-4">
-<a class="hover:text-primary" href="#">Seller Network</a>
-<span class="material-symbols-outlined text-xs">chevron_right</span>
-<span class="text-on-surface">Shop Detail</span>
-</nav>
-<h1 class="monolithic-text text-4xl font-extrabold text-on-surface mb-2">Sahara Sands Quarry</h1>
-<div class="flex items-center gap-2 text-secondary font-medium">
-<span class="material-symbols-outlined text-base">location_on</span>
-<span class="text-sm tracking-wide">Eastern Ridge Industrial Zone, Sector 4</span>
-</div>
-</div>
-<div class="flex gap-4">
-<button class="bg-surface-container-low text-on-surface px-6 py-3 rounded-md font-semibold text-sm flex items-center gap-2 hover:bg-surface-container-high transition-colors">
-<span class="material-symbols-outlined text-sm">arrow_back</span>
-                        Back to Dashboard
-                    </button>
-<button class="bg-gradient-to-br from-primary to-primary-container text-white px-6 py-3 rounded-md font-semibold text-sm flex items-center gap-2 shadow-sm active:scale-95 transition-all">
-<span class="material-symbols-outlined text-sm">edit</span>
-                        Manage Shop
-                    </button>
-</div>
-</div>
-</div>
-<!-- Bento Grid Analytics -->
-<div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-<!-- Total Customers -->
-<div class="bg-surface-container-low p-8 rounded-xl relative overflow-hidden group">
-<div class="relative z-10">
-<span class="text-xs font-bold uppercase tracking-widest text-secondary mb-4 block">Total Customers</span>
-<h2 class="monolithic-text text-5xl font-black text-on-surface">1,284</h2>
-<p class="text-sm text-slate-500 mt-4 flex items-center gap-1">
-<span class="material-symbols-outlined text-green-600 text-sm">trending_up</span>
-<span class="text-green-600 font-bold">+12%</span> from last month
-                    </p>
-</div>
-<span class="material-symbols-outlined absolute -bottom-4 -right-4 text-9xl text-primary/5 opacity-20 pointer-events-none">group</span>
-</div>
-<!-- Total Revenue -->
-<div class="bg-surface-container-low p-8 rounded-xl relative overflow-hidden group">
-<div class="relative z-10">
-<span class="text-xs font-bold uppercase tracking-widest text-secondary mb-4 block">Total Shop Revenue</span>
-<h2 class="monolithic-text text-5xl font-black text-on-surface">$428.5k</h2>
-<p class="text-sm text-slate-500 mt-4 flex items-center gap-1">
-<span class="material-symbols-outlined text-green-600 text-sm">trending_up</span>
-<span class="text-green-600 font-bold">+8.4%</span> volume increase
-                    </p>
-</div>
-<span class="material-symbols-outlined absolute -bottom-4 -right-4 text-9xl text-primary/5 opacity-20 pointer-events-none">payments</span>
-</div>
-<!-- Admin Commission -->
-<div class="bg-on-background p-8 rounded-xl relative overflow-hidden border border-primary/10">
-<div class="relative z-10">
-<span class="text-xs font-bold uppercase tracking-widest text-primary-fixed mb-4 block">Admin Commission (11%)</span>
-<h2 class="monolithic-text text-5xl font-black text-white">$47,135</h2>
-<div class="mt-4 flex items-center justify-between">
-<p class="text-xs text-primary-fixed/60 font-medium">Platform Fee Net</p>
-<span class="bg-primary-container/30 text-primary-fixed px-2 py-1 rounded text-[10px] font-bold uppercase">Settled</span>
-</div>
-</div>
-<div class="absolute inset-0 bg-gradient-to-br from-primary/20 to-transparent opacity-50"></div>
-</div>
-</div>
-<!-- Transactions Section -->
-<div class="max-w-7xl mx-auto">
-<div class="flex items-center justify-between mb-6">
-<h3 class="monolithic-text text-2xl font-bold text-on-surface">Recent Transactions</h3>
-<button class="text-primary text-sm font-bold flex items-center gap-1 hover:underline">
-                    View All Manifests
-                    <span class="material-symbols-outlined text-sm">open_in_new</span>
-</button>
-</div>
-<!-- Custom Table Component (Tectonic Precision Style) -->
-<div class="bg-surface-container-low rounded-xl overflow-hidden">
-<div class="overflow-x-auto">
-<table class="w-full text-left border-collapse">
-<thead>
-<tr class="bg-surface-container-high/50">
-<th class="px-8 py-5 text-xs font-bold uppercase tracking-widest text-secondary">Transaction ID</th>
-<th class="px-8 py-5 text-xs font-bold uppercase tracking-widest text-secondary">Date</th>
-<th class="px-8 py-5 text-xs font-bold uppercase tracking-widest text-secondary">Material</th>
-<th class="px-8 py-5 text-xs font-bold uppercase tracking-widest text-secondary">Customer</th>
-<th class="px-8 py-5 text-xs font-bold uppercase tracking-widest text-secondary">Volume</th>
-<th class="px-8 py-5 text-xs font-bold uppercase tracking-widest text-secondary">Total Paid</th>
-<th class="px-8 py-5 text-xs font-bold uppercase tracking-widest text-secondary">Status</th>
-</tr>
-</thead>
-<tbody class="divide-y divide-outline-variant/10">
-<!-- Row 1 -->
-<tr class="hover:bg-white transition-colors">
-<td class="px-8 py-6 font-mono text-sm font-bold text-primary">#TRX-88210</td>
-<td class="px-8 py-6 text-sm text-on-surface-variant">Oct 24, 2023</td>
-<td class="px-8 py-6">
-<div class="flex items-center gap-3">
-<div class="w-8 h-8 rounded bg-secondary-container flex items-center justify-center">
-<span class="material-symbols-outlined text-on-secondary-container text-sm">terrain</span>
-</div>
-<span class="text-sm font-semibold">Fine Silic Sands</span>
-</div>
-</td>
-<td class="px-8 py-6 text-sm">Apex Foundations Ltd.</td>
-<td class="px-8 py-6 text-sm font-medium">450 Tons</td>
-<td class="px-8 py-6 text-sm font-bold">$12,450.00</td>
-<td class="px-8 py-6">
-<span class="inline-flex items-center px-2 py-1 rounded bg-green-100 text-green-700 text-[10px] font-black uppercase">Delivered</span>
-</td>
-</tr>
-<!-- Row 2 -->
-<tr class="hover:bg-white transition-colors">
-<td class="px-8 py-6 font-mono text-sm font-bold text-primary">#TRX-88209</td>
-<td class="px-8 py-6 text-sm text-on-surface-variant">Oct 23, 2023</td>
-<td class="px-8 py-6">
-<div class="flex items-center gap-3">
-<div class="w-8 h-8 rounded bg-secondary-container flex items-center justify-center">
-<span class="material-symbols-outlined text-on-secondary-container text-sm">grid_view</span>
-</div>
-<span class="text-sm font-semibold">Coarse Gravel Mix</span>
-</div>
-</td>
-<td class="px-8 py-6 text-sm">City Metro Works</td>
-<td class="px-8 py-6 text-sm font-medium">1,200 Tons</td>
-<td class="px-8 py-6 text-sm font-bold">$28,800.00</td>
-<td class="px-8 py-6">
-<span class="inline-flex items-center px-2 py-1 rounded bg-blue-100 text-blue-700 text-[10px] font-black uppercase">In Transit</span>
-</td>
-</tr>
-<!-- Row 3 -->
-<tr class="hover:bg-white transition-colors">
-<td class="px-8 py-6 font-mono text-sm font-bold text-primary">#TRX-88204</td>
-<td class="px-8 py-6 text-sm text-on-surface-variant">Oct 22, 2023</td>
-<td class="px-8 py-6">
-<div class="flex items-center gap-3">
-<div class="w-8 h-8 rounded bg-secondary-container flex items-center justify-center">
-<span class="material-symbols-outlined text-on-secondary-container text-sm">layers</span>
-</div>
-<span class="text-sm font-semibold">Base Rock Layer</span>
-</div>
-</td>
-<td class="px-8 py-6 text-sm">Riverway Dev.</td>
-<td class="px-8 py-6 text-sm font-medium">85 Tons</td>
-<td class="px-8 py-6 text-sm font-bold">$4,250.00</td>
-<td class="px-8 py-6">
-<span class="inline-flex items-center px-2 py-1 rounded bg-green-100 text-green-700 text-[10px] font-black uppercase">Delivered</span>
-</td>
-</tr>
-<!-- Row 4 -->
-<tr class="hover:bg-white transition-colors">
-<td class="px-8 py-6 font-mono text-sm font-bold text-primary">#TRX-88198</td>
-<td class="px-8 py-6 text-sm text-on-surface-variant">Oct 21, 2023</td>
-<td class="px-8 py-6">
-<div class="flex items-center gap-3">
-<div class="w-8 h-8 rounded bg-secondary-container flex items-center justify-center">
-<span class="material-symbols-outlined text-on-secondary-container text-sm">terrain</span>
-</div>
-<span class="text-sm font-semibold">Fine Silic Sands</span>
-</div>
-</td>
-<td class="px-8 py-6 text-sm">Solo Build Co.</td>
-<td class="px-8 py-6 text-sm font-medium">200 Tons</td>
-<td class="px-8 py-6 text-sm font-bold">$5,800.00</td>
-<td class="px-8 py-6">
-<span class="inline-flex items-center px-2 py-1 rounded bg-orange-100 text-orange-700 text-[10px] font-black uppercase">Pending Payment</span>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<!-- Supplementary Data Section -->
-<div class="max-w-7xl mx-auto mt-12 grid grid-cols-1 md:grid-cols-2 gap-6">
-<div class="bg-surface-container-high/30 p-8 rounded-xl flex flex-col justify-between">
-<div>
-<h4 class="monolithic-text text-xl font-bold mb-4">Location Precision</h4>
-<p class="text-sm text-on-surface-variant leading-relaxed mb-6">Sahara Sands Quarry operates in a high-density industrial corridor. Logistic efficiency for this hub is currently rated at 94.2% based on access to primary haulage routes.</p>
-</div>
-<div class="h-48 w-full rounded-lg overflow-hidden bg-surface-dim relative">
-<img class="w-full h-full object-cover grayscale opacity-50" data-alt="abstract satellite map view of industrial grid with heavy machinery tracks and earthwork patterns" data-location="Eastern Ridge" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDcR82cxCtH_9ChyhzQv97njRiPO9wQeDsuFuzlKbEboeQJiPemN2WdatcS2b4MZXWIYY3G_NeIEgC5A_tN-O_ySSp005n1oU3dy39KjeFCxAdS4-j3_1QU6kqnOgjVsDDxz4VOfbvuwaWUqaoKZMrnLWs1i-F-xik4gluczzimOKUst0KKIfNM_Y2hLdRS15ZCntH7MP0DZmyx0guxUCD8WseMhD7wOUbnEk1OMMQNKndkyZYniVQdV1FR8MXZ91hcQcWUqQuFPQ"/>
-<div class="absolute inset-0 flex items-center justify-center">
-<div class="w-4 h-4 bg-primary rounded-full shadow-[0_0_0_8px_rgba(0,72,141,0.2)]"></div>
-</div>
-</div>
-</div>
-<div class="bg-surface-container-high/30 p-8 rounded-xl">
-<h4 class="monolithic-text text-xl font-bold mb-6">Inventory Summary</h4>
-<div class="space-y-6">
-<div>
-<div class="flex justify-between text-xs font-bold uppercase tracking-widest text-secondary mb-2">
-<span>Silic Sand Capacity</span>
-<span>82%</span>
-</div>
-<div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
-<div class="h-full bg-primary" style="width: 82%"></div>
-</div>
-</div>
-<div>
-<div class="flex justify-between text-xs font-bold uppercase tracking-widest text-secondary mb-2">
-<span>Gravel Stocks</span>
-<span>45%</span>
-</div>
-<div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
-<div class="h-full bg-secondary" style="width: 45%"></div>
-</div>
-</div>
-<div>
-<div class="flex justify-between text-xs font-bold uppercase tracking-widest text-secondary mb-2">
-<span>Crushed Stone</span>
-<span>91%</span>
-</div>
-<div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
-<div class="h-full bg-primary" style="width: 91%"></div>
-</div>
-</div>
-</div>
-<button class="mt-10 w-full border border-outline-variant py-3 rounded-md text-sm font-bold text-on-surface hover:bg-white transition-all">
-                    Generate Inventory Audit
-                </button>
-</div>
-</div>
-</main>
-<!-- Mobile Navigation -->
-<nav class="md:hidden fixed bottom-0 left-0 w-full glass-overlay h-16 flex items-center justify-around px-4 z-50 border-t border-outline-variant/10">
-<button class="flex flex-col items-center gap-1 text-slate-500">
-<span class="material-symbols-outlined text-xl">dashboard</span>
-<span class="text-[10px] font-bold uppercase">Overview</span>
-</button>
-<button class="flex flex-col items-center gap-1 text-primary">
-<span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">storefront</span>
-<span class="text-[10px] font-bold uppercase">Network</span>
-</button>
-<button class="flex flex-col items-center gap-1 text-slate-500">
-<span class="material-symbols-outlined text-xl">monitoring</span>
-<span class="text-[10px] font-bold uppercase">Stats</span>
-</button>
-<a href="{{ route('ProfilAdmin') }}" class="flex flex-col items-center gap-1 text-slate-500">
-<span class="material-symbols-outlined text-xl">person</span>
-<span class="text-[10px] font-bold uppercase">Admin</span>
-</a>
-</nav>
-</body></html>
+<x-layout-admin title="Dashboard Admin">
+
+  <div class="px-6 md:px-8 pb-24 md:pb-10 max-w-[1400px] mx-auto space-y-8">
+
+    {{-- Page Header --}}
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div>
+        <span class="text-xs font-black text-primary uppercase tracking-[0.2em] flex items-center gap-1.5 mb-1">
+          <span class="material-symbols-outlined text-[14px]" style="font-variation-settings:'FILL' 1">shield_person</span>
+          Administrator
+        </span>
+        <h1 class="font-headline text-3xl md:text-4xl font-extrabold text-on-surface tracking-tight">
+          Selamat Datang, {{ Auth::user()->Username ?? 'Admin' }} 👋
+        </h1>
+        <p class="text-sm text-on-surface-variant mt-1">Pantau seluruh aktivitas platform PasirKu dari sini.</p>
+      </div>
+      <div class="flex gap-2">
+        <a href="{{ route('ShopeRegistry') }}"
+          class="bg-primary text-on-primary px-5 py-2.5 rounded-xl font-bold text-sm flex items-center gap-2 hover:opacity-90 transition-all hover:shadow-md">
+          <span class="material-symbols-outlined text-[18px]">storefront</span>
+          Kelola Toko
+        </a>
+      </div>
+    </div>
+
+    {{-- Stats Cards --}}
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+
+      {{-- Total Toko --}}
+      <div class="stat-card bg-surface-container-lowest rounded-2xl p-5 shadow-sm border border-outline-variant/20">
+        <div class="flex items-center justify-between mb-3">
+          <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+            <span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings:'FILL' 1">storefront</span>
+          </div>
+          <span class="text-xs font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
+            {{ $stats['toko_aktif'] }} aktif
+          </span>
+        </div>
+        <p class="text-xs font-semibold text-on-surface-variant uppercase tracking-wide">Total Toko</p>
+        <h3 class="font-headline text-3xl font-extrabold text-on-surface mt-1">{{ $stats['total_toko'] }}</h3>
+        <p class="text-xs text-on-surface-variant mt-1.5">{{ $stats['toko_inactive'] }} tidak aktif</p>
+      </div>
+
+      {{-- Total User --}}
+      <div class="stat-card bg-surface-container-lowest rounded-2xl p-5 shadow-sm border border-outline-variant/20">
+        <div class="flex items-center justify-between mb-3">
+          <div class="w-10 h-10 rounded-xl bg-tertiary/10 flex items-center justify-center">
+            <span class="material-symbols-outlined text-tertiary text-[20px]" style="font-variation-settings:'FILL' 1">group</span>
+          </div>
+        </div>
+        <p class="text-xs font-semibold text-on-surface-variant uppercase tracking-wide">Total Pengguna</p>
+        <h3 class="font-headline text-3xl font-extrabold text-on-surface mt-1">{{ $stats['total_users'] }}</h3>
+        <p class="text-xs text-on-surface-variant mt-1.5">User terdaftar</p>
+      </div>
+
+      {{-- Total Pendapatan --}}
+      <div class="stat-card bg-surface-container-lowest rounded-2xl p-5 shadow-sm border border-outline-variant/20">
+        <div class="flex items-center justify-between mb-3">
+          <div class="w-10 h-10 rounded-xl bg-secondary-container flex items-center justify-center">
+            <span class="material-symbols-outlined text-secondary text-[20px]" style="font-variation-settings:'FILL' 1">payments</span>
+          </div>
+        </div>
+        <p class="text-xs font-semibold text-on-surface-variant uppercase tracking-wide">Total Pendapatan</p>
+        <h3 class="font-headline text-2xl font-extrabold text-on-surface mt-1">
+          Rp {{ number_format($stats['total_pendapatan'], 0, ',', '.') }}
+        </h3>
+        <p class="text-xs text-on-surface-variant mt-1.5">Dari semua toko</p>
+      </div>
+
+      {{-- Komisi Admin --}}
+      <div class="stat-card bg-primary rounded-2xl p-5 shadow-sm relative overflow-hidden">
+        <div class="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 rounded-full bg-on-primary/10 blur-3xl pointer-events-none"></div>
+        <div class="flex items-center justify-between mb-3 relative z-10">
+          <div class="w-10 h-10 rounded-xl bg-on-primary/20 flex items-center justify-center">
+            <span class="material-symbols-outlined text-on-primary text-[20px]" style="font-variation-settings:'FILL' 1">account_balance</span>
+          </div>
+        </div>
+        <p class="text-xs font-semibold text-on-primary/70 uppercase tracking-wide relative z-10">Komisi Admin</p>
+        <h3 class="font-headline text-2xl font-extrabold text-on-primary mt-1 relative z-10">
+          Rp {{ number_format($stats['total_komisi'], 0, ',', '.') }}
+        </h3>
+        <p class="text-xs text-on-primary/60 mt-1.5 relative z-10">{{ $stats['total_pembelian'] }} total pembelian</p>
+      </div>
+
+    </div>
+
+    {{-- Content Grid --}}
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+      {{-- Recent Toko Table --}}
+      <div class="lg:col-span-2 bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant/20 overflow-hidden">
+        <div class="px-6 py-5 border-b border-outline-variant/20 flex items-center justify-between">
+          <div>
+            <h2 class="font-headline font-bold text-on-surface text-lg">Toko Terbaru</h2>
+            <p class="text-xs text-on-surface-variant mt-0.5">5 toko yang paling baru bergabung</p>
+          </div>
+          <a href="{{ route('ShopeRegistry') }}"
+            class="text-primary text-xs font-bold flex items-center gap-1 hover:underline">
+            Lihat semua
+            <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+          </a>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead>
+              <tr class="border-b border-outline-variant/20 bg-surface-container-low/50">
+                <th class="px-6 py-3 text-xs font-bold uppercase tracking-wider text-on-surface-variant">Toko</th>
+                <th class="px-6 py-3 text-xs font-bold uppercase tracking-wider text-on-surface-variant">Lokasi</th>
+                <th class="px-6 py-3 text-xs font-bold uppercase tracking-wider text-on-surface-variant">Pendapatan</th>
+                <th class="px-6 py-3 text-xs font-bold uppercase tracking-wider text-on-surface-variant">Status</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-outline-variant/10">
+              @forelse($recentToko as $toko)
+              <tr class="hover:bg-surface-container-low/50 transition-colors">
+                <td class="px-6 py-4">
+                  <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-primary/10 text-primary font-bold text-xs flex items-center justify-center uppercase shrink-0">
+                      {{ strtoupper(substr($toko->Nama_Toko, 0, 2)) }}
+                    </div>
+                    <div>
+                      <p class="font-semibold text-on-surface text-sm">{{ $toko->Nama_Toko }}</p>
+                      <p class="text-xs text-on-surface-variant">{{ $toko->Username }}</p>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-6 py-4 text-on-surface-variant text-xs">{{ Str::limit($toko->Lokasi_Toko, 25) }}</td>
+                <td class="px-6 py-4 font-semibold text-on-surface text-sm">
+                  Rp {{ number_format($toko->Pendapatan_Toko ?? 0, 0, ',', '.') }}
+                </td>
+                <td class="px-6 py-4">
+                  @if($toko->Status === 'active')
+                    <span class="inline-flex items-center gap-1 bg-green-100 text-green-700 text-[10px] font-black uppercase px-2.5 py-1 rounded-full">
+                      <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> Aktif
+                    </span>
+                  @else
+                    <span class="inline-flex items-center gap-1 bg-yellow-100 text-yellow-700 text-[10px] font-black uppercase px-2.5 py-1 rounded-full">
+                      <span class="w-1.5 h-1.5 bg-yellow-500 rounded-full"></span> Inactive
+                    </span>
+                  @endif
+                </td>
+              </tr>
+              @empty
+              <tr>
+                <td colspan="4" class="px-6 py-10 text-center text-on-surface-variant text-sm">Belum ada data toko.</td>
+              </tr>
+              @endforelse
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {{-- Quick Actions --}}
+      <div class="space-y-4">
+
+        {{-- Status Toko Summary --}}
+        <div class="bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant/20 p-6">
+          <h3 class="font-headline font-bold text-on-surface mb-5">Status Platform</h3>
+          <div class="space-y-4">
+            <div>
+              <div class="flex justify-between text-xs font-bold mb-1.5">
+                <span class="text-on-surface-variant uppercase tracking-wide">Toko Aktif</span>
+                <span class="text-green-600">{{ $stats['total_toko'] > 0 ? round(($stats['toko_aktif'] / $stats['total_toko']) * 100) : 0 }}%</span>
+              </div>
+              <div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
+                <div class="h-full bg-green-500 rounded-full transition-all"
+                  style="width: {{ $stats['total_toko'] > 0 ? round(($stats['toko_aktif'] / $stats['total_toko']) * 100) : 0 }}%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-xs font-bold mb-1.5">
+                <span class="text-on-surface-variant uppercase tracking-wide">Komisi Admin</span>
+                <span class="text-primary">{{ $stats['total_pendapatan'] > 0 ? round(($stats['total_komisi'] / $stats['total_pendapatan']) * 100) : 0 }}%</span>
+              </div>
+              <div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
+                <div class="h-full bg-primary rounded-full transition-all"
+                  style="width: {{ $stats['total_pendapatan'] > 0 ? min(100, round(($stats['total_komisi'] / $stats['total_pendapatan']) * 100)) : 0 }}%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {{-- Quick Nav Cards --}}
+        <div class="bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant/20 p-6 space-y-3">
+          <h3 class="font-headline font-bold text-on-surface mb-4">Aksi Cepat</h3>
+
+          <a href="{{ route('ShopeRegistry') }}"
+            class="flex items-center gap-3 p-3 rounded-xl hover:bg-surface-container-low transition-colors group">
+            <div class="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
+              <span class="material-symbols-outlined text-primary text-[18px]" style="font-variation-settings:'FILL' 1">storefront</span>
+            </div>
+            <div class="flex-1">
+              <p class="text-sm font-semibold text-on-surface">Kelola Toko</p>
+              <p class="text-xs text-on-surface-variant">Aktifkan / nonaktifkan toko</p>
+            </div>
+            <span class="material-symbols-outlined text-on-surface-variant text-[16px] group-hover:text-primary transition-colors">arrow_forward_ios</span>
+          </a>
+
+          <a href="{{ route('Pesan') }}"
+            class="flex items-center gap-3 p-3 rounded-xl hover:bg-surface-container-low transition-colors group">
+            <div class="w-9 h-9 rounded-xl bg-secondary-container flex items-center justify-center">
+              <span class="material-symbols-outlined text-secondary text-[18px]" style="font-variation-settings:'FILL' 1">forum</span>
+            </div>
+            <div class="flex-1">
+              <p class="text-sm font-semibold text-on-surface">Chat Support</p>
+              <p class="text-xs text-on-surface-variant">Balas pesan dari pengguna</p>
+            </div>
+            <span class="material-symbols-outlined text-on-surface-variant text-[16px] group-hover:text-primary transition-colors">arrow_forward_ios</span>
+          </a>
+
+          <a href="{{ route('ProfilAdmin') }}"
+            class="flex items-center gap-3 p-3 rounded-xl hover:bg-surface-container-low transition-colors group">
+            <div class="w-9 h-9 rounded-xl bg-tertiary/10 flex items-center justify-center">
+              <span class="material-symbols-outlined text-tertiary text-[18px]" style="font-variation-settings:'FILL' 1">manage_accounts</span>
+            </div>
+            <div class="flex-1">
+              <p class="text-sm font-semibold text-on-surface">Profil Admin</p>
+              <p class="text-xs text-on-surface-variant">Pengaturan akun</p>
+            </div>
+            <span class="material-symbols-outlined text-on-surface-variant text-[16px] group-hover:text-primary transition-colors">arrow_forward_ios</span>
+          </a>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</x-layout-admin>
