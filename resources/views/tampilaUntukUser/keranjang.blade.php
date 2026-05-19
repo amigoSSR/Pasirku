@@ -179,26 +179,21 @@
         <!-- Section: Shipping Address -->
         <section class="bg-surface-container-low p-8 rounded-xl relative overflow-hidden">
           <div class="flex items-center gap-3 mb-8">
-            <span class="material-symbols-outlined text-primary" data-icon="local_shipping">local_shipping</span>
+            <span class="material-symbols-outlined text-primary">local_shipping</span>
             <h2 class="text-2xl font-bold">Alamat Pengiriman</h2>
           </div>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="flex flex-col gap-6">
             <div class="flex flex-col gap-2">
-              <label class="text-xs font-bold text-secondary uppercase tracking-wider">Nama Penerima</label>
-              <input class="input-industrial px-4 py-3 rounded-lg w-full" placeholder="Contoh: PT. Konstruksi Maju" type="text" />
+              <label for="lokasi-pengantaran" class="text-xs font-bold text-secondary uppercase tracking-wider">Lokasi Pengantaran</label>
+              <input id="lokasi-pengantaran" class="input-industrial px-4 py-3 rounded-lg w-full"
+                     placeholder="Contoh: Jl. Merdeka No. 10, Jakarta Pusat" type="text" />
+              <p class="text-[11px] text-on-surface-variant">Masukkan alamat lengkap lokasi pengiriman pasir.</p>
             </div>
             <div class="flex flex-col gap-2">
-              <label class="text-xs font-bold text-secondary uppercase tracking-wider">Nomor Telepon Lapangan</label>
-              <input class="input-industrial px-4 py-3 rounded-lg w-full" placeholder="+62 812 XXXX" type="tel" />
-            </div>
-            <div class="md:col-span-2 flex flex-col gap-2">
-              <label class="text-xs font-bold text-secondary uppercase tracking-wider">Detail Lokasi Proyek</label>
-              <textarea class="input-industrial px-4 py-3 rounded-lg w-full resize-none"
-                placeholder="Jl. Industrial No. 45, Area Konstruksi Blok B" rows="3"></textarea>
-            </div>
-            <div class="flex flex-col gap-2">
-              <label class="text-xs font-bold text-secondary uppercase tracking-wider">Kode Pos / Area</label>
-              <input class="input-industrial px-4 py-3 rounded-lg w-full" placeholder="12345" type="text" />
+              <label for="detail-lokasi" class="text-xs font-bold text-secondary uppercase tracking-wider">Detail Tambahan Lokasi Pengantaran</label>
+              <textarea id="detail-lokasi" class="input-industrial px-4 py-3 rounded-lg w-full resize-none"
+                        placeholder="Contoh: Masuk gang kedua, dekat pos satpam, patokan warung Bu Sari..." rows="3"></textarea>
+              <p class="text-[11px] text-on-surface-variant">Opsional — bantu pengemudi menemukan lokasi dengan lebih mudah.</p>
             </div>
           </div>
         </section>
@@ -206,24 +201,41 @@
         <!-- Section: Delivery Schedule -->
         <section class="bg-surface-container-lowest p-8 rounded-xl shadow-sm border-l-8 border-secondary">
           <div class="flex items-center gap-3 mb-8">
-            <span class="material-symbols-outlined text-secondary" data-icon="calendar_today">calendar_today</span>
+            <span class="material-symbols-outlined text-secondary">calendar_today</span>
             <h2 class="text-2xl font-bold">Jadwal Pengiriman Pasir</h2>
           </div>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+            {{-- Pilih Tanggal --}}
             <div class="bg-surface-container-low p-6 rounded-lg">
               <p class="text-xs font-bold text-secondary uppercase tracking-wider mb-4">Pilih Tanggal</p>
-              <div class="flex items-center justify-between bg-white px-4 py-3 rounded-md">
-                <span class="font-semibold">24 Oktober 2023</span>
-                <span class="material-symbols-outlined text-primary" data-icon="event">event</span>
-              </div>
+              <input id="tanggal-pengiriman" type="date" class="input-industrial px-4 py-3 rounded-lg w-full font-semibold"
+                     min="{{ now()->addDay()->format('Y-m-d') }}"
+                     value="{{ now()->addDay()->format('Y-m-d') }}" />
+              <p class="text-[11px] text-on-surface-variant mt-2">Pengiriman minimal H+1 dari hari ini.</p>
             </div>
+
+            {{-- Estimasi Waktu Tiba --}}
             <div class="bg-surface-container-low p-6 rounded-lg">
               <p class="text-xs font-bold text-secondary uppercase tracking-wider mb-4">Estimasi Waktu Tiba</p>
-              <div class="grid grid-cols-2 gap-2">
-                <button class="bg-primary text-white py-2 rounded font-bold text-sm">Pagi (08:00)</button>
-                <button class="bg-white text-on-surface py-2 rounded font-bold text-sm hover:bg-primary-fixed">Siang (13:00)</button>
+              <div class="flex flex-col gap-3">
+                <div class="flex items-center gap-3">
+                  <input id="jam-mulai" type="time" value="08:00"
+                         class="input-industrial px-4 py-3 rounded-lg flex-1 font-bold text-lg text-center"
+                         oninput="hitungEstimasi()" />
+                  <span class="text-on-surface-variant font-semibold text-sm">WIB</span>
+                </div>
+                {{-- Display estimasi hasil kalkulasi --}}
+                <div id="estimasi-box" class="bg-white rounded-lg px-4 py-3 flex items-center gap-3">
+                  <span class="material-symbols-outlined text-secondary text-[20px]">schedule</span>
+                  <div>
+                    <p id="estimasi-label" class="font-black text-on-surface text-sm">08:00 – 12:00</p>
+                    <p class="text-[10px] text-on-surface-variant italic">*Estimasi rentang waktu kedatangan (±4 jam)</p>
+                  </div>
+                </div>
               </div>
             </div>
+
           </div>
         </section>
 
@@ -259,33 +271,88 @@
           <!-- Payment Section -->
           <div class="bg-white p-8 rounded-xl shadow-xl">
             <h3 class="text-lg font-bold mb-6 flex items-center gap-2">
-              <span class="material-symbols-outlined text-primary" data-icon="qr_code_2">qr_code_2</span>
+              <span class="material-symbols-outlined text-primary">qr_code_2</span>
               Pembayaran QRIS
             </h3>
+
+            <!-- QRIS Placeholder -->
             <div class="flex flex-col items-center justify-center bg-surface-container-low p-6 rounded-lg mb-6">
-              <!-- Placeholder for QRIS -->
               <div class="w-48 h-48 bg-white p-3 rounded-lg shadow-inner mb-4 relative flex items-center justify-center">
                 <div class="w-full h-full bg-slate-100 flex items-center justify-center border-2 border-dashed border-slate-300">
-                  <span class="material-symbols-outlined text-4xl text-slate-400" data-icon="qr_code_scanner">qr_code_scanner</span>
+                  <span class="material-symbols-outlined text-4xl text-slate-400">qr_code_scanner</span>
                 </div>
-                <div class="absolute inset-0 bg-gradient-to-tr from-primary/5 to-transparent pointer-events-none"></div>
               </div>
               <p class="text-[10px] text-center text-on-surface-variant font-bold uppercase tracking-wider">
-                Pindai QRIS di atas melalui Aplikasi Bank atau E-Wallet Anda
+                Pindai QRIS melalui Aplikasi Bank atau E-Wallet Anda
               </p>
             </div>
-            <div class="space-y-4">
-              <button class="w-full flex items-center justify-center gap-2 bg-surface-container-high py-4 rounded-lg font-bold hover:bg-surface-container-highest transition-colors group">
-                <span class="material-symbols-outlined group-hover:scale-110 transition-transform" data-icon="cloud_upload">cloud_upload</span>
-                Upload Bukti Pembayaran
+
+            <!-- FORM KONFIRMASI PESANAN -->
+            <form id="form-konfirmasi" method="POST"
+                  action="{{ route('pesanan.store') }}"
+                  enctype="multipart/form-data"
+                  class="space-y-4">
+              @csrf
+
+              {{-- Hidden inputs: diisi oleh JS sebelum submit --}}
+              <input type="hidden" name="id_toko"            id="h-id-toko">
+              <input type="hidden" name="lokasi_pengantaran" id="h-lokasi">
+              <input type="hidden" name="detail_lokasi"      id="h-detail-lokasi">
+              <input type="hidden" name="unit"               id="h-unit">
+              <input type="hidden" name="tanggal_pengiriman" id="h-tanggal">
+              <input type="hidden" name="jam_tiba"           id="h-jam-tiba">
+
+              {{-- Input file tersembunyi --}}
+              <input type="file" id="input-bukti" name="bukti_pembayaran"
+                     accept="image/*" class="hidden">
+
+              {{-- Tombol trigger file manager --}}
+              <button type="button" id="btn-upload-bukti"
+                      onclick="document.getElementById('input-bukti').click()"
+                      class="w-full flex items-center justify-center gap-2 bg-surface-container-high py-4 rounded-lg font-bold hover:bg-surface-container-highest transition-colors group">
+                <span class="material-symbols-outlined group-hover:scale-110 transition-transform">cloud_upload</span>
+                <span id="upload-label">Upload Bukti Pembayaran</span>
               </button>
-              <button class="w-full bg-gradient-to-br from-primary to-primary-container text-white py-5 rounded-lg font-black text-lg shadow-lg hover:scale-[1.02] active:scale-95 transition-all">
-                KONFIRMASI PESANAN
+
+              {{-- Preview bukti pembayaran --}}
+              <div id="preview-bukti" class="hidden rounded-xl overflow-hidden border-2 border-primary/30 bg-surface-container-low p-3">
+                <div class="flex items-center gap-3">
+                  <div class="relative flex-shrink-0">
+                    <img id="preview-img" src="" alt="Preview Bukti"
+                         class="w-20 h-20 object-cover rounded-lg shadow">
+                    <div class="absolute -top-1 -right-1 bg-green-500 rounded-full p-0.5">
+                      <span class="material-symbols-outlined text-white text-[14px]">check</span>
+                    </div>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-xs font-bold text-on-surface truncate" id="preview-filename"></p>
+                    <p class="text-[10px] text-on-surface-variant" id="preview-filesize"></p>
+                    <p class="text-[10px] text-green-600 font-bold mt-1">OK Siap diunggah | Akan dikonversi ke PNG</p>
+                  </div>
+                  <button type="button" id="btn-ganti-file"
+                          onclick="resetUpload()"
+                          class="flex-shrink-0 text-on-surface-variant hover:text-error transition-colors">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                  </button>
+                </div>
+              </div>
+
+              {{-- Error bukti jika ada dari server --}}
+              @error('bukti_pembayaran')
+                <p class="text-xs text-red-600 font-semibold">{{ $message }}</p>
+              @enderror
+
+              {{-- Tombol konfirmasi --}}
+              <button type="submit" id="btn-konfirmasi"
+                      class="w-full bg-gradient-to-br from-primary to-primary-container text-white py-5 rounded-lg font-black text-lg shadow-lg hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100">
+                <span id="konfirmasi-icon" class="material-symbols-outlined">task_alt</span>
+                <span id="konfirmasi-label">KONFIRMASI PESANAN</span>
               </button>
+
               <p class="text-[10px] text-center text-on-surface-variant italic">
-                *Dengan mengklik Konfirmasi, Anda menyetujui syarat &amp; ketentuan pengiriman material konstruksi.
+                *Dengan mengklik Konfirmasi, Anda menyetujui syarat &amp; ketentuan pengiriman.
               </p>
-            </div>
+            </form>
           </div>
 
         </div>
@@ -306,32 +373,38 @@
         <a class="text-xs font-bold uppercase text-on-surface-variant hover:text-primary" href="#">Kontak Support</a>
       </div>
       <div class="text-[10px] font-medium text-slate-400">
-        © 2024 Pasir Ku. All rights reserved.
+        ﾂｩ 2024 Pasir Ku. All rights reserved.
       </div>
     </div>
   </footer>
 
   <script>
+    /* -- Helpers ------------------------------------------- */
     function formatRupiah(angka) {
       return 'Rp ' + angka.toLocaleString('id-ID');
     }
+    function formatBytes(bytes) {
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+      return (bytes / 1048576).toFixed(1) + ' MB';
+    }
 
+    /* -- Checkout Render ----------------------------------- */
     function renderCheckout() {
-      const cartRaw     = sessionStorage.getItem('pasirku_cart');
-      const tokoRaw     = sessionStorage.getItem('pasirku_toko');
+      const cartRaw  = sessionStorage.getItem('pasirku_cart');
+      const tokoRaw  = sessionStorage.getItem('pasirku_toko');
 
-      const cartItemsList    = document.getElementById('cart-items-list');
-      const paymentLines     = document.getElementById('payment-summary-lines');
-      const ongkirSection    = document.getElementById('ongkir-section');
-      const grandTotalEl     = document.getElementById('grand-total');
-      const emptyNotice      = document.getElementById('cart-empty-notice');
-      const storeName        = document.getElementById('checkout-store-name');
+      const cartItemsList = document.getElementById('cart-items-list');
+      const paymentLines  = document.getElementById('payment-summary-lines');
+      const ongkirSection = document.getElementById('ongkir-section');
+      const grandTotalEl  = document.getElementById('grand-total');
+      const emptyNotice   = document.getElementById('cart-empty-notice');
+      const storeName     = document.getElementById('checkout-store-name');
 
-      // No cart data
       if (!cartRaw || !tokoRaw) {
         cartItemsList.innerHTML = '';
         emptyNotice.classList.remove('hidden');
-        paymentLines.innerHTML = '<p class="text-white/50 text-sm text-center">Tidak ada item</p>';
+        paymentLines.innerHTML  = '<p class="text-white/50 text-sm text-center">Tidak ada item</p>';
         ongkirSection.innerHTML = '';
         grandTotalEl.textContent = formatRupiah(0);
         return;
@@ -340,37 +413,28 @@
       const cartItems = JSON.parse(cartRaw);
       const toko      = JSON.parse(tokoRaw);
 
-      // Store name
-      storeName.textContent = 'Toko: ' + toko.nama + ' · ' + toko.lokasi;
+      storeName.textContent = 'Toko: ' + toko.nama + ' | ' + toko.lokasi;
 
       if (!cartItems || cartItems.length === 0) {
         cartItemsList.innerHTML = '';
         emptyNotice.classList.remove('hidden');
-        paymentLines.innerHTML = '<p class="text-white/50 text-sm text-center">Tidak ada item</p>';
+        paymentLines.innerHTML  = '<p class="text-white/50 text-sm text-center">Tidak ada item</p>';
         ongkirSection.innerHTML = '';
         grandTotalEl.textContent = formatRupiah(0);
         return;
       }
 
-      // --- Render Cart Items (left side) ---
+      /*Render cart items*/
       cartItemsList.innerHTML = '';
-      let subtotalPickUp = 0;
-      let subtotalTruck  = 0;
-      let qtyPickUp      = 0;
-      let qtyTruck       = 0;
-      let subTotal       = 0;
+      let subtotalPickUp = 0, subtotalTruck = 0;
+      let qtyPickUp = 0,      qtyTruck = 0;
+      let subTotal  = 0;
 
       cartItems.forEach(item => {
         const lineTotal = item.harga * item.qty;
         subTotal += lineTotal;
-
-        if (item.type === 'pickup') {
-          subtotalPickUp += lineTotal;
-          qtyPickUp      += item.qty;
-        } else {
-          subtotalTruck += lineTotal;
-          qtyTruck      += item.qty;
-        }
+        if (item.type === 'pickup') { subtotalPickUp += lineTotal; qtyPickUp += item.qty; }
+        else                        { subtotalTruck  += lineTotal; qtyTruck  += item.qty; }
 
         const typeLabel = item.type === 'pickup'
           ? '<span class="inline-flex items-center gap-1 text-blue-600 font-bold text-xs bg-blue-50 px-2 py-0.5 rounded-full"><span class="material-symbols-outlined text-[13px]">directions_car</span>Pick Up</span>'
@@ -385,102 +449,193 @@
             </div>
             <div>
               <p class="font-bold text-sm text-on-surface leading-tight">${item.namaPasir}</p>
-              <div class="flex items-center gap-2 mt-0.5">${typeLabel} <span class="text-xs text-on-surface-variant">× ${item.qty}</span></div>
+              <div class="flex items-center gap-2 mt-0.5">${typeLabel} <span class="text-xs text-on-surface-variant">x ${item.qty}</span></div>
             </div>
           </div>
           <div class="text-right">
             <p class="font-black text-sm text-on-surface">${formatRupiah(lineTotal)}</p>
             <p class="text-[10px] text-on-surface-variant">${formatRupiah(item.harga)} / unit</p>
-          </div>
-        `;
+          </div>`;
         cartItemsList.appendChild(row);
       });
 
-      // --- Ongkir calculation ---
-      // Ongkir dikenakan jika ada item jenis tersebut
+      /* -- Ongkir & grand total ---------------------------- */
       const ongkirPickUpTotal = qtyPickUp > 0 ? toko.ongkirPickUp : 0;
       const ongkirTruckTotal  = qtyTruck  > 0 ? toko.ongkirTruck  : 0;
       const totalOngkir       = ongkirPickUpTotal + ongkirTruckTotal;
       const grandTotal        = subTotal + totalOngkir;
 
-      // --- Payment Summary Lines (right side) ---
+      /* -- Payment summary lines --------------------------- */
       paymentLines.innerHTML = '';
-
       if (qtyPickUp > 0) {
-        const row = document.createElement('div');
-        row.className = 'flex justify-between text-sm opacity-80 items-center';
-        row.innerHTML = `
-          <span class="flex items-center gap-1.5">
-            <span class="material-symbols-outlined text-[14px]">directions_car</span>
-            Pick Up (${qtyPickUp} unit)
-          </span>
-          <span>${formatRupiah(subtotalPickUp)}</span>
-        `;
-        paymentLines.appendChild(row);
+        const r = document.createElement('div');
+        r.className = 'flex justify-between text-sm opacity-80 items-center';
+        r.innerHTML = `<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[14px]">directions_car</span>Pick Up (${qtyPickUp} unit)</span><span>${formatRupiah(subtotalPickUp)}</span>`;
+        paymentLines.appendChild(r);
       }
-
       if (qtyTruck > 0) {
-        const row = document.createElement('div');
-        row.className = 'flex justify-between text-sm opacity-80 items-center';
-        row.innerHTML = `
-          <span class="flex items-center gap-1.5">
-            <span class="material-symbols-outlined text-[14px]">local_shipping</span>
-            Truk (${qtyTruck} unit)
-          </span>
-          <span>${formatRupiah(subtotalTruck)}</span>
-        `;
-        paymentLines.appendChild(row);
+        const r = document.createElement('div');
+        r.className = 'flex justify-between text-sm opacity-80 items-center';
+        r.innerHTML = `<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[14px]">local_shipping</span>Truk (${qtyTruck} unit)</span><span>${formatRupiah(subtotalTruck)}</span>`;
+        paymentLines.appendChild(r);
       }
-
-      // Subtotal divider
       const subtotalRow = document.createElement('div');
       subtotalRow.className = 'flex justify-between text-sm opacity-60 border-t border-white/10 pt-3 mt-1';
       subtotalRow.innerHTML = `<span>Subtotal Produk</span><span>${formatRupiah(subTotal)}</span>`;
       paymentLines.appendChild(subtotalRow);
 
-      // --- Ongkir section ---
+      /* -- Ongkir section ---------------------------------- */
       ongkirSection.innerHTML = '';
-
       if (ongkirPickUpTotal > 0) {
         const r = document.createElement('div');
         r.className = 'flex justify-between text-sm opacity-80 items-center';
-        r.innerHTML = `
-          <span class="flex items-center gap-1.5">
-            <span class="material-symbols-outlined text-[14px]">directions_car</span>
-            Ongkir Pick Up
-          </span>
-          <span>${formatRupiah(ongkirPickUpTotal)}</span>
-        `;
+        r.innerHTML = `<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[14px]">directions_car</span>Ongkir Pick Up</span><span>${formatRupiah(ongkirPickUpTotal)}</span>`;
         ongkirSection.appendChild(r);
       }
-
       if (ongkirTruckTotal > 0) {
         const r = document.createElement('div');
         r.className = 'flex justify-between text-sm opacity-80 items-center';
-        r.innerHTML = `
-          <span class="flex items-center gap-1.5">
-            <span class="material-symbols-outlined text-[14px]">local_shipping</span>
-            Ongkir Truk
-          </span>
-          <span>${formatRupiah(ongkirTruckTotal)}</span>
-        `;
+        r.innerHTML = `<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[14px]">local_shipping</span>Ongkir Truk</span><span>${formatRupiah(ongkirTruckTotal)}</span>`;
         ongkirSection.appendChild(r);
       }
-
       if (totalOngkir === 0) {
         const r = document.createElement('div');
         r.className = 'flex justify-between text-sm opacity-50 items-center';
-        r.innerHTML = `<span>Ongkos Kirim</span><span>–</span>`;
+        r.innerHTML = `<span>Ongkos Kirim</span><span>-</span>`;
         ongkirSection.appendChild(r);
       }
 
-      // Grand Total
       grandTotalEl.textContent = formatRupiah(grandTotal);
+
+      /* -- Isi hidden inputs dari sessionStorage ----------- */
+      document.getElementById('h-id-toko').value      = toko.id   ?? '';
+
+      // Unit = total qty semua item (pickUp + truck)
+      const totalQty = qtyPickUp + qtyTruck;
+      document.getElementById('h-unit').value = totalQty > 0 ? totalQty : 1;
     }
 
-    // Run on page load
-    document.addEventListener('DOMContentLoaded', renderCheckout);
+    /* ── File Upload Preview ─────────────────────────────── */
+    document.addEventListener('DOMContentLoaded', () => {
+      renderCheckout();
+      hitungEstimasi(); // inisialisasi estimasi awal
+
+      const inputBukti   = document.getElementById('input-bukti');
+      const previewBox   = document.getElementById('preview-bukti');
+      const previewImg   = document.getElementById('preview-img');
+      const previewName  = document.getElementById('preview-filename');
+      const previewSize  = document.getElementById('preview-filesize');
+      const uploadLabel  = document.getElementById('upload-label');
+      const btnUpload    = document.getElementById('btn-upload-bukti');
+
+      inputBukti.addEventListener('change', function () {
+        const file = this.files[0];
+        if (!file) return;
+
+        // Tampilkan preview
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          previewImg.src      = e.target.result;
+          previewName.textContent = file.name;
+          previewSize.textContent = formatBytes(file.size) + ' | ' + file.type.split('/')[1].toUpperCase();
+          previewBox.classList.remove('hidden');
+          btnUpload.classList.add('hidden');
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+
+    function resetUpload() {
+      document.getElementById('input-bukti').value  = '';
+      document.getElementById('preview-bukti').classList.add('hidden');
+      document.getElementById('btn-upload-bukti').classList.remove('hidden');
+      document.getElementById('preview-img').src = '';
+    }
+
+    /* ── Hitung Estimasi Waktu Tiba (+4 jam) ────────────── */
+    function hitungEstimasi() {
+      const input = document.getElementById('jam-mulai');
+      if (!input || !input.value) return;
+
+      const [jamStr, menitStr] = input.value.split(':');
+      const jamMulai   = parseInt(jamStr,  10);
+      const menitMulai = parseInt(menitStr, 10);
+
+      // Tambah 4 jam
+      const totalMenitSelesai = jamMulai * 60 + menitMulai + 240;
+      const jamSelesai   = Math.floor(totalMenitSelesai / 60) % 24;
+      const menitSelesai = totalMenitSelesai % 60;
+
+      const pad = (n) => String(n).padStart(2, '0');
+      document.getElementById('estimasi-label').textContent =
+        `${pad(jamMulai)}:${pad(menitMulai)} – ${pad(jamSelesai)}:${pad(menitSelesai)}`;
+    }
+
+    /* ── Form Submit: validasi + isi lokasi + loading ───── */
+    document.getElementById('form-konfirmasi').addEventListener('submit', function (e) {
+      // Ambil lokasi dari field baru
+      const lokasiUtama = (document.getElementById('lokasi-pengantaran')?.value ?? '').trim();
+      const detailTambahan = (document.getElementById('detail-lokasi')?.value ?? '').trim();
+      
+      document.getElementById('h-lokasi').value = lokasiUtama || 'Belum diisi';
+      document.getElementById('h-detail-lokasi').value = detailTambahan;
+
+      // Ambil tanggal pengiriman & jam tiba
+      const tanggalPengiriman = (document.getElementById('tanggal-pengiriman')?.value ?? '').trim();
+      const jamTiba = (document.getElementById('estimasi-label')?.textContent ?? '').trim();
+      
+      document.getElementById('h-tanggal').value = tanggalPengiriman;
+      document.getElementById('h-jam-tiba').value = jamTiba;
+
+      // Validasi: file harus sudah dipilih
+      const file = document.getElementById('input-bukti').files[0];
+      if (!file) {
+        e.preventDefault();
+        alert('Harap upload bukti pembayaran terlebih dahulu!');
+        document.getElementById('btn-upload-bukti').classList.add('ring-2', 'ring-red-400');
+        setTimeout(() => document.getElementById('btn-upload-bukti').classList.remove('ring-2', 'ring-red-400'), 2000);
+        return;
+      }
+
+      // Tampilkan Loading Overlay Premium
+      const overlay = document.getElementById('loading-overlay');
+      if (overlay) {
+        overlay.classList.remove('hidden');
+        overlay.classList.add('flex');
+      }
+
+      // Loading state di tombol
+      const btn   = document.getElementById('btn-konfirmasi');
+      const icon  = document.getElementById('konfirmasi-icon');
+      const label = document.getElementById('konfirmasi-label');
+      if (btn) btn.disabled   = true;
+      if (icon) {
+        icon.textContent  = 'hourglass_top';
+        icon.style.animation = 'spin 1s linear infinite';
+      }
+      if (label) label.textContent = 'Memproses...';
+    });
   </script>
 
+  <!-- Loading Overlay Glassmorphic Premium -->
+  <div id="loading-overlay" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md hidden flex flex-col items-center justify-center z-[99999] transition-all duration-300">
+    <div class="bg-white/95 backdrop-blur-xl p-8 rounded-3xl shadow-2xl flex flex-col items-center max-w-sm text-center border border-white/20 transform scale-100 transition-transform duration-300">
+      <div class="relative w-24 h-24 mb-6">
+        <!-- Outer Animated Spin Ring -->
+        <div class="absolute inset-0 rounded-full border-[6px] border-slate-100"></div>
+        <div class="absolute inset-0 rounded-full border-[6px] border-t-primary border-r-primary animate-spin"></div>
+        <!-- Inner Decorative Pulse Icon -->
+        <div class="absolute inset-0 flex items-center justify-center">
+          <span class="material-symbols-outlined text-4xl text-primary animate-pulse">local_shipping</span>
+        </div>
+      </div>
+      <h3 class="font-headline font-black text-xl text-on-surface mb-2">Memproses Pesanan</h3>
+      <p class="text-on-surface-variant text-sm px-4 leading-relaxed font-medium">Mohon tunggu sebentar, kami sedang mengunggah bukti pembayaran dan menyimpan pesanan Anda...</p>
+    </div>
+  </div>
+
+  <style>
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  </style>
+
 </body>
-</html>

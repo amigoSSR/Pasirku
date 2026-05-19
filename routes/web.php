@@ -7,6 +7,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ShoopeRegistryController;
 use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\StokController;
+use App\Http\Controllers\PesananController;
 use Illuminate\Support\Facades\Route;
 
 use Illuminate\Support\Facades\Auth;
@@ -55,6 +56,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware(['role:user'])->group(function () {
         Route::get('/MenuUtama', [MenuUtamaController::class, 'index'])->name('MenuUtama');
         Route::get('/keranjang', fn() => view('tampilaUntukUser.keranjang'))->name('keranjang');
+        Route::post('/keranjang/konfirmasi', [PesananController::class, 'store'])->name('pesanan.store');
         Route::get('/Pesan', fn() => view('tampilaUntukUser.Pesan'))->name('Pesan');
         Route::get('/ordertracking', fn() => view('tampilaUntukUser.ordertracking'))->name('ordertracking');
         Route::get('/Profil', fn() => view('tampilaUntukUser.profil'))->name('Profil');
@@ -101,6 +103,10 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/MarketPlace/{id}', [MarketPlaceController::class, 'show'])->name('MarketPlace');
+    // Serve gambar bukti pembayaran dengan HTTP cache headers
+    Route::get('/bukti-pembayaran/{filename}', [PesananController::class, 'serveImage'])
+         ->name('bukti.image')
+         ->where('filename', '.+\.png');
 });
 
 

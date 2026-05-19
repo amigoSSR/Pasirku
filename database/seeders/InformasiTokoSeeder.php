@@ -61,6 +61,21 @@ class InformasiTokoSeeder extends Seeder
                 'created_at'           => now(),
                 'updated_at'           => now(),
             ],
+            [
+                'ID_Akun'              => 4,
+                'Nama_Toko'            => 'Toko Pasir Dummy',
+                'Nomer_Telepon_Toko'   => '6281112223334',
+                'Email_Toko'           => 'tokodummy@example.com',
+                'Lokasi_Toko'          => 'Jl. Dummy No. 1, Jakarta',
+                'Username'             => 'pemilik_toko',
+                'Pendapatan_Toko'      => 0,
+                'Total_Pembelian'      => 0,
+                'Komisi_Admin'         => 0,
+                'Ongkir_PickUp'        => 50000,
+                'Ongkir_Truck'         => 150000,
+                'created_at'           => now(),
+                'updated_at'           => now(),
+            ],
         ]);
     }
 }

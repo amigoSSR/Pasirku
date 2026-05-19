@@ -105,6 +105,29 @@
 
   @include('tampilaUntukUser.topbar')
 
+  {{-- Toast Notifikasi Sukses --}}
+  @if(session('success'))
+    <div id="toast-success" class="fixed top-20 left-1/2 -translate-x-1/2 z-[99999] bg-gradient-to-r from-emerald-600 to-green-500 text-white font-bold py-4 px-6 rounded-2xl shadow-2xl flex items-center gap-3 border border-white/20 transition-all duration-500 animate-bounce">
+      <span class="material-symbols-outlined bg-white/20 p-1.5 rounded-full text-lg leading-none" style="font-variation-settings: 'FILL' 1">check_circle</span>
+      <span class="text-sm font-semibold tracking-tight">{{ session('success') }}</span>
+      <button onclick="document.getElementById('toast-success').remove()" class="hover:bg-white/20 p-1 rounded-lg transition-colors ml-4 flex items-center justify-center">
+        <span class="material-symbols-outlined text-sm leading-none">close</span>
+      </button>
+    </div>
+    
+    <script>
+      // Otomatis hilangkan toast setelah 5 detik
+      setTimeout(() => {
+        const toast = document.getElementById('toast-success');
+        if (toast) {
+          toast.style.opacity = '0';
+          toast.style.transform = 'translate(-50%, -20px)';
+          setTimeout(() => toast.remove(), 500);
+        }
+      }, 5000);
+    </script>
+  @endif
+
   <div class="flex pt-[60px] min-h-screen">
 
     <!-- SideNavBar (Desktop Only) — shared component -->
