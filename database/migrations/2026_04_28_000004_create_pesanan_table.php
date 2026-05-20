@@ -21,12 +21,13 @@ return new class extends Migration
             $table->string('Lokasi_Pengantaran');
             $table->integer('Harga_PickUp');   // Harga per mobil pick up
             $table->integer('Harga_Truck');    // Harga per truk
-            $table->integer('Volume_Pasir'); // dalam m³
+            $table->integer('Unit');           // Jumlah unit yang dipesan (pickUp + truck)
             $table->integer('Ongkir_PickUp');
             $table->integer('Ongkir_Truck');
             $table->string('Status_Pembayaran');
             $table->string('Status_Pesanan');
-            $table->date('Jadwal_Pengiriman')->nullable();
+            $table->date('Tanggal_Pengiriman')->nullable();
+            $table->string('Jam_Tiba')->nullable();   // Estimasi jam tiba (misal: 13:00 - 17:00)
             $table->timestamps();
 
             $table->foreign('ID_Akun')

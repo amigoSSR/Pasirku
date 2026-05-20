@@ -79,6 +79,27 @@ class IsiTokoSeeder extends Seeder
                 'created_at'   => now(),
                 'updated_at'   => now(),
             ],
+            // Produk Toko 4 (Toko Pasir Dummy)
+            [
+                'ID_Toko'      => 4,
+                'Nama_Pasir'   => 'Pasir Dummy 1',
+                'Harga_PickUp' => 100000,
+                'Harga_Truck'  => 300000,
+                'Stock_PickUp' => 50,
+                'Stock_Truck'  => 10,
+                'created_at'   => now(),
+                'updated_at'   => now(),
+            ],
+            [
+                'ID_Toko'      => 4,
+                'Nama_Pasir'   => 'Pasir Dummy 2',
+                'Harga_PickUp' => 120000,
+                'Harga_Truck'  => 350000,
+                'Stock_PickUp' => 30,
+                'Stock_Truck'  => 5,
+                'created_at'   => now(),
+                'updated_at'   => now(),
+            ],
         ]);
     }
 }

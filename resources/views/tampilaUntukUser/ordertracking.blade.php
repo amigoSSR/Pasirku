@@ -1,108 +1,317 @@
-<x-layout-user title="Lacak Pesanan">
+<!DOCTYPE html>
+<html lang="id">
 
-  <div class="px-6 md:px-8 pb-24 md:pb-10 max-w-[1400px] mx-auto space-y-6">
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Active Orders | Pasir Ku</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Public+Sans:wght@400;500;600&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+    rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+    rel="stylesheet" />
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-variant": "#d3e4fe",
+            "on-surface": "#0b1c30",
+            "on-secondary-fixed-variant": "#623f18",
+            "primary-container": "#005fb8",
+            "on-background": "#0b1c30",
+            "on-tertiary-container": "#fcd1c4",
+            "surface": "#f8f9ff",
+            "surface-dim": "#cbdbf5",
+            "secondary": "#7d562d",
+            "surface-container-low": "#eff4ff",
+            "on-primary-fixed": "#001b3d",
+            "inverse-on-surface": "#eaf1ff",
+            "surface-tint": "#005db5",
+            "inverse-surface": "#213145",
+            "outline": "#727783",
+            "on-primary-fixed-variant": "#00468b",
+            "on-tertiary-fixed-variant": "#5d4037",
+            "tertiary-container": "#78584e",
+            "background": "#f8f9ff",
+            "error": "#ba1a1a",
+            "on-primary": "#ffffff",
+            "surface-container-highest": "#d3e4fe",
+            "on-secondary": "#ffffff",
+            "primary-fixed": "#d6e3ff",
+            "on-secondary-container": "#7a532a",
+            "on-error-container": "#93000a",
+            "surface-container-lowest": "#ffffff",
+            "secondary-fixed-dim": "#f0bd8b",
+            "tertiary-fixed-dim": "#e7bdb1",
+            "on-primary-container": "#cadcff",
+            "error-container": "#ffdad6",
+            "on-secondary-fixed": "#2c1600",
+            "primary-fixed-dim": "#a8c8ff",
+            "surface-container": "#e5eeff",
+            "on-surface-variant": "#424752",
+            "secondary-container": "#ffca98",
+            "surface-container-high": "#dce9ff",
+            "on-tertiary-fixed": "#2c160e",
+            "primary": "#00488d",
+            "outline-variant": "#c2c6d4",
+            "surface-bright": "#f8f9ff",
+            "tertiary": "#5e4138",
+            "inverse-primary": "#a8c8ff",
+            "secondary-fixed": "#ffdcbd",
+            "on-tertiary": "#ffffff",
+            "tertiary-fixed": "#ffdbd0",
+            "on-error": "#ffffff"
+          },
+          borderRadius: {
+            DEFAULT: "0.125rem",
+            lg: "0.25rem",
+            xl: "0.5rem",
+            full: "0.75rem"
+          },
+          fontFamily: {
+            headline: ["Manrope"],
+            body: ["Public Sans"],
+            label: ["Public Sans"]
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    body {
+      font-family: 'Public Sans', sans-serif;
+    }
+    h1, h2, h3, h4 {
+      font-family: 'Manrope', sans-serif;
+    }
+    .tectonic-shadow {
+      box-shadow: 0px 24px 48px rgba(11, 28, 48, 0.08);
+    }
+    .glass-overlay {
+      backdrop-filter: blur(20px);
+      background-color: rgba(248, 249, 255, 0.8);
+    }
+  </style>
+</head>
 
-    {{-- Page Header --}}
-    <div>
-      <nav class="flex items-center gap-2 text-xs text-on-surface-variant mb-1">
-        <a href="{{ route('MenuUtama') }}" class="hover:text-primary transition-colors">Home</a>
-        <span class="material-symbols-outlined text-[14px]">chevron_right</span>
-        <span class="font-semibold text-primary">Pesanan Saya</span>
-      </nav>
-      <h1 class="font-headline text-2xl font-bold text-on-surface">Pesanan Saya</h1>
-      <p class="text-sm text-on-surface-variant mt-1">Pantau status pesanan dan pengiriman material Anda.</p>
+<body class="bg-surface text-on-surface min-h-screen">
+
+  @include('tampilaUntukUser.topbar')
+
+  {{-- Toast Notifikasi Sukses --}}
+  @if(session('success'))
+    <div id="toast-success" class="fixed top-20 left-1/2 -translate-x-1/2 z-[99999] bg-gradient-to-r from-emerald-600 to-green-500 text-white font-bold py-4 px-6 rounded-2xl shadow-2xl flex items-center gap-3 border border-white/20 transition-all duration-500 animate-bounce">
+      <span class="material-symbols-outlined bg-white/20 p-1.5 rounded-full text-lg leading-none" style="font-variation-settings: 'FILL' 1">check_circle</span>
+      <span class="text-sm font-semibold tracking-tight">{{ session('success') }}</span>
+      <button onclick="document.getElementById('toast-success').remove()" class="hover:bg-white/20 p-1 rounded-lg transition-colors ml-4 flex items-center justify-center">
+        <span class="material-symbols-outlined text-sm leading-none">close</span>
+      </button>
     </div>
+    
+    <script>
+      // Otomatis hilangkan toast setelah 5 detik
+      setTimeout(() => {
+        const toast = document.getElementById('toast-success');
+        if (toast) {
+          toast.style.opacity = '0';
+          toast.style.transform = 'translate(-50%, -20px)';
+          setTimeout(() => toast.remove(), 500);
+        }
+      }, 5000);
+    </script>
+  @endif
 
-    {{-- Flash Messages --}}
-    @if(session('success'))
-    <div class="flex items-center gap-3 p-4 bg-green-50 text-green-800 rounded-xl border border-green-200 text-sm font-semibold">
-      <span class="material-symbols-outlined text-green-600" style="font-variation-settings:'FILL' 1">check_circle</span>
-      {{ session('success') }}
-    </div>
-    @endif
+  <div class="flex pt-[60px] min-h-screen">
 
-    {{-- Orders List --}}
-    <div class="space-y-4">
-      @forelse($orders as $o)
-        <div class="bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant/30 p-5 lg:p-6 flex flex-col md:flex-row gap-6">
-          
-          {{-- Store Info & Products --}}
-          <div class="flex-1 space-y-4">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-primary/10 text-primary font-bold flex items-center justify-center uppercase">
-                  <span class="material-symbols-outlined">storefront</span>
+    <!-- SideNavBar (Desktop Only) — shared component -->
+    <x-sidebar />
+
+    <!-- Main Content Canvas -->
+    <main class="flex-1 md:ml-64 flex flex-col min-h-screen relative">
+
+      <!-- Content Shell -->
+      <div class="flex-1 p-6 md:p-10 max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-8 mb-24 md:mb-10">
+
+        <!-- Tracking Map Section (Large Bento Block) -->
+        <section class="lg:col-span-8 bg-surface-container-low rounded-xl overflow-hidden min-h-[400px] lg:min-h-[600px] relative tectonic-shadow">
+          <div class="absolute inset-0 z-0">
+            <img
+              class="w-full h-full object-cover grayscale-[0.2] contrast-[1.1]"
+              alt="Peta pengiriman"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBq5DKJKlNW9YxlkLe8drqR2ugGoBGO38hppAxGA_7ZRhJoPUN9JUBOBmsKazSDOSh5nyakHj_yUyzqqU6iJydop5T5rVVBva1ExQuQ7sLpAu2HHBCONcxXMdRSu6HvhzBEv6FfEPXaE2Z0wzYSOx9PWBoWRvcPZ6rmHXHYjWJc4HlvIZpkOtwlaJ495zKRONy41DdJcrLpZlNTrDCyUpIsfKEGEgHwBywLPnLgehdcMeU-ux4foCAH40IO_GR3dTb3GjVwLzKX5A" />
+          </div>
+
+          <!-- Floating Map Controls -->
+          <div class="absolute top-6 left-6 z-10 glass-overlay p-4 rounded-xl shadow-lg border border-white/20">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">local_shipping</span>
+              </div>
+              <div>
+                <h3 class="text-on-surface font-bold text-lg tracking-tight">TRUCK-992-B</h3>
+                <p class="text-on-surface-variant text-sm font-medium">Hino Ranger - Sand Delivery</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Map Zoom Controls -->
+          <div class="absolute bottom-6 right-6 z-10 flex flex-col gap-2">
+            <button class="bg-white p-3 rounded-lg shadow-md text-on-surface hover:bg-surface-variant transition-colors">
+              <span class="material-symbols-outlined">add</span>
+            </button>
+            <button class="bg-white p-3 rounded-lg shadow-md text-on-surface hover:bg-surface-variant transition-colors">
+              <span class="material-symbols-outlined">remove</span>
+            </button>
+            <button class="bg-primary text-white p-3 rounded-lg shadow-md hover:opacity-90 transition-all">
+              <span class="material-symbols-outlined">my_location</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- Status & Details Section -->
+        <section class="lg:col-span-4 space-y-6">
+
+          <!-- Delivery Stepper Card -->
+          <div class="bg-surface-container-lowest p-8 rounded-xl tectonic-shadow border-b-4 border-primary">
+            <div class="mb-8">
+              <p class="text-secondary font-bold text-xs uppercase tracking-[0.2em] mb-1">Status Pengiriman</p>
+              <h2 class="text-on-surface text-3xl font-extrabold tracking-tighter leading-none">Menuju ke lokasi anda</h2>
+            </div>
+            <div class="space-y-0">
+
+              <!-- Step 1: Done -->
+              <div class="flex gap-4 min-h-[80px]">
+                <div class="flex flex-col items-center">
+                  <div class="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+                    <span class="material-symbols-outlined text-[14px] text-white font-bold">check</span>
+                  </div>
+                  <div class="w-0.5 flex-1 bg-primary"></div>
+                </div>
+                <div class="pb-6">
+                  <h4 class="text-on-surface font-bold text-sm">Diterima oleh toko</h4>
+                  <p class="text-on-surface-variant text-xs mt-1">12 Oct, 09:15 AM</p>
+                </div>
+              </div>
+
+              <!-- Step 2: Done -->
+              <div class="flex gap-4 min-h-[80px]">
+                <div class="flex flex-col items-center">
+                  <div class="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+                    <span class="material-symbols-outlined text-[14px] text-white font-bold">check</span>
+                  </div>
+                  <div class="w-0.5 flex-1 bg-primary"></div>
+                </div>
+                <div class="pb-6">
+                  <h4 class="text-on-surface font-bold text-sm">Sedang di proses</h4>
+                  <p class="text-on-surface-variant text-xs mt-1">12 Oct, 10:30 AM</p>
+                </div>
+              </div>
+
+              <!-- Step 3: Active -->
+              <div class="flex gap-4">
+                <div class="flex flex-col items-center">
+                  <div class="w-8 h-8 -ml-1 rounded-full bg-surface-container-high border-2 border-primary flex items-center justify-center">
+                    <div class="w-3 h-3 bg-primary rounded-full"></div>
+                  </div>
                 </div>
                 <div>
-                  <h3 class="font-bold text-on-surface">{{ $o->Nama_Toko }}</h3>
-                  <p class="text-xs text-on-surface-variant">{{ $o->created_at->format('d M Y, H:i') }} • #ORD-{{ str_pad($o->ID_Pesanan, 4, '0', STR_PAD_LEFT) }}</p>
+                  <h4 class="text-primary font-extrabold text-sm">Menuju ke lokasi anda</h4>
+                  <p class="text-on-surface-variant text-xs mt-1">Estimasi tiba: 15 Menit</p>
                 </div>
               </div>
-              <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-[11px] uppercase font-black tracking-wider {{ $o->statusBadgeClass() }}">
-                <span class="material-symbols-outlined text-[14px]">{{ $o->statusIcon() }}</span>
-                {{ $o->statusLabel() }}
-              </span>
-            </div>
 
-            <div class="bg-surface-container-low rounded-xl p-4 flex flex-col gap-2">
+            </div>
+          </div>
+
+          <!-- Driver Card -->
+          <div class="bg-surface-container-high p-6 rounded-xl flex items-center justify-between">
+            <div class="flex items-center gap-4">
+              <img
+                class="w-14 h-14 rounded-full object-cover border-2 border-white"
+                alt="Foto pengemudi"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuByKeGgBGPyb-1LrlmcJl9Tr5oKO1fSuuolVQHCpNgA-QAvE5pE3nfTBIX85hfox0WV4CZ5_-KqRsnXDWLPMZmzbjsDEZXKsWsqU0HhA0CoEXdCckfBAGrXd8TsJidbUrMloqtfP1zeImk7OoqITYWzNkgt7hsEPBmtXhvyZLZCUerLobHs8JfiGRJAU0SOo7nUI1ORwDzlwdPwW5HNAIsc_iDGvWY-nY7ZPOB9ORFlH_z0AoN5vlgf-llKRZSTLcqKLLxONxbgPw" />
               <div>
-                <p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-1">Produk</p>
-                <p class="text-sm font-semibold text-on-surface">{{ $o->nama_produk }}</p>
+                <h4 class="text-on-surface font-bold">Budi Santoso</h4>
+                <div class="flex items-center gap-1">
+                  <span class="material-symbols-outlined text-sm text-secondary"
+                    style="font-variation-settings: 'FILL' 1;">star</span>
+                  <span class="text-xs font-bold text-on-surface-variant">4.9 (240+ reviews)</span>
+                </div>
               </div>
-              @if($o->Status_Pesanan === \App\Models\Pesanan::STATUS_DIBATALKAN && $o->alasan_tolak)
-                <div class="bg-red-50 text-red-700 p-2 rounded text-xs">
-                  <strong>Alasan Penolakan:</strong> {{ $o->alasan_tolak }}
+            </div>
+            <button class="bg-surface-container-lowest p-3 rounded-full text-primary hover:bg-primary hover:text-white transition-all shadow-sm">
+              <span class="material-symbols-outlined">call</span>
+            </button>
+          </div>
+
+          <!-- Order Details Card -->
+          <div class="bg-white p-6 rounded-xl space-y-4 tectonic-shadow">
+            <div class="flex justify-between items-end">
+              <div>
+                <p class="text-on-surface-variant text-[10px] uppercase font-black tracking-widest mb-1">Material</p>
+                <h4 class="text-on-surface font-bold text-lg">Pasir Cor Super (5m³)</h4>
+              </div>
+            </div>
+            <!-- Dual Price Display -->
+            <div class="grid grid-cols-2 gap-3 pt-2">
+              <div class="bg-blue-50 border border-blue-100 rounded-xl p-3 flex flex-col gap-1">
+                <div class="flex items-center gap-1.5">
+                  <span class="material-symbols-outlined text-[15px] text-blue-600">directions_car</span>
+                  <span class="text-[10px] font-bold text-blue-500 uppercase tracking-wide">Pick Up</span>
                 </div>
-              @endif
-              @if($o->Status_Pesanan === \App\Models\Pesanan::STATUS_DIKIRIM && $o->info_pengiriman)
-                <div class="bg-tertiary/10 text-tertiary p-2 rounded text-xs flex items-center gap-2">
-                  <span class="material-symbols-outlined text-[16px]">info</span>
-                  <span>{{ $o->info_pengiriman }}</span>
+                <span class="text-blue-800 font-black text-base">Rp 150.000</span>
+              </div>
+              <div class="bg-amber-50 border border-amber-100 rounded-xl p-3 flex flex-col gap-1">
+                <div class="flex items-center gap-1.5">
+                  <span class="material-symbols-outlined text-[15px] text-amber-600">local_shipping</span>
+                  <span class="text-[10px] font-bold text-amber-500 uppercase tracking-wide">Truk</span>
                 </div>
-              @endif
+                <span class="text-amber-800 font-black text-base">Rp 350.000</span>
+              </div>
+            </div>
+            <div class="pt-4 border-t border-slate-100 flex items-start gap-3">
+              <span class="material-symbols-outlined text-secondary">location_on</span>
+              <p class="text-on-surface-variant text-xs leading-relaxed font-medium">
+                Jl. Menteng No. 45, Blok C12, <br />
+                Kecamatan Menteng, Jakarta Pusat
+              </p>
             </div>
           </div>
 
-          {{-- Order Details & Actions --}}
-          <div class="md:w-[300px] shrink-0 border-t md:border-t-0 md:border-l border-outline-variant/30 pt-4 md:pt-0 md:pl-6 flex flex-col justify-between">
-            <div class="space-y-3">
-              <div class="flex justify-between items-center text-sm">
-                <span class="text-on-surface-variant">Penerima</span>
-                <span class="font-semibold text-on-surface">{{ $o->nama_pembeli ?? $o->Username }}</span>
-              </div>
-              <div class="flex justify-between items-center text-sm">
-                <span class="text-on-surface-variant">Metode Kirim</span>
-                <span class="font-semibold text-on-surface capitalize">{{ str_replace(',', ' & ', $o->tipe_pengiriman) }}</span>
-              </div>
-              <div class="flex justify-between items-center pt-3 border-t border-outline-variant/30">
-                <span class="font-bold text-on-surface">Total Belanja</span>
-                <span class="font-black text-primary text-lg">Rp {{ number_format($o->total_harga, 0, ',', '.') }}</span>
-              </div>
-            </div>
+        </section>
+      </div>
 
-            <div class="mt-6 flex flex-col gap-2">
-              <a href="{{ route('Pesan') }}" class="w-full text-center bg-surface-container-low border border-outline-variant/50 text-on-surface px-4 py-2 rounded-xl text-sm font-bold hover:bg-surface-container transition-colors flex items-center justify-center gap-2">
-                <span class="material-symbols-outlined text-[18px]">chat</span> Chat Toko
-              </a>
-              @if($o->Status_Pesanan === \App\Models\Pesanan::STATUS_PENDING)
-                <p class="text-center text-[10px] text-on-surface-variant mt-1 italic">Menunggu konfirmasi penjual</p>
-              @endif
-            </div>
-          </div>
-
+      <!-- Mobile BottomNavBar -->
+      <nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-2 bg-slate-50/80 backdrop-blur-xl shadow-[0px_-8px_24px_rgba(11,28,48,0.05)] rounded-t-xl">
+        <div class="flex flex-col items-center justify-center text-slate-500 px-6 py-1">
+          <span class="material-symbols-outlined">trolley</span>
+          <span class="text-[10px] font-bold uppercase tracking-wider mt-1">Home</span>
         </div>
-      @empty
-        <div class="text-center py-20 bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-sm">
-          <span class="material-symbols-outlined text-6xl text-on-surface-variant/30 mb-4 block">receipt_long</span>
-          <h3 class="font-headline font-bold text-lg text-on-surface">Belum ada pesanan</h3>
-          <p class="text-on-surface-variant text-sm mt-1">Anda belum melakukan pembelian material apapun.</p>
-          <a href="{{ route('MenuUtama') }}" class="inline-block mt-6 bg-primary text-on-primary px-6 py-2.5 rounded-full font-bold text-sm hover:opacity-90 transition-opacity">
-            Mulai Belanja
-          </a>
+        <div class="flex flex-col items-center justify-center bg-blue-100 text-blue-900 rounded-xl px-6 py-1">
+          <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">shopping_cart</span>
+          <span class="text-[10px] font-bold uppercase tracking-wider mt-1">Cart</span>
         </div>
-      @endforelse
-    </div>
+        <div class="flex flex-col items-center justify-center text-slate-500 px-6 py-1">
+          <span class="material-symbols-outlined">person</span>
+          <span class="text-[10px] font-bold uppercase tracking-wider mt-1">Profile</span>
+        </div>
+      </nav>
 
+      <!-- Floating Action Button: Chat dengan Toko -->
+      <button class="fixed bottom-24 right-6 md:bottom-10 md:right-10 bg-gradient-to-br from-primary to-primary-container text-white px-6 py-4 rounded-full flex items-center gap-3 shadow-2xl z-50 active:scale-95 transition-transform">
+        <span class="material-symbols-outlined">chat_bubble</span>
+        <span class="font-bold tracking-tight">Chat dengan Toko</span>
+      </button>
+
+    </main>
   </div>
 
-</x-layout-user>
+</body>
+</html>

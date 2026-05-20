@@ -47,6 +47,15 @@ class InformasiAkunSeeder extends Seeder
                 'created_at'     => now(),
                 'updated_at'     => now(),
             ],
+            [
+                'Username'       => 'pemilik_toko',
+                'Nomer_Telepon'  => '6281112223334',
+                'Email'          => 'pemilik@example.com',
+                'Password'       => Hash::make('password123'),
+                'Role'           => 'user',
+                'created_at'     => now(),
+                'updated_at'     => now(),
+            ],
         ]);
     }
 }
