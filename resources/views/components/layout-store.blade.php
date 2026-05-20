@@ -144,8 +144,9 @@ tailwind.config = {
       <span class="material-symbols-outlined text-2xl" @style(["font-variation-settings: 'FILL' 1" => request()->routeIs('ordertrackingStore','ordertracking')])>local_shipping</span>
       <span class="text-[10px] font-bold">Orders</span>
     </a>
-    <a href="{{ $isStore ? route('PesanStore') : route('Pesan') }}" class="flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-xl {{ request()->routeIs('PesanStore','Pesan') ? 'text-primary' : 'text-on-surface-variant' }}">
+    <a href="{{ $isStore ? route('PesanStore') : route('Pesan') }}" class="flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-xl {{ request()->routeIs('PesanStore','Pesan') ? 'text-primary' : 'text-on-surface-variant' }} relative">
       <span class="material-symbols-outlined text-2xl" @style(["font-variation-settings: 'FILL' 1" => request()->routeIs('PesanStore','Pesan')])>forum</span>
+      <span id="mobile-chat-badge" class="hidden absolute top-1 right-3 bg-error text-on-error text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center shrink-0">0</span>
       <span class="text-[10px] font-bold">Chat</span>
     </a>
     <a href="{{ $isStore ? route('ProfilStore') : route('Profil') }}" class="flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-xl {{ request()->routeIs('ProfilStore','Profil') ? 'text-primary' : 'text-on-surface-variant' }}">
@@ -153,6 +154,46 @@ tailwind.config = {
       <span class="text-[10px] font-bold">Profile</span>
     </a>
   </nav>
+
+  {{-- Modern Toast Notification with AlpineJS --}}
+  @if(session('success') || session('error') || $errors->any())
+  <div x-data="{ show: true }"
+       x-show="show"
+       x-init="setTimeout(() => show = false, 5000)"
+       x-transition:enter="transition ease-out duration-300"
+       x-transition:enter-start="opacity-0 translate-y-4"
+       x-transition:enter-end="opacity-100 translate-y-0"
+       x-transition:leave="transition ease-in duration-200"
+       x-transition:leave-start="opacity-100 translate-y-0"
+       x-transition:leave-end="opacity-0 translate-y-4"
+       class="fixed bottom-20 right-6 z-[9999] max-w-sm w-full bg-surface-container-lowest border border-outline-variant/30 rounded-2xl shadow-xl p-4 flex items-start gap-3.5"
+       style="display: none;">
+       
+       @if(session('success'))
+       <div class="w-10 h-10 bg-green-500/10 text-green-600 rounded-xl flex items-center justify-center shrink-0">
+         <span class="material-symbols-outlined text-[22px]" style="font-variation-settings:'FILL' 1">check_circle</span>
+       </div>
+       <div class="flex-1 min-w-0">
+         <h4 class="font-headline font-bold text-on-surface text-sm">Berhasil</h4>
+         <p class="text-on-surface-variant text-xs mt-0.5 leading-relaxed">{{ session('success') }}</p>
+       </div>
+       @elseif(session('error') || $errors->any())
+       <div class="w-10 h-10 bg-red-500/10 text-red-600 rounded-xl flex items-center justify-center shrink-0">
+         <span class="material-symbols-outlined text-[22px]" style="font-variation-settings:'FILL' 1">error</span>
+       </div>
+       <div class="flex-1 min-w-0">
+         <h4 class="font-headline font-bold text-on-surface text-sm">Pemberitahuan</h4>
+         <p class="text-on-surface-variant text-xs mt-0.5 leading-relaxed">
+           {{ session('error') ?? $errors->first() }}
+         </p>
+       </div>
+       @endif
+       
+       <button @click="show = false" class="text-outline hover:text-on-surface transition-colors p-0.5 rounded-lg ml-auto shrink-0">
+         <span class="material-symbols-outlined text-[18px]">close</span>
+       </button>
+  </div>
+  @endif
 
   {{-- Scripts injected per-page --}}
   @stack('scripts')

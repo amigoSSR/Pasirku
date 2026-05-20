@@ -37,6 +37,8 @@ class StoreRegistrationController extends Controller
             'Lokasi_Toko' => 'required|string|max:255',
             'Email_Toko' => 'required|email|max:255',
             'Nomer_Telepon_Toko' => 'required|string|max:20',
+            'latitude' => 'required|numeric|between:-90,90',
+            'longitude' => 'required|numeric|between:-180,180',
         ]);
 
         try {
@@ -52,6 +54,8 @@ class StoreRegistrationController extends Controller
                 'Lokasi_Toko' => $request->Lokasi_Toko,
                 'Email_Toko' => $request->Email_Toko,
                 'Nomer_Telepon_Toko' => $request->Nomer_Telepon_Toko,
+                'latitude' => $request->latitude,
+                'longitude' => $request->longitude,
             ]);
 
             return redirect()->route('Profil')->with('success', 'Pendaftaran toko berhasil diajukan!');

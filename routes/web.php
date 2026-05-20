@@ -11,6 +11,7 @@ use App\Http\Controllers\PesananController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\QrisController;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -27,14 +28,20 @@ use App\Http\Controllers\ChatController;
 
 Route::middleware(['auth', 'verified'])->group(function () {
 
+    // Store & Admin Profile management
+    Route::middleware(['role:store,admin'])->group(function () {
+        Route::get('/ProfilStore', [\App\Http\Controllers\StoreProfileController::class, 'showProfile'])->name('ProfilStore');
+        Route::post('/ProfilStore/alamat', [\App\Http\Controllers\StoreProfileController::class, 'updateAddress'])->name('ProfilStore.updateAddress');
+    });
+
     // Store Routes
     Route::middleware(['role:store'])->group(function () {
         Route::get('/MenuUtamaStore', [MenuUtamaController::class, 'storeIndex'])->name('MenuUtamaStore');
-        Route::get('/ProfilStore', fn() => view('tampilanPenjualStore.profilStore'))->name('ProfilStore');
+        Route::get('/store/dashboard/stats', [MenuUtamaController::class, 'statsApi'])->name('store.dashboard.stats');
         Route::get('/PesanStore', fn() => view('tampilanPenjualStore.PesanStore'))->name('PesanStore');
         Route::get('/ordertrackingStore', [OrderController::class, 'storeOrders'])->name('ordertrackingStore');
         Route::put('/ordertrackingStore/{id}/status', [OrderController::class, 'updateStatus'])->name('ordertrackingStore.updateStatus');
-        Route::get('/MonitoringPelangganStore', fn() => view('tampilanPenjualStore.MonitoringPelanggan'))->name('MonitoringPelangganStore');
+        Route::get('/MonitoringPelangganStore', [MenuUtamaController::class, 'monitoringPelanggan'])->name('MonitoringPelangganStore');
         Route::get('/tambahProduk', [ProdukController::class, 'create'])->name('tambahProduk');
         Route::post('/tambahProduk', [ProdukController::class, 'store'])->name('tambahProduk.store');
         
@@ -60,6 +67,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/admin/pesan', fn() => view('tampilanUntukAdmin.PesanAdmin'))->name('PesanAdmin');
         Route::put('/admin/shope-registry/{id}/toggle-status', [AdminController::class, 'toggleStatus'])
             ->name('admin.shope.toggleStatus');
+        Route::put('/admin/shope-registry/{id}/update-location', [AdminController::class, 'updateLocation'])
+            ->name('admin.shope.updateLocation');
+
     });
 
     // User Routes
@@ -88,6 +98,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/chat/send', [ChatController::class, 'sendMessage'])->name('chat.send');
     Route::get('/chat/start/{id}', [ChatController::class, 'startChatWithToko'])->name('chat.start');
 
+    // Notification API
+    Route::get('/api/notifications/count', [NotificationController::class, 'unreadCount'])->name('api.notifications.count');
+
     // Public API for Checkout (Requires Auth)
     Route::get('/api/store/{id}/qris', [QrisController::class, 'getQrisUrl'])->name('api.store.qris');
 });
@@ -101,6 +114,7 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/MarketPlace/{id}', [MarketPlaceController::class, 'show'])->name('MarketPlace');
+    Route::post('/api/products/check-stock', [MarketPlaceController::class, 'checkStock'])->name('api.products.checkStock');
     // Serve gambar bukti pembayaran dengan HTTP cache headers
     Route::get('/bukti-pembayaran/{filename}', [PesananController::class, 'serveImage'])
          ->name('bukti.image')

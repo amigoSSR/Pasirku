@@ -67,4 +67,59 @@ class AdminController extends Controller
 
         return back()->with('success', 'Status toko berhasil diubah menjadi ' . ucfirst($newStatus) . '.');
     }
+
+    /**
+     * Memperbarui alamat & koordinat peta suatu toko oleh admin.
+     */
+    public function updateLocation(Request $request, $id)
+    {
+        if (Auth::user()->Role !== 'admin') {
+            if ($request->ajax()) {
+                return response()->json(['error' => 'Unauthorized action.'], 403);
+            }
+            abort(403, 'Unauthorized action.');
+        }
+
+        $toko = Toko::findOrFail($id);
+
+        $request->validate([
+            'provinsi'      => 'required|string|max:255',
+            'kota'          => 'required|string|max:255',
+            'kecamatan'     => 'required|string|max:255',
+            'detail_alamat' => 'required|string',
+            'kode_pos'      => 'required|string|max:10',
+            'latitude'      => 'required|numeric|between:-90,90',
+            'longitude'     => 'required|numeric|between:-180,180',
+        ]);
+
+        $lokasiLengkap = sprintf(
+            '%s, Kec. %s, %s, %s, %s',
+            $request->detail_alamat,
+            $request->kecamatan,
+            $request->kota,
+            $request->provinsi,
+            $request->kode_pos
+        );
+
+        $toko->update([
+            'provinsi'      => $request->provinsi,
+            'kota'          => $request->kota,
+            'kecamatan'     => $request->kecamatan,
+            'detail_alamat' => $request->detail_alamat,
+            'kode_pos'      => $request->kode_pos,
+            'latitude'      => $request->latitude,
+            'longitude'     => $request->longitude,
+            'Lokasi_Toko'   => $lokasiLengkap,
+        ]);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Lokasi toko ' . $toko->Nama_Toko . ' berhasil diperbarui!',
+                'toko' => $toko
+            ]);
+        }
+
+        return back()->with('success', 'Lokasi toko ' . $toko->Nama_Toko . ' berhasil diperbarui!');
+    }
 }

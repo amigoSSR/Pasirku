@@ -1,6 +1,10 @@
 <x-layout-admin title="Manajemen Toko">
+  
+  @push('head')
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  @endpush
 
-  <div class="px-6 md:px-8 pb-24 md:pb-10 max-w-[1400px] mx-auto space-y-8">
+  <div x-data="shopeRegistryPage()" class="px-6 md:px-8 pb-24 md:pb-10 max-w-[1400px] mx-auto space-y-8">
 
     {{-- Page Header --}}
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -125,6 +129,13 @@
               </button>
             </form>
           @endif
+          <div class="pt-2 border-t border-outline-variant/10">
+            <button type="button" @click="openModal({{ json_encode($toko) }})"
+              class="w-full text-xs bg-secondary/10 text-secondary border border-secondary/20 py-2 rounded-xl hover:bg-secondary/20 transition-colors font-bold flex items-center justify-center gap-1.5">
+              <span class="material-symbols-outlined text-[16px]">edit_location</span>
+              Edit Lokasi Toko
+            </button>
+          </div>
         </div>
         @empty
         <div class="p-10 text-center text-on-surface-variant text-sm">Belum ada data toko.</div>
@@ -212,6 +223,11 @@
                       </button>
                     </form>
                   @endif
+                  <button type="button" @click="openModal({{ json_encode($toko) }})"
+                    class="text-[11px] bg-secondary/10 text-secondary border border-secondary/20 px-3 py-1.5 rounded-lg hover:bg-secondary/20 transition-colors font-bold flex items-center gap-1 mt-1">
+                    <span class="material-symbols-outlined text-[14px]">edit_location</span>
+                    Edit Lokasi
+                  </button>
                 </div>
               </td>
             </tr>
@@ -229,5 +245,278 @@
     </div>
 
   </div>
+
+  <!-- Modal Edit Lokasi (Alpine.js) -->
+  <div x-show="open" 
+       class="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto bg-black/60 backdrop-blur-md transition-opacity duration-300"
+       x-transition:enter="ease-out duration-300"
+       x-transition:enter-start="opacity-0"
+       x-transition:enter-end="opacity-100"
+       x-transition:leave="ease-in duration-200"
+       x-transition:leave-start="opacity-100"
+       x-transition:leave-end="opacity-0"
+       x-cloak>
+    
+    <div class="relative w-full max-w-4xl bg-surface-container-lowest rounded-3xl border border-outline-variant/30 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+         @click.away="open = false"
+         x-transition:enter="ease-out duration-300"
+         x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+         x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+         x-transition:leave="ease-in duration-200"
+         x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+         x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+      
+      <!-- Modal Header -->
+      <div class="px-6 py-4 border-b border-outline-variant/20 flex items-center justify-between bg-surface-container-low/50">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+            <span class="material-symbols-outlined text-[22px]">edit_location</span>
+          </div>
+          <div>
+            <h3 class="font-headline font-bold text-on-surface text-lg">Edit Alamat & Koordinat Toko</h3>
+            <p class="text-xs text-on-surface-variant">Toko: <span class="font-bold text-primary" x-text="store.Nama_Toko"></span></p>
+          </div>
+        </div>
+        <button @click="open = false" class="w-9 h-9 rounded-xl hover:bg-surface-container-high text-on-surface-variant flex items-center justify-center transition-colors">
+          <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+      </div>
+
+      <!-- Modal Body (Scrollable) -->
+      <div class="flex-1 overflow-y-auto p-6 space-y-6">
+        
+        <!-- Form Fields Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          
+          <!-- Left side: Detailed Inputs -->
+          <div class="space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+              <div class="space-y-1">
+                <label class="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">Provinsi</label>
+                <input type="text" x-model="form.provinsi" required
+                  class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-3 py-2 text-sm text-on-surface focus:ring-2 focus:ring-primary/20 focus:border-primary/30 outline-none transition-all" />
+              </div>
+              <div class="space-y-1">
+                <label class="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">Kota / Kabupaten</label>
+                <input type="text" x-model="form.kota" required
+                  class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-3 py-2 text-sm text-on-surface focus:ring-2 focus:ring-primary/20 focus:border-primary/30 outline-none transition-all" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div class="space-y-1">
+                <label class="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">Kecamatan</label>
+                <input type="text" x-model="form.kecamatan" required
+                  class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-3 py-2 text-sm text-on-surface focus:ring-2 focus:ring-primary/20 focus:border-primary/30 outline-none transition-all" />
+              </div>
+              <div class="space-y-1">
+                <label class="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">Kode Pos</label>
+                <input type="text" x-model="form.kode_pos" required
+                  class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-3 py-2 text-sm text-on-surface focus:ring-2 focus:ring-primary/20 focus:border-primary/30 outline-none transition-all" />
+              </div>
+            </div>
+
+            <div class="space-y-1">
+              <label class="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">Detail Alamat Lengkap</label>
+              <textarea x-model="form.detail_alamat" rows="2" required
+                class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-3 py-2 text-sm text-on-surface focus:ring-2 focus:ring-primary/20 focus:border-primary/30 outline-none transition-all resize-none"></textarea>
+            </div>
+
+            <!-- Koordinat Read-only -->
+            <div class="grid grid-cols-2 gap-4 bg-surface-container-low/70 p-4 rounded-xl border border-outline-variant/20">
+              <div class="flex flex-col">
+                <span class="text-[9px] font-black text-outline uppercase tracking-wider mb-0.5">Latitude (Lintang)</span>
+                <span class="font-mono text-xs font-bold text-on-surface" x-text="form.latitude"></span>
+              </div>
+              <div class="flex flex-col">
+                <span class="text-[9px] font-black text-outline uppercase tracking-wider mb-0.5">Longitude (Bujur)</span>
+                <span class="font-mono text-xs font-bold text-on-surface" x-text="form.longitude"></span>
+              </div>
+            </div>
+
+            <!-- Search Address Nominatim -->
+            <button type="button" @click="searchAddress()" :disabled="loadingSearch"
+              class="w-full bg-secondary/10 hover:bg-secondary/20 disabled:opacity-50 text-secondary border border-secondary/20 py-2.5 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5">
+              <span class="material-symbols-outlined text-[18px]" :class="loadingSearch && 'animate-spin'" x-text="loadingSearch ? 'autorenew' : 'search'">search</span>
+              <span x-text="loadingSearch ? 'Mencari Alamat...' : 'Cari & Sesuaikan Peta'"></span>
+            </button>
+          </div>
+
+          <!-- Right side: Map container -->
+          <div class="flex flex-col h-full min-h-[300px] md:min-h-full">
+            <label class="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Pin Point Lokasi Peta</label>
+            <div class="flex-1 w-full rounded-2xl border border-outline-variant/30 overflow-hidden relative" style="min-height: 250px;">
+              <div id="admin-edit-map" class="absolute inset-0 z-0"></div>
+            </div>
+            <p class="text-[10px] text-on-surface-variant mt-2 flex items-center gap-1 leading-normal">
+              <span class="material-symbols-outlined text-sm text-primary">info</span>
+              Seret penanda di peta atau klik lokasi baru untuk memperbarui koordinat GPS.
+            </p>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="px-6 py-4 border-t border-outline-variant/20 flex items-center justify-end gap-3 bg-surface-container-low/50">
+        <button type="button" @click="open = false"
+          class="px-5 py-2.5 rounded-xl border border-outline-variant text-on-surface-variant hover:bg-surface-container-high text-xs font-bold transition-all">
+          Batal
+        </button>
+        <button type="button" @click="submitForm()" :disabled="submitting"
+          class="px-5 py-2.5 rounded-xl bg-primary text-on-primary hover:bg-primary-container disabled:opacity-50 text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm">
+          <span class="material-symbols-outlined text-[16px]" x-show="!submitting">save</span>
+          <span class="material-symbols-outlined text-[16px] animate-spin" x-show="submitting">autorenew</span>
+          <span x-text="submitting ? 'Menyimpan...' : 'Simpan Perubahan'"></span>
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+  @push('scripts')
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script>
+    document.addEventListener('alpine:init', () => {
+      Alpine.data('shopeRegistryPage', () => ({
+        open: false,
+        store: {},
+        loadingSearch: false,
+        submitting: false,
+        map: null,
+        marker: null,
+        form: {
+          provinsi: '',
+          kota: '',
+          kecamatan: '',
+          detail_alamat: '',
+          kode_pos: '',
+          latitude: '',
+          longitude: ''
+        },
+
+        openModal(toko) {
+          this.store = toko;
+          this.form.provinsi = toko.provinsi || '';
+          this.form.kota = toko.kota || '';
+          this.form.kecamatan = toko.kecamatan || '';
+          this.form.detail_alamat = toko.detail_alamat || '';
+          this.form.kode_pos = toko.kode_pos || '';
+          this.form.latitude = toko.latitude || -5.147665;
+          this.form.longitude = toko.longitude || 119.432731;
+          
+          this.open = true;
+
+          this.$nextTick(() => {
+            this.initMap();
+          });
+        },
+
+        initMap() {
+          if (this.map) {
+            this.map.remove();
+            this.map = null;
+          }
+
+          const lat = parseFloat(this.form.latitude);
+          const lng = parseFloat(this.form.longitude);
+
+          this.map = L.map('admin-edit-map').setView([lat, lng], 13);
+
+          L.tileLayer('https://{s}.google.com/vt?lyrs=m&x={x}&y={y}&z={z}', {
+            maxZoom: 20,
+            subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+          }).addTo(this.map);
+
+          this.marker = L.marker([lat, lng], { draggable: true }).addTo(this.map);
+
+          const updateCoords = (newLat, newLng) => {
+            this.form.latitude = parseFloat(newLat).toFixed(8);
+            this.form.longitude = parseFloat(newLng).toFixed(8);
+          };
+
+          this.marker.on('dragend', (e) => {
+            const pos = e.target.getLatLng();
+            updateCoords(pos.lat, pos.lng);
+          });
+
+          this.map.on('click', (e) => {
+            this.marker.setLatLng(e.latlng);
+            updateCoords(e.latlng.lat, e.latlng.lng);
+          });
+        },
+
+        searchAddress() {
+          const parts = [
+            this.form.detail_alamat,
+            this.form.kecamatan ? 'Kec. ' + this.form.kecamatan : '',
+            this.form.kota,
+            this.form.provinsi,
+            this.form.kode_pos
+          ].filter(Boolean).join(', ');
+
+          if (!parts) {
+            alert('Silakan isi alamat lengkap terlebih dahulu!');
+            return;
+          }
+
+          this.loadingSearch = true;
+          fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(parts)}&limit=1`)
+            .then(res => res.json())
+            .then(data => {
+              this.loadingSearch = false;
+              if (data && data.length > 0) {
+                const newLat = parseFloat(data[0].lat);
+                const newLng = parseFloat(data[0].lon);
+
+                this.map.setView([newLat, newLng], 15);
+                this.marker.setLatLng([newLat, newLng]);
+                this.form.latitude = newLat.toFixed(8);
+                this.form.longitude = newLng.toFixed(8);
+              } else {
+                alert('Lokasi tidak ditemukan pada peta. Silakan klik peta secara manual.');
+              }
+            })
+            .catch(() => {
+              this.loadingSearch = false;
+              alert('Gagal mencari alamat. Periksa koneksi internet Anda.');
+            });
+        },
+
+        submitForm() {
+          this.submitting = true;
+          const url = `/admin/shope-registry/${this.store.ID_Toko}/update-location`;
+
+          fetch(url, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+              'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify(this.form)
+          })
+          .then(res => res.json())
+          .then(data => {
+            this.submitting = false;
+            if (data.success) {
+              alert(data.message);
+              this.open = false;
+              window.location.reload();
+            } else {
+              alert('Gagal memperbarui lokasi: ' + (data.error || 'Terjadi kesalahan'));
+            }
+          })
+          .catch(err => {
+            this.submitting = false;
+            alert('Terjadi kesalahan koneksi.');
+          });
+        }
+      }));
+    });
+  </script>
+  @endpush
 
 </x-layout-admin>

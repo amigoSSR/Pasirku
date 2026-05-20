@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
+use Illuminate\Support\Facades\Log;
+
 class PesananController extends Controller
 {
     /**
@@ -26,6 +28,10 @@ class PesananController extends Controller
             'unit'               => 'required|integer|min:1',
             'tanggal_pengiriman' => 'required|date',
             'jam_tiba'           => 'required|string|max:100',
+            'total_harga'        => 'required|numeric',
+            'nama_produk'        => 'required|string',
+            'tipe_pengiriman'    => 'required|string',
+            'cart_items'         => 'required|string',
         ], [
             'bukti_pembayaran.required' => 'Bukti pembayaran wajib diunggah.',
             'bukti_pembayaran.image'    => 'File harus berupa gambar.',
@@ -34,6 +40,7 @@ class PesananController extends Controller
             'unit.required'              => 'Jumlah unit wajib diisi.',
             'tanggal_pengiriman.required' => 'Tanggal pengiriman wajib diisi.',
             'jam_tiba.required'          => 'Estimasi jam tiba wajib diisi.',
+            'cart_items.required'        => 'Data produk dalam keranjang wajib disertakan.',
         ]);
 
         // ── 2. Konversi gambar → PNG ──────────────────────────────────
@@ -88,33 +95,130 @@ class PesananController extends Controller
         $Detail_Lokasi = $request->detail_lokasi;
         $lokasiPengantaranFinal = $Detail_Lokasi ? $request->lokasi_pengantaran . ' | ' . $Detail_Lokasi : $request->lokasi_pengantaran;
 
-        // ── 6. Simpan pesanan ke database ─────────────────────────────
-        DB::table('pesanan')->insert([
-            'ID_Akun'            => $user->ID_Akun,
-            'ID_Toko'            => $toko->ID_Toko,
-            'Username'           => $user->Username,
-            'Nama_Toko'          => $toko->Nama_Toko,
-            'Lokasi_Toko'        => $toko->Lokasi_Toko,
-            'Lokasi_Pengantaran' => $lokasiPengantaranFinal,
-            'Harga_PickUp'       => $hargaPickUp,
-            'Harga_Truck'        => $hargaTruck,
-            'Unit'               => (int) $request->unit,
-            'Ongkir_PickUp'      => (int) ($toko->Ongkir_PickUp ?? 0),
-            'Ongkir_Truck'       => (int) ($toko->Ongkir_Truck ?? 0),
-            'Status_Pembayaran'  => 'Belum Dikonfirmasi',
-            'Status_Pesanan'     => 'Belum Diterima Toko',
-            'Bukti_Pembayaran'   => $storagePath,
-            'Tanggal_Pengiriman' => $request->tanggal_pengiriman,
-            'Jam_Tiba'           => $request->jam_tiba,
-            'created_at'         => now(),
-            'updated_at'         => now(),
-        ]);
+        try {
+            DB::beginTransaction();
 
-        // ── 7. Bersihkan sessionStorage keranjang via flash ───────────
-        session()->flash('clear_cart', true);
+            // Decode cart items JSON
+            $cartItems = json_decode($request->cart_items, true);
+            if (!is_array($cartItems)) {
+                throw new \Exception('Struktur data keranjang belanja tidak valid.');
+            }
 
-        return redirect()->route('ordertracking')
-                         ->with('success', 'Pesanan kamu akan di cek oleh Toko');
+            // ── 6. Simpan pesanan ke database ─────────────────────────────
+            $pesananId = DB::table('pesanan')->insertGetId([
+                'ID_Akun'            => $user->ID_Akun,
+                'ID_Toko'            => $toko->ID_Toko,
+                'Username'           => $user->Username,
+                'Nama_Toko'          => $toko->Nama_Toko,
+                'Lokasi_Toko'        => $toko->Lokasi_Toko,
+                'Lokasi_Pengantaran' => $lokasiPengantaranFinal,
+                'Harga_PickUp'       => $hargaPickUp,
+                'Harga_Truck'        => $hargaTruck,
+                'Unit'               => (int) $request->unit,
+                'Ongkir_PickUp'      => (int) ($toko->Ongkir_PickUp ?? 0),
+                'Ongkir_Truck'       => (int) ($toko->Ongkir_Truck ?? 0),
+                'total_harga'        => (int) $request->total_harga,
+                'nama_pembeli'       => $request->nama_penerima ?? $user->Username,
+                'nama_produk'        => $request->nama_produk,
+                'cart_items'         => $request->cart_items,
+                'tipe_pengiriman'    => $request->tipe_pengiriman,
+                'Status_Pembayaran'  => 'Belum Dikonfirmasi',
+                'Status_Pesanan'     => 'Belum Diterima Toko',
+                'Bukti_Pembayaran'   => $storagePath,
+                'Tanggal_Pengiriman' => $request->tanggal_pengiriman,
+                'Jam_Tiba'           => $request->jam_tiba,
+                'created_at'         => now(),
+                'updated_at'         => now(),
+            ]);
+
+            // ── 7. Pengurangan Stok dengan Pessimistic Locking & Validation ──
+            foreach ($cartItems as $item) {
+                $key = $item['key'] ?? null;
+                if (!$key) continue;
+
+                $parts = explode('_', $key);
+                $productId = (int) $parts[0];
+                $type = $item['type'] ?? ($parts[1] ?? 'pickup');
+                $qty = (int) ($item['qty'] ?? 1);
+
+                // Lock baris produk di isi_toko untuk update
+                $product = DB::table('isi_toko')
+                    ->where('ID_Isi_Toko', $productId)
+                    ->where('ID_Toko', $toko->ID_Toko)
+                    ->lockForUpdate()
+                    ->first();
+
+                if (!$product) {
+                    throw new \Exception("Produk '{$item['namaPasir']}' tidak ditemukan atau bukan milik toko ini.");
+                }
+
+                if ($type === 'pickup') {
+                    if ($product->Stock_PickUp < $qty) {
+                        throw new \Exception("Stok Pick Up untuk '{$product->Nama_Pasir}' tidak mencukupi (Tersedia: {$product->Stock_PickUp}, Diminta: {$qty}).");
+                    }
+                    DB::table('isi_toko')
+                        ->where('ID_Isi_Toko', $productId)
+                        ->decrement('Stock_PickUp', $qty);
+                } else {
+                    if ($product->Stock_Truck < $qty) {
+                        throw new \Exception("Stok Truk untuk '{$product->Nama_Pasir}' tidak mencukupi (Tersedia: {$product->Stock_Truck}, Diminta: {$qty}).");
+                    }
+                    DB::table('isi_toko')
+                        ->where('ID_Isi_Toko', $productId)
+                        ->decrement('Stock_Truck', $qty);
+                }
+
+                // Ambil sisa stok terbaru pasca decrement
+                $updatedProduct = DB::table('isi_toko')
+                    ->where('ID_Isi_Toko', $productId)
+                    ->first();
+                $totalStock = $updatedProduct->Stock_PickUp + $updatedProduct->Stock_Truck;
+
+                if ($totalStock === 0) {
+                    DB::table('isi_toko')
+                        ->where('ID_Isi_Toko', $productId)
+                        ->update(['Status_Produk' => 'habis']);
+                }
+
+                // Catat di log_stok
+                DB::table('log_stok')->insert([
+                    'ID_Isi_Toko' => $productId,
+                    'tipe'        => 'keluar',
+                    'jenis'       => $type,
+                    'jumlah'      => $qty,
+                    'keterangan'  => "Pengurangan stok otomatis via Checkout (Order #{$pesananId}). Pembeli: " . $user->Username,
+                    'created_at'  => now(),
+                    'updated_at'  => now(),
+                ]);
+            }
+
+            DB::commit();
+
+            // ── 8. Bersihkan sessionStorage keranjang via flash ───────────
+            session()->flash('clear_cart', true);
+
+            return redirect()->route('ordertracking')
+                             ->with('success', 'Pesanan kamu akan di cek oleh Toko');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            // Catat log detail kesalahan
+            Log::error('Gagal memproses transaksi checkout.', [
+                'user_id'    => $user->ID_Akun ?? null,
+                'toko_id'    => $toko->ID_Toko ?? null,
+                'cart_items' => $request->cart_items,
+                'message'    => $e->getMessage(),
+                'trace'      => $e->getTraceAsString()
+            ]);
+
+            // Hapus file bukti pembayaran dari storage jika transaksi gagal
+            if (isset($namaFile) && file_exists("{$diskPath}/{$namaFile}")) {
+                @unlink("{$diskPath}/{$namaFile}");
+            }
+
+            return back()->withInput()->withErrors(['error' => 'Checkout gagal: ' . $e->getMessage()]);
+        }
     }
 
     /**

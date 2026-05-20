@@ -1,3 +1,11 @@
+@push('leaflet-css')
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+@endpush
+
+@push('leaflet-js')
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+@endpush
+
 <x-layout-user title="Marketplace">
 
   <div class="px-6 md:px-8 pb-24 md:pb-10 max-w-[1400px] mx-auto space-y-8">
@@ -32,6 +40,87 @@
             Chat Toko
           </a>
         </div>
+      </div>
+    </div>
+
+    {{-- Store Info & Location --}}
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {{-- Address Details --}}
+      <div class="lg:col-span-1 bg-surface-container-lowest p-6 rounded-2xl shadow-sm border border-outline-variant/30 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center gap-2.5 mb-4">
+            <div class="w-9 h-9 bg-primary/10 text-primary rounded-xl flex items-center justify-center">
+              <span class="material-symbols-outlined text-[20px]" style="font-variation-settings:'FILL' 1">pin_drop</span>
+            </div>
+            <h3 class="font-headline font-bold text-lg text-on-surface">Detail Alamat Toko</h3>
+          </div>
+          
+          <div class="space-y-3.5 text-sm">
+            @if($toko->detail_alamat)
+              <div>
+                <span class="text-[10px] font-bold text-outline uppercase tracking-wider block">Alamat Lengkap</span>
+                <p class="text-on-surface font-semibold mt-0.5">{{ $toko->detail_alamat }}</p>
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <span class="text-[10px] font-bold text-outline uppercase tracking-wider block">Kecamatan</span>
+                  <p class="text-on-surface font-semibold mt-0.5">{{ $toko->kecamatan }}</p>
+                </div>
+                <div>
+                  <span class="text-[10px] font-bold text-outline uppercase tracking-wider block">Kota / Kabupaten</span>
+                  <p class="text-on-surface font-semibold mt-0.5">{{ $toko->kota }}</p>
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <span class="text-[10px] font-bold text-outline uppercase tracking-wider block">Provinsi</span>
+                  <p class="text-on-surface font-semibold mt-0.5">{{ $toko->provinsi }}</p>
+                </div>
+                <div>
+                  <span class="text-[10px] font-bold text-outline uppercase tracking-wider block">Kode Pos</span>
+                  <p class="text-on-surface font-semibold mt-0.5">{{ $toko->kode_pos }}</p>
+                </div>
+              </div>
+            @else
+              <div class="text-on-surface-variant flex items-center gap-2 py-4">
+                <span class="material-symbols-outlined text-outline">info</span>
+                <span>Toko belum memperbarui alamat terstruktur.</span>
+              </div>
+              <div>
+                <span class="text-[10px] font-bold text-outline uppercase tracking-wider block">Lokasi</span>
+                <p class="text-on-surface font-semibold mt-0.5">{{ $toko->Lokasi_Toko }}</p>
+              </div>
+            @endif
+          </div>
+        </div>
+
+        @if($toko->latitude && $toko->longitude)
+          <div class="mt-6 pt-4 border-t border-outline-variant/30 flex items-center justify-between text-xs text-on-surface-variant">
+            <span class="flex items-center gap-1 font-mono">
+              <span class="material-symbols-outlined text-sm text-primary">my_location</span>
+              {{ number_format($toko->latitude, 6) }}, {{ number_format($toko->longitude, 6) }}
+            </span>
+            <a href="https://www.google.com/maps/search/?api=1&query={{ $toko->latitude }},{{ $toko->longitude }}" target="_blank" class="text-primary font-bold hover:underline flex items-center gap-0.5">
+              Buka di Google Maps
+              <span class="material-symbols-outlined text-sm">open_in_new</span>
+            </a>
+          </div>
+        @endif
+      </div>
+
+      {{-- Read-only Leaflet Map --}}
+      <div class="lg:col-span-2 bg-surface-container-lowest p-4 rounded-2xl shadow-sm border border-outline-variant/30 flex flex-col h-[320px] lg:h-auto min-h-[300px]">
+        @if($toko->latitude && $toko->longitude)
+          <div id="read-only-map" class="w-full h-full rounded-xl border border-outline-variant/20 overflow-hidden shadow-inner relative z-0"></div>
+        @else
+          <div class="w-full h-full rounded-xl bg-surface-container-low/40 flex flex-col items-center justify-center text-center p-6 border-2 border-dashed border-outline-variant/40">
+            <div class="w-14 h-14 bg-surface-container rounded-full flex items-center justify-center mb-3">
+              <span class="material-symbols-outlined text-3xl text-outline">map</span>
+            </div>
+            <h4 class="font-headline font-bold text-on-surface mb-1">Peta tidak tersedia</h4>
+            <p class="text-xs text-on-surface-variant max-w-xs">Toko belum memetakan lokasi operasional mereka di peta.</p>
+          </div>
+        @endif
       </div>
     </div>
 
@@ -86,10 +175,22 @@
                     Rp {{ number_format($produk->Harga_PickUp, 0, ',', '.') }}
                   </div>
                 </div>
-                <div class="flex items-center gap-1.5 bg-surface-container py-1 px-2.5 rounded-full border border-outline-variant/30">
-                  <span class="w-1.5 h-1.5 rounded-full {{ $produk->Stock_PickUp > 0 ? 'bg-green-500 animate-pulse' : 'bg-error' }}"></span>
-                  <span class="text-xs font-bold text-on-surface-variant">Sisa {{ $produk->Stock_PickUp }}</span>
-                </div>
+                @if($produk->Stock_PickUp === 0)
+                  <div class="flex items-center gap-1 bg-rose-50 text-rose-700 border border-rose-200 py-1 px-2.5 rounded-full font-bold text-xs">
+                    <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                    <span>Habis</span>
+                  </div>
+                @elseif($produk->Stock_PickUp <= 10)
+                  <div class="flex items-center gap-1 bg-amber-50 text-amber-700 border border-amber-200 py-1 px-2.5 rounded-full font-bold text-xs">
+                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                    <span>Sisa {{ $produk->Stock_PickUp }}</span>
+                  </div>
+                @else
+                  <div class="flex items-center gap-1 bg-emerald-50 text-emerald-700 border border-emerald-200 py-1 px-2.5 rounded-full font-bold text-xs">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                    <span>Sisa {{ $produk->Stock_PickUp }}</span>
+                  </div>
+                @endif
               </div>
               <div class="relative mt-1 min-h-[38px]">
                 @if($produk->Stock_PickUp > 0)
@@ -132,10 +233,22 @@
                     Rp {{ number_format($produk->Harga_Truck, 0, ',', '.') }}
                   </div>
                 </div>
-                <div class="flex items-center gap-1.5 bg-surface-container py-1 px-2.5 rounded-full border border-outline-variant/30">
-                  <span class="w-1.5 h-1.5 rounded-full {{ $produk->Stock_Truck > 0 ? 'bg-green-500 animate-pulse' : 'bg-error' }}"></span>
-                  <span class="text-xs font-bold text-on-surface-variant">Sisa {{ $produk->Stock_Truck }}</span>
-                </div>
+                @if($produk->Stock_Truck === 0)
+                  <div class="flex items-center gap-1 bg-rose-50 text-rose-700 border border-rose-200 py-1 px-2.5 rounded-full font-bold text-xs">
+                    <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                    <span>Habis</span>
+                  </div>
+                @elseif($produk->Stock_Truck <= 10)
+                  <div class="flex items-center gap-1 bg-amber-50 text-amber-700 border border-amber-200 py-1 px-2.5 rounded-full font-bold text-xs">
+                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                    <span>Sisa {{ $produk->Stock_Truck }}</span>
+                  </div>
+                @else
+                  <div class="flex items-center gap-1 bg-emerald-50 text-emerald-700 border border-emerald-200 py-1 px-2.5 rounded-full font-bold text-xs">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                    <span>Sisa {{ $produk->Stock_Truck }}</span>
+                  </div>
+                @endif
               </div>
               <div class="relative mt-1 min-h-[38px]">
                 @if($produk->Stock_Truck > 0)
@@ -206,6 +319,8 @@
       lokasi: @json($toko->Lokasi_Toko),
       ongkirPickUp: {{ $toko->Ongkir_PickUp }},
       ongkirTruck: {{ $toko->Ongkir_Truck }},
+      latitude: {{ $toko->latitude ?? 'null' }},
+      longitude: {{ $toko->longitude ?? 'null' }},
     };
     let cartItems = {};
     function totalCartQty() { return Object.values(cartItems).reduce((s,v)=>s+v.qty,0); }
@@ -239,6 +354,23 @@
       sessionStorage.setItem('pasirku_toko',JSON.stringify(TOKO_DATA));
       window.location.href='{{ route('keranjang') }}';
     }
+
+    @if($toko->latitude && $toko->longitude)
+    document.addEventListener('DOMContentLoaded', () => {
+      let lat = {{ $toko->latitude }};
+      let lng = {{ $toko->longitude }};
+      
+      const readOnlyMap = L.map('read-only-map').setView([lat, lng], 14);
+      
+      L.tileLayer('https://{s}.google.com/vt?lyrs=m&x={x}&y={y}&z={z}', {
+        maxZoom: 20,
+        subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+      }).addTo(readOnlyMap);
+
+      const marker = L.marker([lat, lng]).addTo(readOnlyMap);
+      marker.bindPopup(`<strong class="text-primary font-headline">{{ $toko->Nama_Toko }}</strong><br><span class="text-xs text-on-surface-variant">{{ $toko->Lokasi_Toko }}</span>`).openPopup();
+    });
+    @endif
   </script>
   @endpush
 

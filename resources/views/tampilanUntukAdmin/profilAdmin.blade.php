@@ -59,7 +59,44 @@
       </div>
     </div>
 
+    {{-- Admin's Store Card if registered --}}
+    @php
+      $tokoAdmin = \App\Models\Toko::where('ID_Akun', Auth::id())->first();
+    @endphp
+    @if($tokoAdmin)
+    <div class="bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant/20 p-6 space-y-4">
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-11 bg-primary/10 text-primary rounded-xl flex items-center justify-center">
+          <span class="material-symbols-outlined text-2xl" style="font-variation-settings:'FILL' 1">storefront</span>
+        </div>
+        <div>
+          <h2 class="font-headline font-bold text-on-surface text-lg">Kelola Alamat & Map Toko Anda</h2>
+          <p class="text-on-surface-variant text-xs mt-0.5">Toko: <span class="font-bold text-primary">{{ $tokoAdmin->Nama_Toko }}</span></p>
+        </div>
+      </div>
+      <p class="text-on-surface-variant text-sm leading-relaxed">
+        Anda terdeteksi memiliki toko yang terdaftar di platform. Silakan gunakan tombol di bawah untuk mengatur koordinat bujur, lintang, alamat terstruktur, dan pin GPS pada peta interaktif.
+      </p>
+      <div class="flex flex-col md:flex-row gap-4 items-center bg-surface-container-low p-4 rounded-xl">
+        <div class="grid grid-cols-2 gap-4 flex-1 text-xs">
+          <div>
+            <span class="font-semibold text-on-surface-variant uppercase tracking-wider block text-[10px] mb-0.5">Latitude (Lintang)</span>
+            <span class="font-mono font-bold text-on-surface bg-surface-container-lowest px-2 py-1 rounded border border-outline-variant/30 inline-block">{{ $tokoAdmin->latitude ?? 'Belum diatur' }}</span>
+          </div>
+          <div>
+            <span class="font-semibold text-on-surface-variant uppercase tracking-wider block text-[10px] mb-0.5">Longitude (Bujur)</span>
+            <span class="font-mono font-bold text-on-surface bg-surface-container-lowest px-2 py-1 rounded border border-outline-variant/30 inline-block">{{ $tokoAdmin->longitude ?? 'Belum diatur' }}</span>
+          </div>
+        </div>
+        <a href="{{ route('ProfilStore') }}" class="w-full md:w-auto bg-primary text-on-primary hover:bg-primary-container px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-sm text-center active:scale-95 duration-200">
+          Kelola Alamat & Map
+        </a>
+      </div>
+    </div>
+    @endif
+
     {{-- Quick Nav Grid --}}
+
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
       <a href="{{ route('MenuUtamaAdmin') }}"

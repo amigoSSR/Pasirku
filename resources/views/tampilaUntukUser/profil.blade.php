@@ -148,6 +148,72 @@
 
     </div>
 
+    {{-- Form Alamat & Peta Toko (Status Kunci untuk User Non-Aktif) --}}
+    <div class="bg-surface-container-lowest p-6 md:p-8 rounded-2xl shadow-sm border border-outline-variant/30 relative overflow-hidden">
+      
+      {{-- Banner/Notifikasi Menunggu Persetujuan Admin / Belum Aktif --}}
+      <div class="absolute inset-0 bg-surface-container-lowest/90 backdrop-blur-[1px] z-20 flex flex-col items-center justify-center text-center p-6 select-none">
+        @if(!$toko)
+          <div class="w-14 h-14 bg-primary/10 text-primary rounded-full flex items-center justify-center mb-4">
+            <span class="material-symbols-outlined text-3xl" style="font-variation-settings:'FILL' 1">lock</span>
+          </div>
+          <h3 class="font-headline text-lg font-bold text-on-surface">Fitur Peta & Alamat Terkunci</h3>
+          <p class="text-on-surface-variant text-xs max-w-md mt-1 leading-relaxed">Fitur alamat lengkap terstruktur dan peta interaktif hanya dapat digunakan setelah Anda mendaftarkan toko dan diaktifkan oleh admin.</p>
+          <a href="{{ route('daftarPenjual') }}" class="mt-4 bg-primary text-on-primary hover:bg-primary-container px-6 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-colors shadow-sm">Daftarkan Toko Sekarang</a>
+        @elseif($toko->Status === 'pending')
+          <div class="w-14 h-14 bg-yellow-500/10 text-yellow-600 rounded-full flex items-center justify-center mb-4 animate-bounce">
+            <span class="material-symbols-outlined text-3xl" style="font-variation-settings:'FILL' 1">hourglass_empty</span>
+          </div>
+          <h3 class="font-headline text-lg font-bold text-on-surface">Menunggu Persetujuan Admin</h3>
+          <p class="text-on-surface-variant text-xs max-w-md mt-1 leading-relaxed">Pendaftaran toko Anda sedang diproses oleh admin. Fitur peta lokasi dan pengisian alamat otomatis akan terbuka setelah toko Anda aktif.</p>
+          <div class="mt-4 flex items-center gap-2 text-[10px] font-bold text-yellow-700 bg-yellow-50 border border-yellow-100 px-4 py-1.5 rounded-full">
+            <span class="w-2 h-2 rounded-full bg-yellow-500 animate-pulse"></span>
+            Sedang diverifikasi admin
+          </div>
+        @elseif($toko->Status === 'rejected')
+          <div class="w-14 h-14 bg-red-500/10 text-red-600 rounded-full flex items-center justify-center mb-4">
+            <span class="material-symbols-outlined text-3xl" style="font-variation-settings:'FILL' 1">gpp_bad</span>
+          </div>
+          <h3 class="font-headline text-lg font-bold text-on-surface">Pendaftaran Toko Ditolak</h3>
+          <p class="text-on-surface-variant text-xs max-w-md mt-1 leading-relaxed">Pengajuan toko Anda ditolak oleh admin. Fitur pengisian alamat dan peta lokasi tidak dapat diakses.</p>
+        @else
+          {{-- Approved --}}
+          <div class="w-14 h-14 bg-green-500/10 text-green-600 rounded-full flex items-center justify-center mb-4">
+            <span class="material-symbols-outlined text-3xl" style="font-variation-settings:'FILL' 1">verified</span>
+          </div>
+          <h3 class="font-headline text-lg font-bold text-on-surface">Toko Anda Telah Aktif!</h3>
+          <p class="text-on-surface-variant text-xs max-w-md mt-1 leading-relaxed">Silakan masuk ke Portal Penjual Anda untuk melengkapi alamat lengkap terstruktur dan pin lokasi GPS pada peta interaktif.</p>
+          <a href="{{ route('ProfilStore') }}" class="mt-4 bg-green-600 text-white hover:bg-green-700 px-6 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-colors shadow-sm">Kelola Alamat Toko</a>
+        @endif
+      </div>
+
+      {{-- Dummy disabled map UI in background for visual design (glassmorphic aesthetic) --}}
+      <div class="filter blur-[1px] opacity-25 select-none pointer-events-none">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-11 h-11 bg-slate-200 text-slate-400 rounded-xl flex items-center justify-center">
+            <span class="material-symbols-outlined text-2xl">map</span>
+          </div>
+          <div>
+            <h3 class="font-headline text-lg font-bold text-slate-400">Alamat & Lokasi Map Toko</h3>
+            <p class="text-slate-400 text-xs mt-0.5">Tentukan alamat terstruktur dan pin lokasi toko Anda pada peta.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <input type="text" disabled class="bg-slate-100 rounded-xl px-4 py-3 text-sm w-full" placeholder="Provinsi" />
+              <input type="text" disabled class="bg-slate-100 rounded-xl px-4 py-3 text-sm w-full" placeholder="Kota" />
+            </div>
+            <textarea disabled rows="3" class="bg-slate-100 rounded-xl px-4 py-3 text-sm w-full" placeholder="Detail Alamat"></textarea>
+            <div class="bg-slate-100 p-4 rounded-xl h-12"></div>
+          </div>
+          <div class="h-64 bg-slate-200 rounded-2xl w-full"></div>
+        </div>
+      </div>
+
+    </div>
+
   </div>
 
 </x-layout-user>

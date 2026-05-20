@@ -1,0 +1,67 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Toko;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
+class StoreProfileController extends Controller
+{
+    /**
+     * Tampilkan halaman profil toko dengan map.
+     */
+    public function showProfile()
+    {
+        $toko = Toko::where('ID_Akun', Auth::id())->first();
+        if (!$toko) {
+            abort(403, 'Anda tidak memiliki akses toko.');
+        }
+
+        return view('tampilanPenjualStore.profilStore', compact('toko'));
+    }
+
+    /**
+     * Update data alamat & koordinat peta toko.
+     */
+    public function updateAddress(Request $request)
+    {
+        $toko = Toko::where('ID_Akun', Auth::id())->first();
+        if (!$toko) {
+            abort(403, 'Aksi tidak diizinkan.');
+        }
+
+        $request->validate([
+            'provinsi'      => 'required|string|max:255',
+            'kota'          => 'required|string|max:255',
+            'kecamatan'     => 'required|string|max:255',
+            'detail_alamat' => 'required|string',
+            'kode_pos'      => 'required|string|max:10',
+            'latitude'      => 'required|numeric|between:-90,90',
+            'longitude'     => 'required|numeric|between:-180,180',
+        ]);
+
+        // Concatenate address for backwards compatibility
+        $lokasiLengkap = sprintf(
+            '%s, Kec. %s, %s, %s, %s',
+            $request->detail_alamat,
+            $request->kecamatan,
+            $request->kota,
+            $request->provinsi,
+            $request->kode_pos
+        );
+
+        $toko->update([
+            'provinsi'      => $request->provinsi,
+            'kota'          => $request->kota,
+            'kecamatan'     => $request->kecamatan,
+            'detail_alamat' => $request->detail_alamat,
+            'kode_pos'      => $request->kode_pos,
+            'latitude'      => $request->latitude,
+            'longitude'     => $request->longitude,
+            'Lokasi_Toko'   => $lokasiLengkap, // sync the existing string field
+        ]);
+
+        return redirect()->back()->with('success', 'Alamat & lokasi toko berhasil diperbarui!');
+    }
+}

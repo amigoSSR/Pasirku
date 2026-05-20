@@ -67,7 +67,8 @@
           ? 'border-primary bg-primary-fixed/20 text-primary font-bold'
           : 'border-transparent text-on-surface-variant hover:text-primary hover:bg-surface-container-low' }}">
       <span class="material-symbols-outlined text-[20px]" @if($isPesan) style="font-variation-settings: 'FILL' 1" @endif>forum</span>
-      <span class="font-label-md text-sm">Messages</span>
+      <span class="font-label-md text-sm flex-1">Messages</span>
+      <span id="sidebar-chat-badge" class="hidden ml-auto bg-error text-on-error text-2xs font-bold w-5 h-5 rounded-full flex items-center justify-center shrink-0">0</span>
     </a>
 
     {{-- Keranjang (User Only) --}}
@@ -155,5 +156,50 @@
       <span class="font-label-md text-sm">Support</span>
     </a>
   </footer>
+
+  {{-- Global Chat Notification Polling --}}
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+      const sidebarBadge = document.getElementById('sidebar-chat-badge');
+      const mobileBadge = document.getElementById('mobile-chat-badge');
+
+      function checkUnreadMessages() {
+          fetch('/api/notifications/count', {
+              headers: {
+                  'X-Requested-With': 'XMLHttpRequest'
+              }
+          })
+          .then(response => {
+              if (!response.ok) throw new Error('Not logged in or network error');
+              return response.json();
+          })
+          .then(data => {
+              const count = data.count || 0;
+              if (count > 0) {
+                  if (sidebarBadge) {
+                      sidebarBadge.textContent = count;
+                      sidebarBadge.classList.remove('hidden');
+                  }
+                  if (mobileBadge) {
+                      mobileBadge.textContent = count;
+                      mobileBadge.classList.remove('hidden');
+                  }
+              } else {
+                  if (sidebarBadge) sidebarBadge.classList.add('hidden');
+                  if (mobileBadge) mobileBadge.classList.add('hidden');
+              }
+          })
+          .catch(err => {
+              // Silently catch exceptions for guest users or offline status
+          });
+      }
+
+      // Check on load
+      checkUnreadMessages();
+
+      // Poll every 30 seconds
+      setInterval(checkUnreadMessages, 30000);
+  });
+  </script>
 
 </aside>

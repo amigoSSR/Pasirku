@@ -10,7 +10,7 @@
   <div class="flex flex-1 overflow-hidden h-full">
 
     {{-- Left: Shop List --}}
-    <section class="w-full md:w-[400px] lg:w-[480px] bg-surface-container-low overflow-y-auto p-6 scrollbar-hide flex flex-col gap-6 shrink-0">
+    <section class="w-full md:w-[500px] lg:w-[600px] xl:w-[700px] bg-surface-container-low overflow-y-auto p-6 scrollbar-hide flex flex-col gap-2 shrink-0">
 
       {{-- Header --}}
       <header class="mb-2">
@@ -32,7 +32,7 @@
       </div>
 
       {{-- Shop Cards --}}
-      <div id="shop-card-list" class="grid gap-4">
+      <div id="shop-card-list" class="grid grid-cols-1 md:grid-cols-1 xl:grid-cols-2 gap-4">
         @forelse ($tokoList as $toko)
         <div
           class="shop-card stat-card bg-surface-container-lowest p-5 rounded-2xl shadow-sm border border-outline-variant/30 cursor-pointer group hover:border-primary/30"
@@ -90,7 +90,23 @@
     <div id="map" class="flex-1 h-full"></div>
 
     <script>
-      window.MAP_CONFIG = { iconUrl: '{{ asset("img/rumah1.png") }}' };
+      window.MAP_CONFIG = {
+        iconUrl: '{{ asset("img/rumah1.png") }}',
+        stores: [
+          @foreach($tokoList as $toko)
+            @if($toko->latitude && $toko->longitude)
+              {
+                id: {{ $toko->ID_Toko }},
+                name: "{!! addslashes($toko->Nama_Toko) !!}",
+                lat: {{ $toko->latitude }},
+                lng: {{ $toko->longitude }},
+                address: "{!! addslashes($toko->Lokasi_Toko) !!}",
+                url: "{{ route('MarketPlace', $toko->ID_Toko) }}"
+              },
+            @endif
+          @endforeach
+        ]
+      };
     </script>
 
   </div>

@@ -109,7 +109,35 @@
                 <p class="truncate max-w-[200px]" title="{{ $o->nama_produk }}">{{ $o->nama_produk }}</p>
                 <p class="text-[10px] text-on-surface-variant">{{ $o->Lokasi_Pengantaran }}</p>
               </td>
-              <td class="px-5 py-4 font-semibold text-primary">Rp {{ number_format($o->total_harga, 0, ',', '.') }}</td>
+              <td class="px-5 py-4">
+                <div class="font-semibold text-primary">Rp {{ number_format($o->total_harga, 0, ',', '.') }}</div>
+                <div class="flex items-center gap-1.5 mt-1">
+                  @php
+                    $statusPembayaran = $o->Status_Pembayaran;
+                    if ($statusPembayaran === 'unpaid' || $statusPembayaran === 'Belum Dikonfirmasi' || !$statusPembayaran) {
+                        $statusPembayaranLabel = 'Pending';
+                        $payBadgeColor = 'text-amber-600 bg-amber-50 border border-amber-200/50';
+                    } elseif ($statusPembayaran === 'Lunas' || $statusPembayaran === 'paid') {
+                        $statusPembayaranLabel = 'Lunas';
+                        $payBadgeColor = 'text-green-600 bg-green-50 border border-green-200/50';
+                    } elseif ($statusPembayaran === 'Dibatalkan') {
+                        $statusPembayaranLabel = 'Dibatalkan';
+                        $payBadgeColor = 'text-red-500 bg-red-50 border border-red-200/50';
+                    } else {
+                        $statusPembayaranLabel = ucfirst($statusPembayaran);
+                        $payBadgeColor = 'text-outline bg-surface-container border border-outline-variant/30';
+                    }
+                  @endphp
+                  <span class="inline-block text-[9px] font-black tracking-wider uppercase px-2 py-0.5 rounded-md {{ $payBadgeColor }}">
+                    {{ $statusPembayaranLabel }}
+                  </span>
+                  @if($o->Bukti_Pembayaran)
+                    <a href="{{ route('bukti.image', basename($o->Bukti_Pembayaran)) }}" target="_blank" class="inline-flex items-center gap-0.5 text-[10px] font-bold text-primary hover:underline hover:opacity-80 transition-all ml-1" title="Lihat Bukti Transfer">
+                      <span class="material-symbols-outlined text-[12px]" style="font-variation-settings:'FILL' 1">receipt</span>Bukti
+                    </a>
+                  @endif
+                </div>
+              </td>
               <td class="px-5 py-4">
                 <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] uppercase font-black tracking-wider {{ $o->statusBadgeClass() }}">
                   <span class="material-symbols-outlined text-[12px]">{{ $o->statusIcon() }}</span>

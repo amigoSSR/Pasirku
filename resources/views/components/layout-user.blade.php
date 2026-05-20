@@ -144,8 +144,9 @@ tailwind.config = {
       <span class="material-symbols-outlined text-2xl" @style(["font-variation-settings: 'FILL' 1" => request()->routeIs('keranjang')])>shopping_cart</span>
       <span class="text-[10px] font-bold">Cart</span>
     </a>
-    <a href="{{ route('Pesan') }}" class="flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-xl {{ request()->routeIs('Pesan') ? 'text-primary' : 'text-on-surface-variant' }}">
+    <a href="{{ route('Pesan') }}" class="flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-xl {{ request()->routeIs('Pesan') ? 'text-primary' : 'text-on-surface-variant' }} relative">
       <span class="material-symbols-outlined text-2xl" @style(["font-variation-settings: 'FILL' 1" => request()->routeIs('Pesan')])>forum</span>
+      <span id="mobile-chat-badge" class="hidden absolute top-1 right-3 bg-error text-on-error text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center shrink-0">0</span>
       <span class="text-[10px] font-bold">Chat</span>
     </a>
     <a href="{{ route('Profil') }}" class="flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-xl {{ request()->routeIs('Profil') ? 'text-primary' : 'text-on-surface-variant' }}">

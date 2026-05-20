@@ -24,6 +24,13 @@ class Toko extends Model
         'Ongkir_PickUp',
         'Ongkir_Truck',
         'Gambar_QRIS',
+        'provinsi',
+        'kota',
+        'kecamatan',
+        'detail_alamat',
+        'kode_pos',
+        'latitude',
+        'longitude',
     ];
 
     /**

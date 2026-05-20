@@ -4,7 +4,13 @@
 <head>
   <meta charset="utf-8" />
   <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>Checkout | Pasir Ku</title>
+  
+  {{-- Leaflet CSS & JS --}}
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <link
     href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&family=Public+Sans:wght@300;400;600&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
@@ -182,21 +188,43 @@
             <span class="material-symbols-outlined text-primary">local_shipping</span>
             <h2 class="text-2xl font-bold">Alamat Pengiriman</h2>
           </div>
-          <div class="flex flex-col gap-6">
-            <div class="flex flex-col gap-2">
-              <label for="lokasi-pengantaran" class="text-xs font-bold text-secondary uppercase tracking-wider">Lokasi Pengantaran</label>
-              <input id="lokasi-pengantaran" class="input-industrial px-4 py-3 rounded-lg w-full"
-                     placeholder="Contoh: Jl. Merdeka No. 10, Jakarta Pusat" type="text" />
-              <p class="text-[11px] text-on-surface-variant">Masukkan alamat lengkap lokasi pengiriman pasir.</p>
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {{-- Kolom Kiri: Form Alamat --}}
+            <div class="space-y-5">
+              <div class="flex flex-col gap-2">
+                <label for="lokasi-pengantaran" class="text-xs font-bold text-secondary uppercase tracking-wider">Lokasi Pengantaran</label>
+                <input id="lokasi-pengantaran" class="input-industrial px-4 py-3 rounded-lg w-full font-semibold"
+                       placeholder="Contoh: Jl. Merdeka No. 10, Jakarta Pusat" type="text" />
+                <p class="text-[11px] text-on-surface-variant">Masukkan alamat lengkap lokasi pengiriman pasir.</p>
+              </div>
+              
+              <div class="flex gap-2">
+                <button type="button" id="btn-search-delivery"
+                  class="flex-1 bg-primary text-on-primary hover:bg-primary-container py-3 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-md active:scale-95 duration-200">
+                  <span class="material-symbols-outlined text-[16px]">search</span>
+                  Cari & Plot di Peta
+                </button>
+              </div>
+
+              <div class="flex flex-col gap-2">
+                <label for="detail-lokasi" class="text-xs font-bold text-secondary uppercase tracking-wider">Detail Tambahan Lokasi Pengantaran</label>
+                <textarea id="detail-lokasi" class="input-industrial px-4 py-3 rounded-lg w-full resize-none font-semibold text-sm"
+                           placeholder="Contoh: Masuk gang kedua, dekat pos satpam, patokan warung Bu Sari..." rows="3"></textarea>
+                <p class="text-[11px] text-on-surface-variant">Opsional — bantu pengemudi menemukan lokasi dengan lebih mudah.</p>
+              </div>
             </div>
-            <div class="flex flex-col gap-2">
-              <label for="detail-lokasi" class="text-xs font-bold text-secondary uppercase tracking-wider">Detail Tambahan Lokasi Pengantaran</label>
-              <textarea id="detail-lokasi" class="input-industrial px-4 py-3 rounded-lg w-full resize-none"
-                        placeholder="Contoh: Masuk gang kedua, dekat pos satpam, patokan warung Bu Sari..." rows="3"></textarea>
-              <p class="text-[11px] text-on-surface-variant">Opsional — bantu pengemudi menemukan lokasi dengan lebih mudah.</p>
+
+            {{-- Kolom Kanan: Peta Interaktif Rute Checkout --}}
+            <div class="flex flex-col gap-2 min-h-[300px]">
+              <span class="text-xs font-bold text-secondary uppercase tracking-wider">Tentukan Pin Lokasi (Koordinat Pengantaran)</span>
+              <div id="checkout-map" class="w-full h-full min-h-[250px] rounded-2xl border border-outline-variant/30 overflow-hidden shadow-inner relative z-0"></div>
+              <p class="text-[10px] text-on-surface-variant flex items-center gap-1">
+                <span class="material-symbols-outlined text-sm text-primary">info</span>
+                Geser pin biru untuk menandai lokasi tepat bongkar pasir. Pin merah menandai asal toko.
+              </p>
             </div>
           </div>
-        </section>
+        </section>n>
 
         <!-- Section: Delivery Schedule -->
         <section class="bg-surface-container-lowest p-8 rounded-xl shadow-sm border-l-8 border-secondary">
@@ -300,6 +328,10 @@
               <input type="hidden" name="unit"               id="h-unit">
               <input type="hidden" name="tanggal_pengiriman" id="h-tanggal">
               <input type="hidden" name="jam_tiba"           id="h-jam-tiba">
+              <input type="hidden" name="total_harga"        id="h-total-harga">
+              <input type="hidden" name="nama_produk"        id="h-nama-produk">
+              <input type="hidden" name="tipe_pengiriman"    id="h-tipe-pengiriman">
+              <input type="hidden" name="cart_items"         id="h-cart-items">
 
               {{-- Input file tersembunyi --}}
               <input type="file" id="input-bukti" name="bukti_pembayaran"
@@ -504,23 +536,119 @@
           : '<span class="inline-flex items-center gap-1 text-amber-600 font-bold text-xs bg-amber-50 px-2 py-0.5 rounded-full"><span class="material-symbols-outlined text-[13px]">local_shipping</span>Truk</span>';
 
         const row = document.createElement('div');
-        row.className = 'flex items-center justify-between bg-white rounded-xl px-4 py-3 shadow-sm border border-outline-variant/20';
+        row.className = 'flex flex-col gap-2 bg-white rounded-xl px-4 py-3 shadow-sm border border-outline-variant/20';
         row.innerHTML = `
-          <div class="flex items-center gap-3">
-            <div class="w-9 h-9 bg-surface-container rounded-lg flex items-center justify-center flex-shrink-0">
-              <span class="material-symbols-outlined text-[18px] text-on-surface-variant">landscape</span>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 bg-surface-container rounded-lg flex items-center justify-center flex-shrink-0">
+                <span class="material-symbols-outlined text-[18px] text-on-surface-variant">landscape</span>
+              </div>
+              <div>
+                <p class="font-bold text-sm text-on-surface leading-tight">${item.namaPasir}</p>
+                <div class="flex items-center gap-2 mt-0.5">
+                  ${typeLabel}
+                  <span class="text-xs text-on-surface-variant font-medium">x ${item.qty}</span>
+                </div>
+              </div>
             </div>
-            <div>
-              <p class="font-bold text-sm text-on-surface leading-tight">${item.namaPasir}</p>
-              <div class="flex items-center gap-2 mt-0.5">${typeLabel} <span class="text-xs text-on-surface-variant">x ${item.qty}</span></div>
+            <div class="text-right flex flex-col items-end">
+              <p class="font-black text-sm text-on-surface leading-none">${formatRupiah(lineTotal)}</p>
+              <p class="text-[10px] text-on-surface-variant mt-1">${formatRupiah(item.harga)} / unit</p>
             </div>
           </div>
-          <div class="text-right">
-            <p class="font-black text-sm text-on-surface">${formatRupiah(lineTotal)}</p>
-            <p class="text-[10px] text-on-surface-variant">${formatRupiah(item.harga)} / unit</p>
+          <div class="flex flex-wrap items-center justify-between border-t border-slate-100 pt-2 mt-1 gap-2">
+            <div id="stock-badge-${item.key}">
+              <span class="inline-flex items-center gap-1 text-[10px] text-slate-400 bg-slate-50 border border-slate-200 px-2 py-0.5 rounded-full">
+                <span class="w-1.5 h-1.5 rounded-full bg-slate-300 animate-pulse"></span>Memeriksa stok...
+              </span>
+            </div>
+            <div id="stock-warning-${item.key}"></div>
           </div>`;
         cartItemsList.appendChild(row);
       });
+
+      // ── Live Stock Checking API Call ──────────────────────────────
+      const productIds = [...new Set(cartItems.map(item => {
+        const parts = item.key.split('_');
+        return parseInt(parts[0], 10);
+      }))];
+
+      if (productIds.length > 0) {
+        fetch('/api/products/check-stock', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+          },
+          body: JSON.stringify({ ids: productIds })
+        })
+        .then(res => res.json())
+        .then(response => {
+          if (response.status === 'success') {
+            const stocks = response.data;
+            let hasInsufficientStock = false;
+
+            cartItems.forEach(item => {
+              const parts = item.key.split('_');
+              const productId = parseInt(parts[0], 10);
+              const prodStock = stocks.find(s => s.ID_Isi_Toko === productId);
+
+              const badgeContainer = document.getElementById(`stock-badge-${item.key}`);
+              const warningContainer = document.getElementById(`stock-warning-${item.key}`);
+
+              if (prodStock && badgeContainer && warningContainer) {
+                const availableStock = item.type === 'pickup' ? prodStock.Stock_PickUp : prodStock.Stock_Truck;
+
+                let badgeHtml = '';
+                if (availableStock === 0) {
+                  badgeHtml = `<span class="inline-flex items-center gap-1 text-[10px] font-bold text-rose-700 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>Stok Habis</span>`;
+                } else if (availableStock <= 10) {
+                  badgeHtml = `<span class="inline-flex items-center gap-1 text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>Stok Menipis (Sisa ${availableStock})</span>`;
+                } else {
+                  badgeHtml = `<span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Stok Tersedia (Sisa ${availableStock})</span>`;
+                }
+                badgeContainer.innerHTML = badgeHtml;
+
+                if (item.qty > availableStock) {
+                  hasInsufficientStock = true;
+                  warningContainer.innerHTML = `<p class="text-rose-600 text-[10px] font-semibold flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">warning</span>Melebihi sisa stok (Sisa: ${availableStock})</p>`;
+                } else {
+                  warningContainer.innerHTML = '';
+                }
+              }
+            });
+
+            const btnKonfirmasi = document.getElementById('btn-konfirmasi');
+            if (hasInsufficientStock) {
+              if (btnKonfirmasi) {
+                btnKonfirmasi.disabled = true;
+                btnKonfirmasi.classList.add('opacity-50', 'cursor-not-allowed');
+                btnKonfirmasi.classList.remove('hover:bg-primary-container');
+
+                let errorAlert = document.getElementById('stock-error-alert');
+                if (!errorAlert) {
+                  errorAlert = document.createElement('div');
+                  errorAlert.id = 'stock-error-alert';
+                  errorAlert.className = 'mt-3 p-3 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-xs font-semibold text-center flex items-center justify-center gap-2';
+                  errorAlert.innerHTML = `<span class="material-symbols-outlined text-[16px]">error</span> Unit pesanan melebihi stok yang tersedia.`;
+                  btnKonfirmasi.parentNode.insertBefore(errorAlert, btnKonfirmasi);
+                }
+              }
+            } else {
+              if (btnKonfirmasi) {
+                btnKonfirmasi.disabled = false;
+                btnKonfirmasi.classList.remove('opacity-50', 'cursor-not-allowed');
+                btnKonfirmasi.classList.add('hover:bg-primary-container');
+                const errorAlert = document.getElementById('stock-error-alert');
+                if (errorAlert) errorAlert.remove();
+              }
+            }
+          }
+        })
+        .catch(err => {
+          console.error('Gagal mengambil informasi stok:', err);
+        });
+      }
 
       /* -- Ongkir & grand total ---------------------------- */
       const ongkirPickUpTotal = qtyPickUp > 0 ? toko.ongkirPickUp : 0;
@@ -572,6 +700,18 @@
 
       /* -- Isi hidden inputs dari sessionStorage ----------- */
       document.getElementById('h-id-toko').value      = toko.id   ?? '';
+      document.getElementById('h-cart-items').value   = cartRaw;
+
+      // Set product string, delivery types, and grand total for backend
+      const namaProdukArray = cartItems.map(item => item.namaPasir + ' (' + item.qty + ' ' + (item.type === 'pickup' ? 'Pick Up' : 'Truk') + ')');
+      document.getElementById('h-nama-produk').value = namaProdukArray.join(', ');
+      
+      const tipePengirimanArray = [];
+      if (qtyPickUp > 0) tipePengirimanArray.push('pickup');
+      if (qtyTruck > 0) tipePengirimanArray.push('truck');
+      document.getElementById('h-tipe-pengiriman').value = tipePengirimanArray.join(',');
+      
+      document.getElementById('h-total-harga').value = grandTotal;
 
       // Unit = total qty semua item (pickUp + truck)
       const totalQty = qtyPickUp + qtyTruck;
@@ -586,6 +726,124 @@
       renderCheckout();
       hitungEstimasi(); // inisialisasi estimasi awal
 
+      // Leaflet Interactive Checkout Map Setup
+      let storeLat = -6.2088; // default Jakarta
+      let storeLng = 106.8456;
+      let hasStoreCoordinates = false;
+
+      const tokoRaw = sessionStorage.getItem('pasirku_toko');
+      if (tokoRaw) {
+        const toko = JSON.parse(tokoRaw);
+        if (toko.latitude && toko.longitude) {
+          storeLat = parseFloat(toko.latitude);
+          storeLng = parseFloat(toko.longitude);
+          hasStoreCoordinates = true;
+        }
+      }
+
+      const checkoutMap = L.map('checkout-map').setView([storeLat, storeLng], 13);
+      
+      L.tileLayer('https://{s}.google.com/vt?lyrs=m&x={x}&y={y}&z={z}', {
+        maxZoom: 20,
+        subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+      }).addTo(checkoutMap);
+
+      // Custom red marker for Store
+      const redIcon = new L.Icon({
+        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
+      });
+
+      if (hasStoreCoordinates) {
+        const storeMarker = L.marker([storeLat, storeLng], { icon: redIcon }).addTo(checkoutMap);
+        storeMarker.bindPopup(`<strong class="text-primary font-headline">Titik Asal Toko</strong><br><span class="text-xs text-on-surface-variant">Material dimuat dari sini</span>`).openPopup();
+      }
+
+      // Delivery Destination marker (draggable)
+      let deliveryLat = storeLat + 0.003;
+      let deliveryLng = storeLng + 0.003;
+      
+      const deliveryMarker = L.marker([deliveryLat, deliveryLng], { draggable: true }).addTo(checkoutMap);
+      deliveryMarker.bindPopup(`<strong class="text-secondary font-headline">Titik Bongkar Pasir</strong><br><span class="text-xs text-on-surface-variant">Geser pin ke lokasi drop-off Anda</span>`).openPopup();
+
+      window.deliveryLat = deliveryLat;
+      window.deliveryLng = deliveryLng;
+
+      // Polyline to draw shipping line
+      const routeLine = L.polyline([[storeLat, storeLng], [deliveryLat, deliveryLng]], {
+        color: '#944a00',
+        dashArray: '6, 12',
+        weight: 3
+      }).addTo(checkoutMap);
+
+      function updateRoute(newLat, newLng, updateText = true) {
+        window.deliveryLat = parseFloat(newLat).toFixed(8);
+        window.deliveryLng = parseFloat(newLng).toFixed(8);
+        
+        routeLine.setLatLngs([[storeLat, storeLng], [newLat, newLng]]);
+        
+        if (updateText) {
+          fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${newLat}&lon=${newLng}`)
+            .then(res => res.json())
+            .then(data => {
+              if (data && data.display_name) {
+                const shortAddress = data.display_name.split(',').slice(0, 4).join(',').trim();
+                document.getElementById('lokasi-pengantaran').value = shortAddress;
+              }
+            })
+            .catch(() => {});
+        }
+      }
+
+      deliveryMarker.on('dragend', function (e) {
+        const position = deliveryMarker.getLatLng();
+        updateRoute(position.lat, position.lng, true);
+      });
+
+      checkoutMap.on('click', function (e) {
+        deliveryMarker.setLatLng(e.latlng);
+        updateRoute(e.latlng.lat, e.latlng.lng, true);
+      });
+
+      document.getElementById('btn-search-delivery').addEventListener('click', () => {
+        const query = document.getElementById('lokasi-pengantaran').value.trim();
+        if (!query) {
+          alert('Silakan ketik lokasi pengantaran terlebih dahulu!');
+          return;
+        }
+
+        const btn = document.getElementById('btn-search-delivery');
+        btn.disabled = true;
+        btn.innerHTML = `<span class="material-symbols-outlined text-[16px] animate-spin">autorenew</span> Mencari...`;
+
+        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`)
+          .then(res => res.json())
+          .then(data => {
+            btn.disabled = false;
+            btn.innerHTML = `<span class="material-symbols-outlined text-[16px]">search</span> Cari & Plot di Peta`;
+
+            if (data && data.length > 0) {
+              const newLat = parseFloat(data[0].lat);
+              const newLng = parseFloat(data[0].lon);
+              
+              checkoutMap.setView([newLat, newLng], 14);
+              deliveryMarker.setLatLng([newLat, newLng]);
+              updateRoute(newLat, newLng, false);
+            } else {
+              alert('Alamat tidak ditemukan. Silakan periksa kembali ejaan alamat Anda.');
+            }
+          })
+          .catch(() => {
+            btn.disabled = false;
+            btn.innerHTML = `<span class="material-symbols-outlined text-[16px]">search</span> Cari & Plot di Peta`;
+            alert('Gagal menghubungi layanan peta. Coba lagi.');
+          });
+      });
+
       const inputBukti   = document.getElementById('input-bukti');
       const previewBox   = document.getElementById('preview-bukti');
       const previewImg   = document.getElementById('preview-img');
@@ -598,7 +856,6 @@
         const file = this.files[0];
         if (!file) return;
 
-        // Tampilkan preview
         const reader = new FileReader();
         reader.onload = (e) => {
           previewImg.src      = e.target.result;
@@ -627,7 +884,6 @@
       const jamMulai   = parseInt(jamStr,  10);
       const menitMulai = parseInt(menitStr, 10);
 
-      // Tambah 4 jam
       const totalMenitSelesai = jamMulai * 60 + menitMulai + 240;
       const jamSelesai   = Math.floor(totalMenitSelesai / 60) % 24;
       const menitSelesai = totalMenitSelesai % 60;
@@ -639,21 +895,25 @@
 
     /* ── Form Submit: validasi + isi lokasi + loading ───── */
     document.getElementById('form-konfirmasi').addEventListener('submit', function (e) {
-      // Ambil lokasi dari field baru
       const lokasiUtama = (document.getElementById('lokasi-pengantaran')?.value ?? '').trim();
       const detailTambahan = (document.getElementById('detail-lokasi')?.value ?? '').trim();
       
-      document.getElementById('h-lokasi').value = lokasiUtama || 'Belum diisi';
+      const deliveryLat = window.deliveryLat || '';
+      const deliveryLng = window.deliveryLng || '';
+      let lokasiString = lokasiUtama;
+      if (deliveryLat && deliveryLng) {
+        lokasiString += ` | Koordinat: ${deliveryLat}, ${deliveryLng}`;
+      }
+      
+      document.getElementById('h-lokasi').value = lokasiString || 'Belum diisi';
       document.getElementById('h-detail-lokasi').value = detailTambahan;
 
-      // Ambil tanggal pengiriman & jam tiba
       const tanggalPengiriman = (document.getElementById('tanggal-pengiriman')?.value ?? '').trim();
       const jamTiba = (document.getElementById('estimasi-label')?.textContent ?? '').trim();
       
       document.getElementById('h-tanggal').value = tanggalPengiriman;
       document.getElementById('h-jam-tiba').value = jamTiba;
 
-      // Validasi: file harus sudah dipilih
       const file = document.getElementById('input-bukti').files[0];
       if (!file) {
         e.preventDefault();
@@ -663,14 +923,12 @@
         return;
       }
 
-      // Tampilkan Loading Overlay Premium
       const overlay = document.getElementById('loading-overlay');
       if (overlay) {
         overlay.classList.remove('hidden');
         overlay.classList.add('flex');
       }
 
-      // Loading state di tombol
       const btn   = document.getElementById('btn-konfirmasi');
       const icon  = document.getElementById('konfirmasi-icon');
       const label = document.getElementById('konfirmasi-label');
