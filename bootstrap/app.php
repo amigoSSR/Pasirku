@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
+            'check.store.registration' => \App\Http\Middleware\RedirectIfHasStore::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

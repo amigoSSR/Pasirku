@@ -26,6 +26,9 @@
 
     $stokPasirRoute = $isStore ? route('stokPasir') : '#';
     $isStokPasir = request()->routeIs('stokPasir');
+
+    $qrisRoute = $isStore ? route('qrisStore') : '#';
+    $isQris = request()->routeIs('qrisStore');
   @endphp
 
   <div class="px-6 mb-8">
@@ -113,6 +116,18 @@
           : 'border-transparent text-on-surface-variant hover:text-primary hover:bg-surface-container-low' }}">
       <span class="material-symbols-outlined text-[20px]" @if($isStokPasir) style="font-variation-settings: 'FILL' 1" @endif>inventory_2</span>
       <span class="font-label-md text-sm">Stok Pasir</span>
+    </a>
+    @endif
+
+    {{-- Pembayaran QRIS --}}
+    @if($isStore)
+    <a href="{{ $qrisRoute }}"
+      class="flex items-center gap-4 px-6 py-3 transition-all duration-200 ease-in-out border-l-4
+        {{ $isQris
+          ? 'border-primary bg-primary-fixed/20 text-primary font-bold'
+          : 'border-transparent text-on-surface-variant hover:text-primary hover:bg-surface-container-low' }}">
+      <span class="material-symbols-outlined text-[20px]" @if($isQris) style="font-variation-settings: 'FILL' 1" @endif>qr_code_scanner</span>
+      <span class="font-label-md text-sm">Pembayaran QRIS</span>
     </a>
     @endif
 

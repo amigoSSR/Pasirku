@@ -33,12 +33,15 @@
             <span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings:'FILL' 1">storefront</span>
           </div>
           <span class="text-xs font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
-            {{ $stats['toko_aktif'] }} aktif
+            {{ $stats['toko_aktif'] }} approved
           </span>
         </div>
         <p class="text-xs font-semibold text-on-surface-variant uppercase tracking-wide">Total Toko</p>
         <h3 class="font-headline text-3xl font-extrabold text-on-surface mt-1">{{ $stats['total_toko'] }}</h3>
-        <p class="text-xs text-on-surface-variant mt-1.5">{{ $stats['toko_inactive'] }} tidak aktif</p>
+        <p class="text-xs text-on-surface-variant mt-1.5 flex gap-2">
+          <span class="text-yellow-600 font-bold">{{ $stats['toko_pending'] }} pending</span>
+          <span class="text-red-500 font-bold">{{ $stats['toko_rejected'] }} rejected</span>
+        </p>
       </div>
 
       {{-- Total User --}}
@@ -129,13 +132,17 @@
                   Rp {{ number_format($toko->Pendapatan_Toko ?? 0, 0, ',', '.') }}
                 </td>
                 <td class="px-6 py-4">
-                  @if($toko->Status === 'active')
+                  @if($toko->Status === 'approved')
                     <span class="inline-flex items-center gap-1 bg-green-100 text-green-700 text-[10px] font-black uppercase px-2.5 py-1 rounded-full">
-                      <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> Aktif
+                      <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> Approved
                     </span>
-                  @else
+                  @elseif($toko->Status === 'pending')
                     <span class="inline-flex items-center gap-1 bg-yellow-100 text-yellow-700 text-[10px] font-black uppercase px-2.5 py-1 rounded-full">
-                      <span class="w-1.5 h-1.5 bg-yellow-500 rounded-full"></span> Inactive
+                      <span class="w-1.5 h-1.5 bg-yellow-500 rounded-full"></span> Pending
+                    </span>
+                  @elseif($toko->Status === 'rejected')
+                    <span class="inline-flex items-center gap-1 bg-red-100 text-red-700 text-[10px] font-black uppercase px-2.5 py-1 rounded-full">
+                      <span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span> Rejected
                     </span>
                   @endif
                 </td>

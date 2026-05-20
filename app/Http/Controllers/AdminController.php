@@ -13,13 +13,14 @@ class AdminController extends Controller
     public function index()
     {
         $stats = [
-            'total_toko'     => \App\Models\Toko::count(),
-            'toko_aktif'     => \App\Models\Toko::where('Status', 'active')->count(),
-            'toko_inactive'  => \App\Models\Toko::where('Status', 'inactive')->count(),
-            'total_users'    => \App\Models\User::where('Role', 'user')->count(),
+            'total_toko'       => \App\Models\Toko::count(),
+            'toko_aktif'       => \App\Models\Toko::where('Status', 'approved')->count(),
+            'toko_pending'     => \App\Models\Toko::where('Status', 'pending')->count(),
+            'toko_rejected'    => \App\Models\Toko::where('Status', 'rejected')->count(),
+            'total_users'      => \App\Models\User::where('Role', 'user')->count(),
             'total_pendapatan' => \App\Models\Toko::sum('Pendapatan_Toko'),
-            'total_komisi'   => \App\Models\Toko::sum('Komisi_Admin'),
-            'total_pembelian'=> \App\Models\Toko::sum('Total_Pembelian'),
+            'total_komisi'     => \App\Models\Toko::sum('Komisi_Admin'),
+            'total_pembelian'  => \App\Models\Toko::sum('Total_Pembelian'),
         ];
 
         $recentToko = \App\Models\Toko::latest()->take(5)->get();
@@ -49,7 +50,16 @@ class AdminController extends Controller
 
         $toko = Toko::findOrFail($id);
 
-        $newStatus = $toko->Status === 'active' ? 'inactive' : 'active';
+        if ($request->has('status')) {
+            $newStatus = $request->input('status');
+        } else {
+            $newStatus = $toko->Status === 'approved' ? 'rejected' : 'approved';
+        }
+
+        if (!in_array($newStatus, ['pending', 'approved', 'rejected'])) {
+            return back()->with('error', 'Status pendaftaran toko tidak valid.');
+        }
+
         $toko->update(['Status' => $newStatus]);
 
         // Dispatch event to update user role (listener protects admin accounts)

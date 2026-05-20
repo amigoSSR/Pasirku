@@ -26,7 +26,7 @@ class UpdateUserRole
             return;
         }
 
-        $newRole = $event->status === 'active' ? 'store' : 'user';
+        $newRole = $event->status === 'approved' ? 'store' : 'user';
         \Illuminate\Support\Facades\DB::table('informasi_akun')
             ->where('ID_Akun', $event->idAkun)
             ->update(['Role' => $newRole]);

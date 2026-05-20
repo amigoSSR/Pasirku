@@ -23,19 +23,19 @@ class CheckStoreStatus
                     ->where('ID_Akun', $user->ID_Akun)
                     ->first();
                 
-                if ($toko && $toko->Status !== 'active') {
-                    // Update role back to user if store is inactive
+                if ($toko && $toko->Status !== 'approved') {
+                    // Update role back to user if store is inactive/not approved
                     \Illuminate\Support\Facades\DB::table('informasi_akun')
                         ->where('ID_Akun', $user->ID_Akun)
                         ->update(['Role' => 'user']);
                     
-                    // Logout because login as store is rejected
+                    // Logout because login as store is rejected/not approved
                     \Illuminate\Support\Facades\Auth::guard('web')->logout();
                     $request->session()->invalidate();
                     $request->session()->regenerateToken();
 
                     return redirect()->route('login')->withErrors([
-                        'Email' => 'Toko Anda belum aktif. Login sebagai toko ditolak.',
+                        'Email' => 'Toko Anda belum aktif atau ditolak. Login sebagai toko ditolak.',
                     ]);
                 }
             }

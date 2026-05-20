@@ -35,12 +35,12 @@
         <p class="font-headline text-2xl font-extrabold text-on-surface mt-1">{{ $tokoList->count() }}</p>
       </div>
       <div class="bg-surface-container-lowest rounded-2xl p-4 shadow-sm border border-outline-variant/20 text-center">
-        <p class="text-xs font-semibold text-on-surface-variant uppercase tracking-wide">Toko Aktif</p>
-        <p class="font-headline text-2xl font-extrabold text-green-600 mt-1">{{ $tokoList->where('Status', 'active')->count() }}</p>
+        <p class="text-xs font-semibold text-on-surface-variant uppercase tracking-wide">Approved</p>
+        <p class="font-headline text-2xl font-extrabold text-green-600 mt-1">{{ $tokoList->where('Status', 'approved')->count() }}</p>
       </div>
       <div class="bg-surface-container-lowest rounded-2xl p-4 shadow-sm border border-outline-variant/20 text-center">
-        <p class="text-xs font-semibold text-on-surface-variant uppercase tracking-wide">Inactive</p>
-        <p class="font-headline text-2xl font-extrabold text-yellow-600 mt-1">{{ $tokoList->where('Status', 'inactive')->count() }}</p>
+        <p class="text-xs font-semibold text-on-surface-variant uppercase tracking-wide">Pending</p>
+        <p class="font-headline text-2xl font-extrabold text-yellow-600 mt-1">{{ $tokoList->where('Status', 'pending')->count() }}</p>
       </div>
       <div class="bg-surface-container-lowest rounded-2xl p-4 shadow-sm border border-outline-variant/20 text-center">
         <p class="text-xs font-semibold text-on-surface-variant uppercase tracking-wide">Total Komisi</p>
@@ -71,13 +71,17 @@
               <p class="font-bold text-on-surface truncate">{{ $toko->Nama_Toko }}</p>
               <p class="text-xs text-on-surface-variant">{{ $toko->Username }}</p>
             </div>
-            @if($toko->Status === 'active')
+            @if($toko->Status === 'approved')
               <span class="shrink-0 inline-flex items-center gap-1 bg-green-100 text-green-700 text-[10px] font-black uppercase px-2.5 py-1 rounded-full">
-                <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> Aktif
+                <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> Approved
               </span>
-            @else
+            @elseif($toko->Status === 'pending')
               <span class="shrink-0 inline-flex items-center gap-1 bg-yellow-100 text-yellow-700 text-[10px] font-black uppercase px-2.5 py-1 rounded-full">
-                <span class="w-1.5 h-1.5 bg-yellow-500 rounded-full"></span> Inactive
+                <span class="w-1.5 h-1.5 bg-yellow-500 rounded-full"></span> Pending
+              </span>
+            @elseif($toko->Status === 'rejected')
+              <span class="shrink-0 inline-flex items-center gap-1 bg-red-100 text-red-700 text-[10px] font-black uppercase px-2.5 py-1 rounded-full">
+                <span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span> Rejected
               </span>
             @endif
           </div>
@@ -87,19 +91,40 @@
             <div><span class="font-semibold text-on-surface">Pendapatan:</span> Rp {{ number_format($toko->Pendapatan_Toko ?? 0, 0, ',', '.') }}</div>
             <div><span class="font-semibold text-on-surface">Komisi:</span> Rp {{ number_format($toko->Komisi_Admin ?? 0, 0, ',', '.') }}</div>
           </div>
-          <form action="{{ route('admin.shope.toggleStatus', $toko->ID_Toko) }}" method="POST"
-            onsubmit="return confirm('Yakin ingin mengubah status toko ini?')">
-            @csrf @method('PUT')
-            @if($toko->Status === 'active')
+          @if($toko->Status === 'pending')
+            <div class="flex gap-2">
+              <form action="{{ route('admin.shope.toggleStatus', $toko->ID_Toko) }}?status=approved" method="POST" class="flex-1"
+                onsubmit="return confirm('Setujui pendaftaran toko {{ $toko->Nama_Toko }}?')">
+                @csrf @method('PUT')
+                <button type="submit" class="w-full text-xs bg-green-50 text-green-600 border border-green-200 py-2 rounded-xl hover:bg-green-100 transition-colors font-bold">
+                  Setujui
+                </button>
+              </form>
+              <form action="{{ route('admin.shope.toggleStatus', $toko->ID_Toko) }}?status=rejected" method="POST" class="flex-1"
+                onsubmit="return confirm('Tolak pendaftaran toko {{ $toko->Nama_Toko }}?')">
+                @csrf @method('PUT')
+                <button type="submit" class="w-full text-xs bg-red-50 text-red-600 border border-red-200 py-2 rounded-xl hover:bg-red-100 transition-colors font-bold">
+                  Tolak
+                </button>
+              </form>
+            </div>
+          @elseif($toko->Status === 'approved')
+            <form action="{{ route('admin.shope.toggleStatus', $toko->ID_Toko) }}?status=rejected" method="POST"
+              onsubmit="return confirm('Nonaktifkan toko {{ $toko->Nama_Toko }}?')">
+              @csrf @method('PUT')
               <button type="submit" class="w-full text-sm bg-red-50 text-red-600 border border-red-200 px-4 py-2 rounded-xl hover:bg-red-100 transition-colors font-bold">
                 Nonaktifkan Toko
               </button>
-            @else
+            </form>
+          @elseif($toko->Status === 'rejected')
+            <form action="{{ route('admin.shope.toggleStatus', $toko->ID_Toko) }}?status=approved" method="POST"
+              onsubmit="return confirm('Aktifkan toko {{ $toko->Nama_Toko }}?')">
+              @csrf @method('PUT')
               <button type="submit" class="w-full text-sm bg-green-50 text-green-600 border border-green-200 px-4 py-2 rounded-xl hover:bg-green-100 transition-colors font-bold">
                 Aktifkan Toko
               </button>
-            @endif
-          </form>
+            </form>
+          @endif
         </div>
         @empty
         <div class="p-10 text-center text-on-surface-variant text-sm">Belum ada data toko.</div>
@@ -144,23 +169,43 @@
               <td class="px-6 py-4 font-semibold text-primary text-sm">Rp {{ number_format($toko->Komisi_Admin ?? 0, 0, ',', '.') }}</td>
               <td class="px-6 py-4">
                 <div class="flex flex-col items-center gap-2">
-                  @if($toko->Status === 'active')
+                  @if($toko->Status === 'approved')
                     <span class="inline-flex items-center gap-1 bg-green-100 text-green-700 text-[10px] font-black uppercase px-2.5 py-1 rounded-full">
-                      <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> Aktif
+                      <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> Approved
                     </span>
-                    <form action="{{ route('admin.shope.toggleStatus', $toko->ID_Toko) }}" method="POST"
+                    <form action="{{ route('admin.shope.toggleStatus', $toko->ID_Toko) }}?status=rejected" method="POST"
                       onsubmit="return confirm('Nonaktifkan toko {{ $toko->Nama_Toko }}?')">
                       @csrf @method('PUT')
                       <button type="submit" class="text-[11px] bg-red-50 text-red-600 border border-red-200 px-3 py-1.5 rounded-lg hover:bg-red-100 transition-colors font-bold">
                         Nonaktifkan
                       </button>
                     </form>
-                  @else
-                    <span class="inline-flex items-center gap-1 bg-yellow-100 text-yellow-700 text-[10px] font-black uppercase px-2.5 py-1 rounded-full">
-                      <span class="w-1.5 h-1.5 bg-yellow-500 rounded-full"></span> Inactive
+                  @elseif($toko->Status === 'pending')
+                    <span class="inline-flex items-center gap-1 bg-yellow-100 text-yellow-700 text-[10px] font-black uppercase px-2.5 py-1 rounded-full mb-1">
+                      <span class="w-1.5 h-1.5 bg-yellow-500 rounded-full"></span> Pending
                     </span>
-                    <form action="{{ route('admin.shope.toggleStatus', $toko->ID_Toko) }}" method="POST"
-                      onsubmit="return confirm('Aktifkan toko {{ $toko->Nama_Toko }}?')">
+                    <div class="flex gap-1.5">
+                      <form action="{{ route('admin.shope.toggleStatus', $toko->ID_Toko) }}?status=approved" method="POST"
+                        onsubmit="return confirm('Setujui pendaftaran toko {{ $toko->Nama_Toko }}?')">
+                        @csrf @method('PUT')
+                        <button type="submit" class="text-[11px] bg-green-50 text-green-600 border border-green-200 px-2 py-1 rounded-lg hover:bg-green-100 transition-colors font-bold">
+                          Setujui
+                        </button>
+                      </form>
+                      <form action="{{ route('admin.shope.toggleStatus', $toko->ID_Toko) }}?status=rejected" method="POST"
+                        onsubmit="return confirm('Tolak pendaftaran toko {{ $toko->Nama_Toko }}?')">
+                        @csrf @method('PUT')
+                        <button type="submit" class="text-[11px] bg-red-50 text-red-600 border border-red-200 px-2 py-1 rounded-lg hover:bg-red-100 transition-colors font-bold">
+                          Tolak
+                        </button>
+                      </form>
+                    </div>
+                  @elseif($toko->Status === 'rejected')
+                    <span class="inline-flex items-center gap-1 bg-red-100 text-red-700 text-[10px] font-black uppercase px-2.5 py-1 rounded-full">
+                      <span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span> Rejected
+                    </span>
+                    <form action="{{ route('admin.shope.toggleStatus', $toko->ID_Toko) }}?status=approved" method="POST"
+                      onsubmit="return confirm('Aktifkan kembali toko {{ $toko->Nama_Toko }}?')">
                       @csrf @method('PUT')
                       <button type="submit" class="text-[11px] bg-green-50 text-green-600 border border-green-200 px-3 py-1.5 rounded-lg hover:bg-green-100 transition-colors font-bold">
                         Aktifkan

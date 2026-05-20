@@ -9,6 +9,7 @@ use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\StokController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\QrisController;
 use Illuminate\Support\Facades\Route;
 
 use Illuminate\Support\Facades\Auth;
@@ -36,6 +37,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/MonitoringPelangganStore', fn() => view('tampilanPenjualStore.MonitoringPelanggan'))->name('MonitoringPelangganStore');
         Route::get('/tambahProduk', [ProdukController::class, 'create'])->name('tambahProduk');
         Route::post('/tambahProduk', [ProdukController::class, 'store'])->name('tambahProduk.store');
+        
+        // QRIS routes
+        Route::get('/qrisStore', [QrisController::class, 'index'])->name('qrisStore');
+        Route::put('/qrisStore', [QrisController::class, 'update'])->name('qrisStore.update');
+        Route::delete('/qrisStore', [QrisController::class, 'destroy'])->name('qrisStore.destroy');
+
         // Stok Pasir
         Route::get('/stokPasir', [StokController::class, 'index'])->name('stokPasir');
         Route::get('/stokPasir/data', [StokController::class, 'data'])->name('stokPasir.data');
@@ -62,33 +69,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/Pesan', fn() => view('tampilaUntukUser.Pesan'))->name('Pesan');
         Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
         Route::get('/ordertracking', [OrderController::class, 'userOrders'])->name('ordertracking');
-        Route::get('/Profil', fn() => view('tampilaUntukUser.profil'))->name('Profil');
-        Route::get('/daftarPenjual', fn() => view('tampilaUntukUser.daftarPenjual'))->name('daftarPenjual');
-        Route::post('/daftarPenjual', function (\Illuminate\Http\Request $request) {
-            $request->validate([
-                'Nama_Toko' => 'required',
-                'Username' => 'required',
-                'Lokasi_Toko' => 'required',
-                'Email_Toko' => 'required',
-                'Nomer_Telepon_Toko' => 'required',
-            ]);
-
-            \Illuminate\Support\Facades\DB::table('informasi_toko')->insert([
-                'ID_Akun' => \Illuminate\Support\Facades\Auth::id(),
-                'Nama_Toko' => $request->Nama_Toko,
-                'Username' => $request->Username,
-                'Lokasi_Toko' => $request->Lokasi_Toko,
-                'Email_Toko' => $request->Email_Toko,
-                'Nomer_Telepon_Toko' => $request->Nomer_Telepon_Toko,
-                'Pendapatan_Toko' => 0,
-                'Total_Pembelian' => 0,
-                'Komisi_Admin' => 0,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-
-            return redirect()->route('Profil')->with('success', 'Berhasil mendaftar sebagai penjual!');
-        })->name('daftarPenjual.store');
+        Route::get('/Profil', function () {
+            $toko = \App\Models\Toko::where('ID_Akun', \Illuminate\Support\Facades\Auth::id())->latest('created_at')->first();
+            return view('tampilaUntukUser.profil', compact('toko'));
+        })->name('Profil');
+        Route::get('/daftarPenjual', [\App\Http\Controllers\StoreRegistrationController::class, 'showForm'])
+            ->name('daftarPenjual')
+            ->middleware('check.store.registration');
+        Route::post('/daftarPenjual', [\App\Http\Controllers\StoreRegistrationController::class, 'store'])
+            ->name('daftarPenjual.store')
+            ->middleware('check.store.registration');
     });
 
     // Chat API Routes
@@ -96,6 +86,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/chat/messages', [ChatController::class, 'getMessages'])->name('chat.messages');
     Route::post('/chat/send', [ChatController::class, 'sendMessage'])->name('chat.send');
     Route::get('/chat/start/{id}', [ChatController::class, 'startChatWithToko'])->name('chat.start');
+
+    // Public API for Checkout (Requires Auth)
+    Route::get('/api/store/{id}/qris', [QrisController::class, 'getQrisUrl'])->name('api.store.qris');
 });
 
 Route::middleware('auth')->group(function () {

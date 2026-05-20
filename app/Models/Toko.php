@@ -23,6 +23,7 @@ class Toko extends Model
         'Status',
         'Ongkir_PickUp',
         'Ongkir_Truck',
+        'Gambar_QRIS',
     ];
 
     /**
@@ -31,7 +32,7 @@ class Toko extends Model
      */
     public function scopeActive(Builder $query): Builder
     {
-        return $query->where('Status', 'active');
+        return $query->where('Status', 'approved');
     }
 
     /**
@@ -39,7 +40,7 @@ class Toko extends Model
      */
     public function isActive(): bool
     {
-        return $this->Status === 'active';
+        return $this->Status === 'approved';
     }
 
     /**

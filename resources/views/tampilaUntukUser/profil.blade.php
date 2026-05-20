@@ -67,17 +67,65 @@
         <p class="text-on-surface-variant text-sm leading-relaxed">Pantau status pengiriman material Anda secara realtime.</p>
       </a>
 
-      {{-- Daftar sebagai Penjual --}}
-      <a class="stat-card group relative overflow-hidden bg-primary text-on-primary p-6 rounded-2xl shadow-sm hover:shadow-lg transition-all" href="{{ route('daftarPenjual') }}">
-        <div class="absolute top-0 right-0 w-28 h-28 bg-on-primary/10 rounded-full -mr-14 -mt-14 blur-2xl"></div>
-        <div class="relative flex justify-between items-start mb-10">
-          <div class="w-11 h-11 bg-on-primary/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-            <span class="material-symbols-outlined text-2xl" style="font-variation-settings:'FILL' 1">add_business</span>
+      {{-- Daftar sebagai Penjual / Status Toko --}}
+      @if(!$toko)
+        {{-- Belum Mendaftar --}}
+        <a class="stat-card group relative overflow-hidden bg-primary text-on-primary p-6 rounded-2xl shadow-sm hover:shadow-lg transition-all" href="{{ route('daftarPenjual') }}">
+          <div class="absolute top-0 right-0 w-28 h-28 bg-on-primary/10 rounded-full -mr-14 -mt-14 blur-2xl"></div>
+          <div class="relative flex justify-between items-start mb-10">
+            <div class="w-11 h-11 bg-on-primary/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+              <span class="material-symbols-outlined text-2xl" style="font-variation-settings:'FILL' 1">add_business</span>
+            </div>
           </div>
+          <h3 class="font-headline text-lg font-bold mb-1">Daftar sebagai Penjual</h3>
+          <p class="text-primary-fixed text-sm leading-relaxed">Jangkau lebih banyak pembeli. Daftarkan toko Anda hari ini.</p>
+        </a>
+      @elseif($toko->Status === 'pending')
+        {{-- Status Pending --}}
+        <div class="stat-card relative overflow-hidden bg-surface-container-lowest p-6 rounded-2xl border border-yellow-500/30 shadow-sm transition-all">
+          <div class="absolute top-0 right-0 -mr-6 -mt-6 w-24 h-24 rounded-full bg-yellow-500/5 blur-xl pointer-events-none"></div>
+          <div class="flex justify-between items-start mb-10">
+            <div class="w-11 h-11 bg-yellow-500/10 rounded-xl flex items-center justify-center text-yellow-600">
+              <span class="material-symbols-outlined text-2xl" style="font-variation-settings:'FILL' 1">pending_actions</span>
+            </div>
+            <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase shrink-0">
+              Pending
+            </span>
+          </div>
+          <h3 class="font-headline text-lg font-bold text-on-surface mb-1">Pendaftaran Toko</h3>
+          <p class="text-on-surface-variant text-sm leading-relaxed">Sedang diproses oleh admin. Harap tunggu verifikasi lapangan berkala.</p>
         </div>
-        <h3 class="font-headline text-lg font-bold mb-1">Daftar sebagai Penjual</h3>
-        <p class="text-primary-fixed text-sm leading-relaxed">Jangkau lebih banyak pembeli. Daftarkan toko Anda hari ini.</p>
-      </a>
+      @elseif($toko->Status === 'approved')
+        {{-- Status Approved --}}
+        <a class="stat-card group relative overflow-hidden bg-green-600 text-on-primary p-6 rounded-2xl shadow-sm hover:shadow-lg transition-all" href="{{ route('MenuUtamaStore') }}">
+          <div class="absolute top-0 right-0 w-28 h-28 bg-on-primary/10 rounded-full -mr-14 -mt-14 blur-2xl"></div>
+          <div class="relative flex justify-between items-start mb-10">
+            <div class="w-11 h-11 bg-on-primary/20 rounded-xl flex items-center justify-center text-white">
+              <span class="material-symbols-outlined text-2xl" style="font-variation-settings:'FILL' 1">storefront</span>
+            </div>
+            <span class="bg-white/20 text-white px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase shrink-0">
+              Approved
+            </span>
+          </div>
+          <h3 class="font-headline text-lg font-bold mb-1">Toko Saya</h3>
+          <p class="text-green-100 text-sm leading-relaxed">Toko Anda aktif! Masuk ke Portal Penjual sekarang.</p>
+        </a>
+      @elseif($toko->Status === 'rejected')
+        {{-- Status Rejected --}}
+        <div class="stat-card relative overflow-hidden bg-surface-container-lowest p-6 rounded-2xl border border-red-200 shadow-sm transition-all">
+          <div class="absolute top-0 right-0 -mr-6 -mt-6 w-24 h-24 rounded-full bg-red-500/5 blur-xl pointer-events-none"></div>
+          <div class="flex justify-between items-start mb-10">
+            <div class="w-11 h-11 bg-red-500/10 rounded-xl flex items-center justify-center text-red-600">
+              <span class="material-symbols-outlined text-2xl" style="font-variation-settings:'FILL' 1">gpp_bad</span>
+            </div>
+            <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase shrink-0">
+              Rejected
+            </span>
+          </div>
+          <h3 class="font-headline text-lg font-bold text-on-surface mb-1">Pendaftaran Ditolak</h3>
+          <p class="text-on-surface-variant text-sm leading-relaxed mb-3">Mohon maaf, pengajuan toko Anda ditolak dan Anda tidak dapat mendaftar lagi.</p>
+        </div>
+      @endif
 
       {{-- Logout (Full Width) --}}
       <div class="md:col-span-3">
