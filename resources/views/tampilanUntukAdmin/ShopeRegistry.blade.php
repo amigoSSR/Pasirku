@@ -36,20 +36,20 @@
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
       <div class="bg-surface-container-lowest rounded-2xl p-4 shadow-sm border border-outline-variant/20 text-center">
         <p class="text-xs font-semibold text-on-surface-variant uppercase tracking-wide">Total Toko</p>
-        <p class="font-headline text-2xl font-extrabold text-on-surface mt-1">{{ $tokoList->count() }}</p>
+        <p class="font-headline text-2xl font-extrabold text-on-surface mt-1">{{ $stats['total'] }}</p>
       </div>
       <div class="bg-surface-container-lowest rounded-2xl p-4 shadow-sm border border-outline-variant/20 text-center">
         <p class="text-xs font-semibold text-on-surface-variant uppercase tracking-wide">Approved</p>
-        <p class="font-headline text-2xl font-extrabold text-green-600 mt-1">{{ $tokoList->where('Status', 'approved')->count() }}</p>
+        <p class="font-headline text-2xl font-extrabold text-green-600 mt-1">{{ $stats['approved'] }}</p>
       </div>
       <div class="bg-surface-container-lowest rounded-2xl p-4 shadow-sm border border-outline-variant/20 text-center">
         <p class="text-xs font-semibold text-on-surface-variant uppercase tracking-wide">Pending</p>
-        <p class="font-headline text-2xl font-extrabold text-yellow-600 mt-1">{{ $tokoList->where('Status', 'pending')->count() }}</p>
+        <p class="font-headline text-2xl font-extrabold text-yellow-600 mt-1">{{ $stats['pending'] }}</p>
       </div>
       <div class="bg-surface-container-lowest rounded-2xl p-4 shadow-sm border border-outline-variant/20 text-center">
         <p class="text-xs font-semibold text-on-surface-variant uppercase tracking-wide">Total Komisi</p>
         <p class="font-headline text-xl font-extrabold text-primary mt-1">
-          Rp {{ number_format($tokoList->sum('Komisi_Admin'), 0, ',', '.') }}
+          Rp {{ number_format($stats['komisi'], 0, ',', '.') }}
         </p>
       </div>
     </div>
@@ -241,6 +241,11 @@
             @endforelse
           </tbody>
         </table>
+      </div>
+
+      {{-- Pagination --}}
+      <div class="px-6 py-4 border-t border-outline-variant/20 bg-surface-container-low/30">
+        {{ $tokoList->links() }}
       </div>
     </div>
 

@@ -44,8 +44,8 @@ class ProdukController extends Controller
             'Satuan'             => $request->Satuan,
             'Deskripsi'          => $request->Deskripsi,
             'Gambar'             => $gambarPath,
-            'Lokasi_Pengambilan' => $request->Lokasi_Pengambilan,
-            'Status_Produk'      => $request->Status_Produk,
+            'Lokasi_Pengambilan' => $request->Lokasi_Pengambilan ?? $toko->detail_alamat,
+            'Status_Produk'      => $request->Status_Produk ?? 'tersedia',
         ]);
 
         return redirect()

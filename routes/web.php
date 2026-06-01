@@ -62,7 +62,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
         Route::get('/admin/menuutama', [AdminController::class, 'index'])->name('MenuUtamaAdmin');
         Route::get('/admin/shop-registration', [AdminController::class, 'shopeRegistry'])->name('ShopeRegistry');
-        Route::get('/admin/user-registry', [ShoopeRegistryController::class, 'index'])->name('ShoopeRegistry');
+        Route::get('/admin/user-registry', [ShoopeRegistryController::class, 'index'])->name('UserRegistry');
         Route::get('/admin/profil', [AdminController::class, 'profile'])->name('ProfilAdmin');
         Route::get('/admin/pesan', fn() => view('tampilanUntukAdmin.PesanAdmin'))->name('PesanAdmin');
         Route::put('/admin/shope-registry/{id}/toggle-status', [AdminController::class, 'toggleStatus'])
@@ -97,6 +97,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/chat/messages', [ChatController::class, 'getMessages'])->name('chat.messages');
     Route::post('/chat/send', [ChatController::class, 'sendMessage'])->name('chat.send');
     Route::get('/chat/start/{id}', [ChatController::class, 'startChatWithToko'])->name('chat.start');
+    Route::get('/chat/admin', [ChatController::class, 'startChatWithAdmin'])->name('chat.admin');
 
     // Notification API
     Route::get('/api/notifications/count', [NotificationController::class, 'unreadCount'])->name('api.notifications.count');

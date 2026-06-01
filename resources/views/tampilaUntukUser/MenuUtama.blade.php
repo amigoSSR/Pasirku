@@ -112,6 +112,89 @@
   </div>
 
   @push('scripts')
+  {{-- Floating CS Chat Popup --}}
+  <div x-data="csChatPopup()" x-cloak class="fixed bottom-24 md:bottom-10 right-6 z-[100]">
+    {{-- Main Chat Popup --}}
+    <div x-show="open" 
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 translate-y-10 scale-90"
+         x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+         x-transition:leave-end="opacity-0 translate-y-10 scale-90"
+         class="absolute bottom-16 right-0 w-80 md:w-96 bg-surface-container-lowest rounded-3xl shadow-2xl border border-outline-variant/30 overflow-hidden flex flex-col">
+      
+      {{-- Header --}}
+      <div class="bg-primary p-4 text-on-primary flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-on-primary/20 rounded-xl flex items-center justify-center">
+            <span class="material-symbols-outlined text-[24px]" style="font-variation-settings:'FILL' 1">support_agent</span>
+          </div>
+          <div>
+            <h4 class="font-headline font-bold text-sm">Customer Service</h4>
+            <p class="text-[10px] text-primary-fixed flex items-center gap-1">
+              <span class="w-1.5 h-1.5 bg-green-400 rounded-full"></span> Online
+            </p>
+          </div>
+        </div>
+        <button @click="open = false" class="hover:bg-on-primary/10 p-1 rounded-lg transition-colors">
+          <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+      </div>
+
+      {{-- Message Body --}}
+      <div class="p-5 bg-surface-container-low/30 space-y-4">
+        <div class="bg-surface-container-lowest p-4 rounded-2xl rounded-tl-none border border-outline-variant/20 shadow-sm">
+          <p class="text-xs text-on-surface leading-relaxed">
+            Halo! Ada yang bisa kami bantu hari ini? Silakan tinggalkan pesan Anda di bawah.
+          </p>
+        </div>
+        
+        <div class="space-y-1.5">
+          <label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest px-1">Pesan Anda</label>
+          <textarea x-model="message" rows="3" 
+            class="w-full bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-4 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary/30 outline-none transition-all resize-none"
+            placeholder="Tulis kendala atau pertanyaan Anda..."></textarea>
+        </div>
+
+        <button @click="startChat()" :disabled="!message.trim() || sending"
+          class="w-full bg-primary text-on-primary py-3 rounded-2xl font-bold text-sm shadow-sm hover:shadow-md active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+          <span x-show="!sending">Mulai Chat</span>
+          <span x-show="sending" class="animate-spin material-symbols-outlined text-[18px]">autorenew</span>
+          <span class="material-symbols-outlined text-[18px]" x-show="!sending">arrow_forward</span>
+        </button>
+      </div>
+
+      {{-- Footer --}}
+      <div class="p-3 bg-surface-container-lowest text-center border-t border-outline-variant/10">
+        <a href="{{ route('chat.admin') }}" class="text-[10px] font-bold text-primary hover:underline">LIHAT SEMUA PERCAKAPAN</a>
+      </div>
+    </div>
+
+    {{-- Floating Toggle Button --}}
+    <button @click="open = !open" 
+      class="w-14 h-14 bg-primary text-on-primary rounded-2xl shadow-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all group relative">
+      <span class="material-symbols-outlined text-[28px]" x-show="!open" style="font-variation-settings:'FILL' 1">chat_bubble</span>
+      <span class="material-symbols-outlined text-[28px]" x-show="open">close</span>
+      
+      {{-- Badge --}}
+      <span class="absolute -top-1 -right-1 w-5 h-5 bg-error text-on-error text-[10px] font-bold rounded-full border-2 border-surface flex items-center justify-center shadow-sm">CS</span>
+    </button>
+  </div>
+
+  <script>
+    function csChatPopup() {
+      return {
+        open: false, message: '', sending: false,
+        startChat() {
+          if (!this.message.trim() || this.sending) return;
+          this.sending = true;
+          window.location.href = `{{ route('chat.admin') }}?initial_msg=${encodeURIComponent(this.message)}`;
+        }
+      }
+    }
+  </script>
+
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script src="{{ asset('js/Maps.js') }}"></script>

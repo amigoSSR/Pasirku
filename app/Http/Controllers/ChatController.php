@@ -210,4 +210,43 @@ class ChatController extends Controller
         // Redirect ke halaman chat dan otomatis buka room toko ini
         return redirect()->route('Pesan')->with('open_chat_toko', $toko->ID_Toko);
     }
+
+    /**
+     * Mulai chat dengan Admin (Customer Service)
+     */
+    public function startChatWithAdmin(Request $request)
+    {
+        $admin = User::where('Role', 'admin')->first();
+        if (!$admin) {
+            return back()->with('error', 'Layanan Customer Service sedang tidak tersedia.');
+        }
+
+        $user = Auth::user();
+
+        // Pastikan user tidak chat dirinya sendiri jika dia admin
+        if ($admin->ID_Akun === $user->ID_Akun) {
+            return back()->with('error', 'Anda adalah admin.');
+        }
+
+        $initialMessage = $request->query('initial_msg', 'Halo Customer Service, saya butuh bantuan.');
+
+        // Cek apakah sudah ada pesan
+        $exists = Message::whereNull('toko_id')
+            ->where(function($q) use ($user, $admin) {
+                $q->where('sender_id', $user->ID_Akun)->where('receiver_id', $admin->ID_Akun)
+                  ->orWhere('sender_id', $admin->ID_Akun)->where('receiver_id', $user->ID_Akun);
+            })->exists();
+
+        if (!$exists || $request->has('initial_msg')) {
+            Message::create([
+                'sender_id' => $user->ID_Akun,
+                'receiver_id' => $admin->ID_Akun,
+                'toko_id' => null,
+                'message' => $initialMessage,
+                'is_read' => false
+            ]);
+        }
+
+        return redirect()->route('Pesan')->with('open_chat_admin', $admin->ID_Akun);
+    }
 }

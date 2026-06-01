@@ -246,15 +246,15 @@
         </div>
       </div>
 
-      {{-- ===== GAMBAR & LOKASI ===== --}}
+      {{-- ===== GAMBAR ===== --}}
       <div class="bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant/30 p-6">
         <div class="flex items-center gap-3 mb-6">
           <div class="w-9 h-9 bg-tertiary/10 rounded-xl flex items-center justify-center shrink-0">
             <span class="material-symbols-outlined text-tertiary text-[18px]" style="font-variation-settings:'FILL' 1">photo_camera</span>
           </div>
           <div>
-            <h2 class="font-headline font-bold text-base text-on-surface">Gambar & Lokasi</h2>
-            <p class="text-xs text-on-surface-variant">Foto produk dan lokasi pengambilan/pengiriman</p>
+            <h2 class="font-headline font-bold text-base text-on-surface">Gambar Produk</h2>
+            <p class="text-xs text-on-surface-variant">Foto produk pasir Anda</p>
           </div>
         </div>
 
@@ -299,81 +299,7 @@
             @enderror
           </div>
 
-          {{-- Lokasi Pengambilan --}}
-          <div class="md:col-span-2">
-            <label class="block text-sm font-semibold text-on-surface mb-1.5" for="Lokasi_Pengambilan">
-              Lokasi Pengambilan/Pengiriman <span class="text-error">*</span>
-            </label>
-            <div class="relative">
-              <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px] pointer-events-none">location_on</span>
-              <input id="Lokasi_Pengambilan" name="Lokasi_Pengambilan" type="text"
-                     value="{{ old('Lokasi_Pengambilan') }}"
-                     placeholder="Contoh: Jl. Industri No. 12, Surabaya"
-                     class="w-full pl-10 pr-4 py-3 rounded-xl border text-sm
-                            {{ $errors->has('Lokasi_Pengambilan') ? 'border-error bg-error-container/20' : 'border-outline-variant bg-surface-container-low' }}
-                            text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all placeholder:text-on-surface-variant/50">
-            </div>
-            @error('Lokasi_Pengambilan')
-              <p class="mt-1.5 text-xs text-error flex items-center gap-1">
-                <span class="material-symbols-outlined text-xs">error</span>{{ $message }}
-              </p>
-            @enderror
-          </div>
-
         </div>
-      </div>
-
-      {{-- ===== STATUS PRODUK ===== --}}
-      <div class="bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant/30 p-6">
-        <div class="flex items-center gap-3 mb-5">
-          <div class="w-9 h-9 bg-amber-500/10 rounded-xl flex items-center justify-center shrink-0">
-            <span class="material-symbols-outlined text-amber-600 text-[18px]" style="font-variation-settings:'FILL' 1">toggle_on</span>
-          </div>
-          <div>
-            <h2 class="font-headline font-bold text-base text-on-surface">Status Produk</h2>
-            <p class="text-xs text-on-surface-variant">Tentukan apakah produk tersedia atau habis</p>
-          </div>
-        </div>
-
-        <div class="flex flex-col sm:flex-row gap-3">
-          {{-- Tersedia --}}
-          <label class="flex-1 cursor-pointer">
-            <input type="radio" name="Status_Produk" value="tersedia" class="peer sr-only"
-                   {{ old('Status_Produk', 'tersedia') === 'tersedia' ? 'checked' : '' }}>
-            <div class="flex items-center gap-3 p-4 rounded-xl border-2 border-outline-variant/50 transition-all
-                        peer-checked:border-green-500 peer-checked:bg-green-50 hover:border-green-300 hover:bg-green-50/40">
-              <div class="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center shrink-0">
-                <span class="material-symbols-outlined text-green-600 text-xl" style="font-variation-settings:'FILL' 1">check_circle</span>
-              </div>
-              <div>
-                <p class="text-sm font-bold text-on-surface">Tersedia</p>
-                <p class="text-xs text-on-surface-variant">Produk siap dipesan</p>
-              </div>
-            </div>
-          </label>
-
-          {{-- Habis --}}
-          <label class="flex-1 cursor-pointer">
-            <input type="radio" name="Status_Produk" value="habis" class="peer sr-only"
-                   {{ old('Status_Produk') === 'habis' ? 'checked' : '' }}>
-            <div class="flex items-center gap-3 p-4 rounded-xl border-2 border-outline-variant/50 transition-all
-                        peer-checked:border-red-400 peer-checked:bg-red-50 hover:border-red-200 hover:bg-red-50/40">
-              <div class="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center shrink-0">
-                <span class="material-symbols-outlined text-error text-xl" style="font-variation-settings:'FILL' 1">cancel</span>
-              </div>
-              <div>
-                <p class="text-sm font-bold text-on-surface">Habis</p>
-                <p class="text-xs text-on-surface-variant">Stok sedang tidak tersedia</p>
-              </div>
-            </div>
-          </label>
-        </div>
-
-        @error('Status_Produk')
-          <p class="mt-2 text-xs text-error flex items-center gap-1">
-            <span class="material-symbols-outlined text-xs">error</span>{{ $message }}
-          </p>
-        @enderror
       </div>
 
       {{-- ===== ACTION BUTTONS ===== --}}

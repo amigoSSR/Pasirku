@@ -125,17 +125,21 @@
           return this.contacts.filter(c => c.name.toLowerCase().includes(this.search.toLowerCase()));
         },
         init() {
-          // Check if there is an open_chat_toko from session redirect
+          // Check if there is an open_chat_toko or open_chat_admin from session redirect
           const openChatToko = '{{ session("open_chat_toko") ?? "" }}';
-          this.fetchContacts(openChatToko);
+          const openChatAdmin = '{{ session("open_chat_admin") ?? "" }}';
+          this.fetchContacts(openChatToko, openChatAdmin);
         },
-        fetchContacts(openChatToko = '') {
+        fetchContacts(openChatToko = '', openChatAdmin = '') {
           fetch('{{ route('chat.rooms') }}')
             .then(res => res.json())
             .then(data => {
               this.contacts = data;
               if (openChatToko) {
                  const target = data.find(c => c.toko_id == openChatToko);
+                 if (target) this.selectContact(target);
+              } else if (openChatAdmin) {
+                 const target = data.find(c => c.type === 'admin' && c.user_id == openChatAdmin);
                  if (target) this.selectContact(target);
               } else {
                  const savedId = localStorage.getItem('chat_selected_room_id');

@@ -70,6 +70,7 @@ tailwind.config = {
 </script>
 
 <style>
+  [x-cloak] { display: none !important; }
   *, *::before, *::after { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
   body { font-family: 'Inter', sans-serif; }
@@ -142,7 +143,8 @@ tailwind.config = {
 
     @php
       $isMenuAdmin = request()->routeIs('MenuUtamaAdmin', 'admin.dashboard');
-      $isShopAdmin = request()->routeIs('ShopeRegistry', 'ShoopeRegistry');
+      $isShopAdmin = request()->routeIs('ShopeRegistry');
+      $isUserAdmin = request()->routeIs('UserRegistry');
       $isProfilAdmin = request()->routeIs('ProfilAdmin');
       $isChatAdmin = request()->routeIs('chat.*') || request()->is('chat/*');
     @endphp
@@ -163,6 +165,14 @@ tailwind.config = {
           {{ $isShopAdmin ? 'bg-primary/10 text-primary font-bold border-primary/10' : 'text-on-surface-variant hover:text-primary hover:bg-surface-container-low' }}">
         <span class="material-symbols-outlined text-[20px]" @if($isShopAdmin) style="font-variation-settings:'FILL' 1" @endif>storefront</span>
         <span class="text-sm">Manajemen Toko</span>
+      </a>
+
+      {{-- Manajemen Pengguna --}}
+      <a href="{{ route('UserRegistry') }}"
+        class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 border border-transparent
+          {{ $isUserAdmin ? 'bg-primary/10 text-primary font-bold border-primary/10' : 'text-on-surface-variant hover:text-primary hover:bg-surface-container-low' }}">
+        <span class="material-symbols-outlined text-[20px]" @if($isUserAdmin) style="font-variation-settings:'FILL' 1" @endif>group</span>
+        <span class="text-sm">Manajemen Pengguna</span>
       </a>
 
       {{-- Chat Admin --}}

@@ -74,6 +74,7 @@ tailwind.config = {
 </script>
 
 <style>
+  [x-cloak] { display: none !important; }
   /* Base */
   *, *::before, *::after { box-sizing: border-box; }
   html { scroll-behavior: smooth; }

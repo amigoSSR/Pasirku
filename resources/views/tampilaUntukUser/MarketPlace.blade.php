@@ -322,36 +322,116 @@
       latitude: {{ $toko->latitude ?? 'null' }},
       longitude: {{ $toko->longitude ?? 'null' }},
     };
+
     let cartItems = {};
-    function totalCartQty() { return Object.values(cartItems).reduce((s,v)=>s+v.qty,0); }
+
+    // Load existing cart for THIS store if any
+    document.addEventListener('DOMContentLoaded', () => {
+      const existingCart = JSON.parse(sessionStorage.getItem('pasirku_cart') || '[]');
+      existingCart.forEach(item => {
+        if (item.tokoId === TOKO_DATA.id) {
+          cartItems[item.key] = {
+            qty: item.qty,
+            harga: item.harga,
+            stock: 999, // stock info might be outdated, but we need it for UI
+            namaPasir: item.namaPasir,
+            type: item.type
+          };
+          
+          // Update UI for buttons
+          const btn = document.getElementById('btn-add-'+item.type+'-'+item.key.split('_')[0]);
+          const qtyDiv = document.getElementById('qty-'+item.type+'-'+item.key.split('_')[0]);
+          const qtyNum = document.getElementById('qty-num-'+item.type+'-'+item.key.split('_')[0]);
+          
+          if (btn && qtyDiv && qtyNum) {
+            btn.classList.add('hidden');
+            qtyDiv.classList.remove('hidden');
+            qtyNum.textContent = item.qty;
+          }
+        }
+      });
+      updateCartUI();
+    });
+
+    function totalCartQty() { 
+      // Total for all stores in sessionStorage + current local cart
+      const existingCart = JSON.parse(sessionStorage.getItem('pasirku_cart') || '[]');
+      const otherStoresQty = existingCart.filter(i => i.tokoId !== TOKO_DATA.id).reduce((s,v)=>s+v.qty, 0);
+      return otherStoresQty + Object.values(cartItems).reduce((s,v)=>s+v.qty,0); 
+    }
+
     function updateCartUI() {
       const total=totalCartQty(), badge=document.getElementById('cart-fab-badge'), fab=document.getElementById('cart-fab'), ring=document.getElementById('cart-fab-ring');
-      badge.textContent=total;
-      badge.classList.remove('bounce'); void badge.offsetWidth; badge.classList.add('bounce');
-      if(total>0){if(fab.style.display==='none'||fab.style.display===''){fab.style.display='flex';ring.style.display='block';fab.classList.remove('pop-in');void fab.offsetWidth;fab.classList.add('pop-in');}}else{fab.style.display='none';ring.style.display='none';}
+      if (badge) {
+        badge.textContent=total;
+        badge.classList.remove('bounce'); void badge.offsetWidth; badge.classList.add('bounce');
+      }
+      if(total>0){if(fab && (fab.style.display==='none'||fab.style.display==='')){fab.style.display='flex';if(ring)ring.style.display='block';fab.classList.remove('pop-in');void fab.offsetWidth;fab.classList.add('pop-in');}}else{if(fab)fab.style.display='none';if(ring)ring.style.display='none';}
     }
+
     function addToCart(produkId,type,harga,stock,namaPasir){
       const key=produkId+'_'+type;
       cartItems[key]={qty:1,harga,stock,namaPasir,type};
-      document.getElementById('btn-add-'+type+'-'+produkId).classList.add('hidden');
-      const qtyDiv=document.getElementById('qty-'+type+'-'+produkId);
-      qtyDiv.classList.remove('hidden');
-      document.getElementById('qty-num-'+type+'-'+produkId).textContent=1;
+      const btn = document.getElementById('btn-add-'+type+'-'+produkId);
+      const qtyDiv = document.getElementById('qty-'+type+'-'+produkId);
+      if (btn) btn.classList.add('hidden');
+      if (qtyDiv) {
+        qtyDiv.classList.remove('hidden');
+        document.getElementById('qty-num-'+type+'-'+produkId).textContent=1;
+      }
       updateCartUI();
     }
+
     function changeQty(produkId,type,delta,stock,namaPasir,harga){
       const key=produkId+'_'+type;
       if(!cartItems[key])cartItems[key]={qty:0,harga,stock,namaPasir,type};
       let newQty=cartItems[key].qty+delta;
       if(newQty>stock)newQty=stock;
-      if(newQty<=0){delete cartItems[key];document.getElementById('qty-'+type+'-'+produkId).classList.add('hidden');document.getElementById('btn-add-'+type+'-'+produkId).classList.remove('hidden');document.getElementById('qty-num-'+type+'-'+produkId).textContent=1;}else{cartItems[key].qty=newQty;document.getElementById('qty-num-'+type+'-'+produkId).textContent=newQty;}
+      if(newQty<=0){
+        delete cartItems[key];
+        document.getElementById('qty-'+type+'-'+produkId).classList.add('hidden');
+        document.getElementById('btn-add-'+type+'-'+produkId).classList.remove('hidden');
+      }else{
+        cartItems[key].qty=newQty;
+        document.getElementById('qty-num-'+type+'-'+produkId).textContent=newQty;
+      }
       updateCartUI();
     }
+
     function goToCheckout(){
-      if(totalCartQty()===0)return;
-      const items=Object.entries(cartItems).map(([key,v])=>({key,namaPasir:v.namaPasir,type:v.type,qty:v.qty,harga:v.harga}));
-      sessionStorage.setItem('pasirku_cart',JSON.stringify(items));
-      sessionStorage.setItem('pasirku_toko',JSON.stringify(TOKO_DATA));
+      // Get all items from sessionStorage (other stores)
+      let fullCart = JSON.parse(sessionStorage.getItem('pasirku_cart') || '[]');
+      
+      // Remove items from THIS store (we will re-add current state)
+      fullCart = fullCart.filter(item => item.tokoId !== TOKO_DATA.id);
+      
+      // Add current store's items
+      const currentItems = Object.entries(cartItems).map(([key,v])=>({
+        key,
+        namaPasir:v.namaPasir,
+        type:v.type,
+        qty:v.qty,
+        harga:v.harga,
+        tokoId: TOKO_DATA.id,
+        tokoNama: TOKO_DATA.nama,
+        tokoLokasi: TOKO_DATA.lokasi,
+        ongkirPickUp: TOKO_DATA.ongkirPickUp,
+        ongkirTruck: TOKO_DATA.ongkirTruck
+      }));
+      
+      fullCart = [...fullCart, ...currentItems];
+      
+      if(fullCart.length===0)return;
+      
+      sessionStorage.setItem('pasirku_cart', JSON.stringify(fullCart));
+      // Store info for each store in a map
+      let storesMap = JSON.parse(sessionStorage.getItem('pasirku_stores') || '{}');
+      storesMap[TOKO_DATA.id] = TOKO_DATA;
+      sessionStorage.setItem('pasirku_stores', JSON.stringify(storesMap));
+      
+      // For backward compatibility (legacy pages might still expect pasirku_toko)
+      sessionStorage.setItem('pasirku_toko', JSON.stringify(TOKO_DATA));
+      
       window.location.href='{{ route('keranjang') }}';
     }
 

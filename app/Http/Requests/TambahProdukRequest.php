@@ -23,8 +23,8 @@ class TambahProdukRequest extends FormRequest
             'Satuan'             => ['required', 'string', 'max:20'],
             'Deskripsi'          => ['nullable', 'string', 'max:1000'],
             'Gambar'             => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
-            'Lokasi_Pengambilan' => ['required', 'string', 'max:200'],
-            'Status_Produk'      => ['required', 'in:tersedia,habis'],
+            'Lokasi_Pengambilan' => ['nullable', 'string', 'max:200'],
+            'Status_Produk'      => ['nullable', 'in:tersedia,habis'],
         ];
     }
 

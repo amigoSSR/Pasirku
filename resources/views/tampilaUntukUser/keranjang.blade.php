@@ -1,104 +1,9 @@
-<!DOCTYPE html>
-<html lang="id">
+<x-layout-user title="Checkout">
 
-<head>
-  <meta charset="utf-8" />
-  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-  <meta name="csrf-token" content="{{ csrf_token() }}">
-  <title>Checkout | Pasir Ku</title>
-  
-  {{-- Leaflet CSS & JS --}}
+  @push('head')
+  {{-- Leaflet CSS --}}
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  
-  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&family=Public+Sans:wght@300;400;600&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
-    rel="stylesheet" />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
-    rel="stylesheet" />
-  <script id="tailwind-config">
-    tailwind.config = {
-      darkMode: "class",
-      theme: {
-        extend: {
-          colors: {
-            "surface-variant": "#d3e4fe",
-            "on-surface": "#0b1c30",
-            "on-secondary-fixed-variant": "#623f18",
-            "primary-container": "#005fb8",
-            "on-background": "#0b1c30",
-            "on-tertiary-container": "#fcd1c4",
-            "surface": "#f8f9ff",
-            "surface-dim": "#cbdbf5",
-            "secondary": "#7d562d",
-            "surface-container-low": "#eff4ff",
-            "on-primary-fixed": "#001b3d",
-            "inverse-on-surface": "#eaf1ff",
-            "surface-tint": "#005db5",
-            "inverse-surface": "#213145",
-            "outline": "#727783",
-            "on-primary-fixed-variant": "#00468b",
-            "on-tertiary-fixed-variant": "#5d4037",
-            "tertiary-container": "#78584e",
-            "background": "#f8f9ff",
-            "error": "#ba1a1a",
-            "on-primary": "#ffffff",
-            "surface-container-highest": "#d3e4fe",
-            "on-secondary": "#ffffff",
-            "primary-fixed": "#d6e3ff",
-            "on-secondary-container": "#7a532a",
-            "on-error-container": "#93000a",
-            "surface-container-lowest": "#ffffff",
-            "secondary-fixed-dim": "#f0bd8b",
-            "tertiary-fixed-dim": "#e7bdb1",
-            "on-primary-container": "#cadcff",
-            "error-container": "#ffdad6",
-            "on-secondary-fixed": "#2c1600",
-            "primary-fixed-dim": "#a8c8ff",
-            "surface-container": "#e5eeff",
-            "on-surface-variant": "#424752",
-            "secondary-container": "#ffca98",
-            "surface-container-high": "#dce9ff",
-            "on-tertiary-fixed": "#2c160e",
-            "primary": "#00488d",
-            "outline-variant": "#c2c6d4",
-            "surface-bright": "#f8f9ff",
-            "tertiary": "#5e4138",
-            "inverse-primary": "#a8c8ff",
-            "secondary-fixed": "#ffdcbd",
-            "on-tertiary": "#ffffff",
-            "tertiary-fixed": "#ffdbd0",
-            "on-error": "#ffffff"
-          },
-          borderRadius: {
-            DEFAULT: "0.125rem",
-            lg: "0.25rem",
-            xl: "0.5rem",
-            full: "0.75rem"
-          },
-          fontFamily: {
-            headline: ["Manrope"],
-            body: ["Public Sans"],
-            label: ["Public Sans"]
-          }
-        }
-      }
-    }
-  </script>
   <style>
-    .material-symbols-outlined {
-      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-    }
-    body {
-      font-family: 'Public Sans', sans-serif;
-      background-color: #f8f9ff;
-      color: #0b1c30;
-    }
-    h1, h2, h3, h4 {
-      font-family: 'Manrope', sans-serif;
-    }
     .strata-grid {
       display: grid;
       grid-template-columns: 1fr 400px;
@@ -110,19 +15,15 @@
       }
     }
     .input-industrial {
-      background-color: #dce9ff;
+      background-color: #edeeef;
       border: none;
       border-bottom: 2px solid transparent;
       transition: border-bottom 0.2s ease;
     }
     .input-industrial:focus {
-      border-bottom: 2px solid #00488d;
+      border-bottom: 2px solid #944a00;
       box-shadow: none;
       outline: none;
-    }
-    .glass-panel {
-      background: rgba(248, 249, 255, 0.8);
-      backdrop-filter: blur(20px);
     }
     /* Shimmer for empty state */
     @keyframes shimmer {
@@ -130,30 +31,34 @@
       100% { background-position: 400px 0; }
     }
     .shimmer {
-      background: linear-gradient(90deg, #e5eeff 25%, #dce9ff 50%, #e5eeff 75%);
+      background: linear-gradient(90deg, #edeeef 25%, #e1e3e4 50%, #edeeef 75%);
       background-size: 800px 100%;
       animation: shimmer 1.5s infinite;
     }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    
+    .animate-fadeUp { animation: fadeUp 0.3s ease forwards; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
   </style>
-</head>
+  @endpush
 
-<body class="bg-surface text-on-surface">
-
-  @include('tampilaUntukUser.topbar')
-
-  <main class="max-w-7xl mx-auto px-6 pt-24 pb-12">
+  <div class="max-w-7xl mx-auto px-6 pb-12">
 
     <!-- Back link & header -->
-    <div class="mb-4">
-      <button onclick="history.back()" class="flex items-center gap-1.5 text-sm text-on-surface-variant hover:text-primary font-semibold transition-colors">
-        <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+    <div class="mb-6">
+      <button onclick="history.back()" class="flex items-center gap-1.5 text-sm text-on-surface-variant hover:text-primary font-semibold transition-colors group">
+        <span class="material-symbols-outlined text-[18px] group-hover:-translate-x-1 transition-transform">arrow_back</span>
         Kembali ke Toko
       </button>
     </div>
-    <div class="mb-12">
-      <p class="text-secondary font-bold uppercase tracking-widest text-xs mb-2">Finalisasi Pesanan</p>
-      <h1 class="text-5xl font-extrabold tracking-tight text-on-surface">Checkout</h1>
-      <p id="checkout-store-name" class="mt-2 text-on-surface-variant font-medium"></p>
+
+    <div class="mb-10">
+      <p class="text-primary font-bold uppercase tracking-[0.2em] text-xs mb-2">Finalisasi Pesanan</p>
+      <h1 class="text-4xl md:text-5xl font-headline font-black tracking-tight text-on-surface">Checkout</h1>
+      <p id="checkout-store-name" class="mt-2 text-on-surface-variant font-medium flex items-center gap-2">
+        <span class="material-symbols-outlined text-primary text-[18px]">storefront</span>
+        <span id="store-name-text">Memuat informasi toko...</span>
+      </p>
     </div>
 
     <div class="strata-grid">
@@ -161,109 +66,119 @@
       <!-- Left Column: Forms -->
       <div class="space-y-8">
 
-        <!-- Section: Item Summary (from cart) -->
-        <section class="bg-surface-container-low p-8 rounded-xl relative overflow-hidden" id="cart-items-section">
+        <!-- Section: Item Summary (Grouped by Store) -->
+        <section class="bg-surface-container-low/50 p-6 md:p-8 rounded-2xl border border-outline-variant/30 relative overflow-hidden" id="cart-items-section">
           <div class="flex items-center gap-3 mb-6">
-            <span class="material-symbols-outlined text-primary">shopping_basket</span>
-            <h2 class="text-2xl font-bold">Item yang Dipesan</h2>
+            <div class="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+              <span class="material-symbols-outlined text-primary" style="font-variation-settings:'FILL' 1">shopping_basket</span>
+            </div>
+            <h2 class="text-xl md:text-2xl font-headline font-bold text-on-surface">Item yang Dipesan</h2>
           </div>
-          <div id="cart-items-list" class="space-y-3">
-            <!-- Populated by JS -->
-            <div class="shimmer h-16 rounded-xl"></div>
-            <div class="shimmer h-16 rounded-xl opacity-60"></div>
+          
+          <div id="cart-items-list" class="space-y-4">
+            <!-- Populated by JS as store rows -->
+            <div class="shimmer h-20 rounded-2xl"></div>
+            <div class="shimmer h-20 rounded-2xl opacity-60"></div>
           </div>
+
           <!-- Empty cart notice -->
-          <div id="cart-empty-notice" class="hidden text-center py-8 text-on-surface-variant">
-            <span class="material-symbols-outlined text-5xl mb-3 block opacity-40">remove_shopping_cart</span>
-            <p class="font-semibold">Keranjang kosong.<br>Silakan pilih produk terlebih dahulu.</p>
-            <button onclick="history.back()" class="mt-4 bg-primary text-white px-6 py-2 rounded-full text-sm font-bold hover:bg-primary-container transition-colors">
-              Pilih Produk
+          <div id="cart-empty-notice" class="hidden text-center py-12 text-on-surface-variant bg-surface-container-lowest rounded-2xl border border-dashed border-outline-variant/50">
+            <span class="material-symbols-outlined text-6xl mb-4 block text-outline/30">remove_shopping_cart</span>
+            <p class="font-bold text-lg text-on-surface">Keranjang Anda kosong</p>
+            <p class="text-sm mt-1">Silakan pilih produk terlebih dahulu sebelum checkout.</p>
+            <button onclick="window.location.href='{{ route('MenuUtama') }}'" class="mt-6 bg-primary text-on-primary px-8 py-3 rounded-full text-sm font-bold hover:bg-primary-container transition-all shadow-sm hover:shadow-md active:scale-95">
+              Cari Toko Sekarang
             </button>
           </div>
         </section>
 
         <!-- Section: Shipping Address -->
-        <section class="bg-surface-container-low p-8 rounded-xl relative overflow-hidden">
+        <section class="bg-surface-container-low/50 p-6 md:p-8 rounded-2xl border border-outline-variant/30">
           <div class="flex items-center gap-3 mb-8">
-            <span class="material-symbols-outlined text-primary">local_shipping</span>
-            <h2 class="text-2xl font-bold">Alamat Pengiriman</h2>
+            <div class="w-10 h-10 bg-secondary/10 rounded-xl flex items-center justify-center">
+              <span class="material-symbols-outlined text-secondary" style="font-variation-settings:'FILL' 1">local_shipping</span>
+            </div>
+            <h2 class="text-xl md:text-2xl font-headline font-bold text-on-surface">Alamat Pengiriman</h2>
           </div>
+          
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {{-- Kolom Kiri: Form Alamat --}}
-            <div class="space-y-5">
+            <div class="space-y-6">
               <div class="flex flex-col gap-2">
-                <label for="lokasi-pengantaran" class="text-xs font-bold text-secondary uppercase tracking-wider">Lokasi Pengantaran</label>
-                <input id="lokasi-pengantaran" class="input-industrial px-4 py-3 rounded-lg w-full font-semibold"
-                       placeholder="Contoh: Jl. Merdeka No. 10, Jakarta Pusat" type="text" />
-                <p class="text-[11px] text-on-surface-variant">Masukkan alamat lengkap lokasi pengiriman pasir.</p>
+                <label for="lokasi-pengantaran" class="text-[10px] font-bold text-secondary uppercase tracking-[0.15em] px-1">Lokasi Pengantaran</label>
+                <div class="relative group">
+                  <span class="material-symbols-outlined absolute left-4 top-4 text-on-surface-variant group-focus-within:text-primary transition-colors">location_on</span>
+                  <input id="lokasi-pengantaran" class="bg-surface-container-highest/50 border-none rounded-xl pl-12 pr-4 py-4 w-full font-medium text-sm focus:ring-2 focus:ring-primary/20 transition-all"
+                         placeholder="Masukkan alamat lengkap..." type="text" />
+                </div>
+                <p class="text-[10px] text-on-surface-variant font-medium">Contoh: Jl. Merdeka No. 10, Jakarta Pusat</p>
               </div>
               
-              <div class="flex gap-2">
-                <button type="button" id="btn-search-delivery"
-                  class="flex-1 bg-primary text-on-primary hover:bg-primary-container py-3 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-md active:scale-95 duration-200">
-                  <span class="material-symbols-outlined text-[16px]">search</span>
-                  Cari & Plot di Peta
-                </button>
-              </div>
+              <button type="button" id="btn-search-delivery"
+                class="w-full bg-primary text-on-primary hover:bg-primary-container py-4 px-6 rounded-2xl text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95 group">
+                <span class="material-symbols-outlined text-[18px] group-hover:rotate-12 transition-transform">search</span>
+                Cari & Plot di Peta
+              </button>
 
               <div class="flex flex-col gap-2">
-                <label for="detail-lokasi" class="text-xs font-bold text-secondary uppercase tracking-wider">Detail Tambahan Lokasi Pengantaran</label>
-                <textarea id="detail-lokasi" class="input-industrial px-4 py-3 rounded-lg w-full resize-none font-semibold text-sm"
-                           placeholder="Contoh: Masuk gang kedua, dekat pos satpam, patokan warung Bu Sari..." rows="3"></textarea>
-                <p class="text-[11px] text-on-surface-variant">Opsional — bantu pengemudi menemukan lokasi dengan lebih mudah.</p>
+                <label for="detail-lokasi" class="text-[10px] font-bold text-secondary uppercase tracking-[0.15em] px-1">Detail Tambahan Lokasi</label>
+                <textarea id="detail-lokasi" class="bg-surface-container-highest/50 border-none rounded-xl px-4 py-4 w-full resize-none font-medium text-sm focus:ring-2 focus:ring-primary/20 transition-all"
+                           placeholder="Contoh: Masuk gang kedua, dekat pos satpam..." rows="3"></textarea>
+                <p class="text-[10px] text-on-surface-variant font-medium">Opsional — patokan spesifik lokasi bongkar pasir.</p>
               </div>
             </div>
 
-            {{-- Kolom Kanan: Peta Interaktif Rute Checkout --}}
-            <div class="flex flex-col gap-2 min-h-[300px]">
-              <span class="text-xs font-bold text-secondary uppercase tracking-wider">Tentukan Pin Lokasi (Koordinat Pengantaran)</span>
-              <div id="checkout-map" class="w-full h-full min-h-[250px] rounded-2xl border border-outline-variant/30 overflow-hidden shadow-inner relative z-0"></div>
-              <p class="text-[10px] text-on-surface-variant flex items-center gap-1">
-                <span class="material-symbols-outlined text-sm text-primary">info</span>
-                Geser pin biru untuk menandai lokasi tepat bongkar pasir. Pin merah menandai asal toko.
-              </p>
+            <div class="flex flex-col gap-2">
+              <label class="text-[10px] font-bold text-secondary uppercase tracking-[0.15em] px-1">Tentukan Pin Lokasi Bongkar</label>
+              <div id="checkout-map" class="w-full aspect-[4/3] min-h-[250px] rounded-2xl border border-outline-variant/50 overflow-hidden shadow-inner relative z-0"></div>
+              <div class="flex items-start gap-2 mt-2">
+                <span class="material-symbols-outlined text-primary text-[16px] shrink-0">info</span>
+                <p class="text-[10px] text-on-surface-variant font-medium leading-relaxed">
+                  Geser <strong class="text-blue-600">pin biru</strong> ke titik tepat pengiriman. <strong class="text-error">Pin merah</strong> adalah lokasi toko.
+                </p>
+              </div>
             </div>
           </div>
-        </section>n>
+        </section>
 
         <!-- Section: Delivery Schedule -->
-        <section class="bg-surface-container-lowest p-8 rounded-xl shadow-sm border-l-8 border-secondary">
+        <section class="bg-surface-container-lowest p-6 md:p-8 rounded-2xl shadow-sm border-l-[6px] border-primary-container relative">
           <div class="flex items-center gap-3 mb-8">
-            <span class="material-symbols-outlined text-secondary">calendar_today</span>
-            <h2 class="text-2xl font-bold">Jadwal Pengiriman Pasir</h2>
+            <div class="w-10 h-10 bg-primary-container/10 rounded-xl flex items-center justify-center">
+              <span class="material-symbols-outlined text-primary-container" style="font-variation-settings:'FILL' 1">calendar_today</span>
+            </div>
+            <h2 class="text-xl md:text-2xl font-headline font-bold text-on-surface">Jadwal Pengiriman</h2>
           </div>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-
-            {{-- Pilih Tanggal --}}
-            <div class="bg-surface-container-low p-6 rounded-lg">
-              <p class="text-xs font-bold text-secondary uppercase tracking-wider mb-4">Pilih Tanggal</p>
-              <input id="tanggal-pengiriman" type="date" class="input-industrial px-4 py-3 rounded-lg w-full font-semibold"
-                     min="{{ now()->addDay()->format('Y-m-d') }}"
-                     value="{{ now()->addDay()->format('Y-m-d') }}" />
-              <p class="text-[11px] text-on-surface-variant mt-2">Pengiriman minimal H+1 dari hari ini.</p>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-surface-container-low p-5 rounded-2xl border border-outline-variant/20">
+              <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-4 px-1">Pilih Tanggal</p>
+              <div class="relative">
+                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">event</span>
+                <input id="tanggal-pengiriman" type="date" class="bg-surface-container-highest/50 border-none rounded-xl pl-12 pr-4 py-3 w-full font-bold text-on-surface focus:ring-2 focus:ring-primary/20"
+                       min="{{ now()->addDay()->format('Y-m-d') }}"
+                       value="{{ now()->addDay()->format('Y-m-d') }}" />
+              </div>
+              <p class="text-[10px] text-on-surface-variant mt-2 px-1 font-medium italic">*Pengiriman minimal H+1</p>
             </div>
 
-            {{-- Estimasi Waktu Tiba --}}
-            <div class="bg-surface-container-low p-6 rounded-lg">
-              <p class="text-xs font-bold text-secondary uppercase tracking-wider mb-4">Estimasi Waktu Tiba</p>
+            <div class="bg-surface-container-low p-5 rounded-2xl border border-outline-variant/20">
+              <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-4 px-1">Estimasi Waktu Tiba</p>
               <div class="flex flex-col gap-3">
-                <div class="flex items-center gap-3">
+                <div class="relative">
+                  <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">schedule</span>
                   <input id="jam-mulai" type="time" value="08:00"
-                         class="input-industrial px-4 py-3 rounded-lg flex-1 font-bold text-lg text-center"
+                         class="bg-surface-container-highest/50 border-none rounded-xl pl-12 pr-4 py-3 w-full font-bold text-on-surface text-lg focus:ring-2 focus:ring-primary/20"
                          oninput="hitungEstimasi()" />
-                  <span class="text-on-surface-variant font-semibold text-sm">WIB</span>
                 </div>
-                {{-- Display estimasi hasil kalkulasi --}}
-                <div id="estimasi-box" class="bg-white rounded-lg px-4 py-3 flex items-center gap-3">
-                  <span class="material-symbols-outlined text-secondary text-[20px]">schedule</span>
+                <div id="estimasi-box" class="bg-primary/5 rounded-xl px-4 py-3 flex items-center gap-3 border border-primary/10">
+                  <span class="material-symbols-outlined text-primary text-[24px]">timelapse</span>
                   <div>
-                    <p id="estimasi-label" class="font-black text-on-surface text-sm">08:00 – 12:00</p>
-                    <p class="text-[10px] text-on-surface-variant italic">*Estimasi rentang waktu kedatangan (±4 jam)</p>
+                    <p id="estimasi-label" class="font-headline font-black text-primary text-base">08:00 – 12:00</p>
+                    <p class="text-[10px] text-on-surface-variant font-medium">Rentang waktu kedatangan (±4 jam)</p>
                   </div>
                 </div>
               </div>
             </div>
-
           </div>
         </section>
 
@@ -271,57 +186,56 @@
 
       <!-- Right Column: Payment & Summary -->
       <div class="space-y-6">
-        <div class="sticky top-24">
+        <div class="sticky top-[84px]">
 
           <!-- Order Summary Card -->
-          <div class="bg-on-surface text-surface rounded-xl p-8 mb-6 relative">
-            <div class="absolute top-0 right-0 p-4 opacity-10">
-              <span class="material-symbols-outlined text-9xl" style="font-variation-settings: 'wght' 700">receipt_long</span>
+          <div class="bg-on-surface text-surface rounded-3xl p-8 mb-6 relative overflow-hidden shadow-xl">
+            <div class="absolute -top-10 -right-10 opacity-[0.03]">
+              <span class="material-symbols-outlined text-[200px]" style="font-variation-settings:'wght' 800">receipt_long</span>
             </div>
-            <h3 class="text-xs font-bold uppercase tracking-[0.2em] mb-6 text-surface-dim">Ringkasan Pembayaran</h3>
-            <div id="payment-summary-lines" class="space-y-4 mb-8">
+
+            <h3 class="text-[10px] font-bold uppercase tracking-[0.25em] mb-8 text-primary-fixed-dim">Ringkasan Pembayaran</h3>
+            
+            <div id="payment-summary-lines" class="space-y-4 mb-8 relative z-10">
               <!-- Populated by JS -->
             </div>
 
             <!-- Ongkir Section -->
-            <div class="border-t border-white/10 pt-4 mb-4 space-y-3" id="ongkir-section">
+            <div class="border-t border-surface-variant/10 pt-6 mb-4 space-y-4 relative z-10" id="ongkir-section">
               <!-- Populated by JS -->
             </div>
 
-            <div class="border-t border-white/10 pt-6 mb-2">
-              <div class="flex justify-between items-end">
-                <span class="text-sm font-bold uppercase">Total Tagihan</span>
-                <span id="grand-total" class="text-3xl font-black text-primary-fixed">Rp 0</span>
+            <div class="border-t border-surface-variant/20 pt-8 mt-4 relative z-10">
+              <div class="flex justify-between items-baseline">
+                <span class="text-xs font-bold uppercase tracking-widest text-primary-fixed">Total Tagihan</span>
+                <span id="grand-total" class="text-3xl font-headline font-black text-on-primary">Rp 0</span>
               </div>
             </div>
           </div>
 
           <!-- Payment Section -->
-          <div class="bg-white p-8 rounded-xl shadow-xl">
-            <h3 class="text-lg font-bold mb-6 flex items-center gap-2">
-              <span class="material-symbols-outlined text-primary">qr_code_2</span>
+          <div class="bg-surface-container-lowest p-6 md:p-8 rounded-3xl shadow-xl border border-outline-variant/30">
+            <h3 class="text-lg font-headline font-extrabold text-on-surface mb-6 flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary" style="font-variation-settings:'FILL' 1">qr_code_2</span>
               Pembayaran QRIS
             </h3>
 
-              {{-- QRIS image + store info --}}
-              <div id="qris_wrapper" class="flex flex-col items-center mb-6">
-                {{-- Loading state --}}
-                <div id="qris_loading" class="flex flex-col items-center justify-center py-8 gap-3 w-full">
-                  <div class="w-10 h-10 rounded-full border-4 border-primary/20 border-t-primary animate-spin"></div>
-                  <p class="text-xs text-on-surface-variant font-medium">Memuat QRIS Toko...</p>
-                </div>
-                {{-- Content injected by JS --}}
-                <div id="qris_content" class="hidden w-full flex flex-col items-center gap-3"></div>
+            <div id="qris_wrapper" class="flex flex-col items-center mb-8">
+              <div id="qris_loading" class="flex flex-col items-center justify-center py-10 gap-4 w-full bg-surface-container-low/30 rounded-2xl border border-dashed border-outline-variant/50">
+                <div class="w-10 h-10 rounded-full border-[3px] border-primary/20 border-t-primary animate-spin"></div>
+                <p class="text-[10px] text-on-surface-variant font-bold uppercase tracking-widest">Memuat QRIS Toko...</p>
               </div>
+              <div id="qris_content" class="hidden w-full flex flex-col items-center gap-3"></div>
+            </div>
 
             <!-- FORM KONFIRMASI PESANAN -->
             <form id="form-konfirmasi" method="POST"
                   action="{{ route('pesanan.store') }}"
                   enctype="multipart/form-data"
-                  class="space-y-4">
+                  class="space-y-6">
               @csrf
 
-              {{-- Hidden inputs: diisi oleh JS sebelum submit --}}
+              {{-- Hidden inputs --}}
               <input type="hidden" name="id_toko"            id="h-id-toko">
               <input type="hidden" name="lokasi_pengantaran" id="h-lokasi">
               <input type="hidden" name="detail_lokasi"      id="h-detail-lokasi">
@@ -333,55 +247,53 @@
               <input type="hidden" name="tipe_pengiriman"    id="h-tipe-pengiriman">
               <input type="hidden" name="cart_items"         id="h-cart-items">
 
-              {{-- Input file tersembunyi --}}
               <input type="file" id="input-bukti" name="bukti_pembayaran"
                      accept="image/*" class="hidden">
 
-              {{-- Tombol trigger file manager --}}
               <button type="button" id="btn-upload-bukti"
                       onclick="document.getElementById('input-bukti').click()"
-                      class="w-full flex items-center justify-center gap-2 bg-surface-container-high py-4 rounded-lg font-bold hover:bg-surface-container-highest transition-colors group">
-                <span class="material-symbols-outlined group-hover:scale-110 transition-transform">cloud_upload</span>
-                <span id="upload-label">Upload Bukti Pembayaran</span>
+                      class="w-full flex flex-col items-center justify-center gap-2 bg-surface-container-low border-2 border-dashed border-outline-variant/50 py-8 rounded-2xl font-bold hover:bg-surface-container-high hover:border-primary/50 transition-all group">
+                <span class="material-symbols-outlined text-4xl text-outline group-hover:text-primary group-hover:scale-110 transition-all">cloud_upload</span>
+                <span id="upload-label" class="text-xs text-on-surface-variant group-hover:text-primary transition-colors">Unggah Bukti Pembayaran</span>
               </button>
 
-              {{-- Preview bukti pembayaran --}}
-              <div id="preview-bukti" class="hidden rounded-xl overflow-hidden border-2 border-primary/30 bg-surface-container-low p-3">
-                <div class="flex items-center gap-3">
+              <div id="preview-bukti" class="hidden rounded-2xl overflow-hidden border border-primary/30 bg-primary/5 p-4 animate-fadeUp">
+                <div class="flex items-center gap-4">
                   <div class="relative flex-shrink-0">
                     <img id="preview-img" src="" alt="Preview Bukti"
-                         class="w-20 h-20 object-cover rounded-lg shadow">
-                    <div class="absolute -top-1 -right-1 bg-green-500 rounded-full p-0.5">
-                      <span class="material-symbols-outlined text-white text-[14px]">check</span>
+                         class="w-16 h-16 object-cover rounded-xl shadow-md border-2 border-white">
+                    <div class="absolute -top-1.5 -right-1.5 bg-green-500 text-white rounded-full p-0.5 shadow-sm">
+                      <span class="material-symbols-outlined text-[14px]" style="font-variation-settings:'wght' 700">check</span>
                     </div>
                   </div>
                   <div class="flex-1 min-w-0">
                     <p class="text-xs font-bold text-on-surface truncate" id="preview-filename"></p>
-                    <p class="text-[10px] text-on-surface-variant" id="preview-filesize"></p>
-                    <p class="text-[10px] text-green-600 font-bold mt-1">OK Siap diunggah | Akan dikonversi ke PNG</p>
+                    <p class="text-[10px] text-on-surface-variant font-medium mt-0.5" id="preview-filesize"></p>
+                    <div class="flex items-center gap-1.5 mt-1.5">
+                      <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+                      <p class="text-[9px] text-green-700 font-bold uppercase tracking-wider">Siap Unggah</p>
+                    </div>
                   </div>
                   <button type="button" id="btn-ganti-file"
                           onclick="resetUpload()"
-                          class="flex-shrink-0 text-on-surface-variant hover:text-error transition-colors">
-                    <span class="material-symbols-outlined text-[20px]">close</span>
+                          class="flex-shrink-0 text-on-surface-variant hover:text-error transition-colors p-2 hover:bg-error/10 rounded-xl">
+                    <span class="material-symbols-outlined text-[22px]">delete</span>
                   </button>
                 </div>
               </div>
 
-              {{-- Error bukti jika ada dari server --}}
               @error('bukti_pembayaran')
-                <p class="text-xs text-red-600 font-semibold">{{ $message }}</p>
+                <p class="text-xs text-error font-bold px-1">{{ $message }}</p>
               @enderror
 
-              {{-- Tombol konfirmasi --}}
               <button type="submit" id="btn-konfirmasi"
-                      class="w-full bg-gradient-to-br from-primary to-primary-container text-white py-5 rounded-lg font-black text-lg shadow-lg hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100">
-                <span id="konfirmasi-icon" class="material-symbols-outlined">task_alt</span>
+                      class="w-full bg-primary text-on-primary py-5 rounded-2xl font-headline font-black text-lg shadow-lg hover:bg-primary-container hover:scale-[1.01] active:scale-95 transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100">
+                <span id="konfirmasi-icon" class="material-symbols-outlined">verified_user</span>
                 <span id="konfirmasi-label">KONFIRMASI PESANAN</span>
               </button>
 
-              <p class="text-[10px] text-center text-on-surface-variant italic">
-                *Dengan mengklik Konfirmasi, Anda menyetujui syarat &amp; ketentuan pengiriman.
+              <p class="text-[9px] text-center text-on-surface-variant font-medium px-4">
+                Dengan mengklik Konfirmasi, Anda menyetujui <span class="text-primary hover:underline cursor-pointer">Syarat & Ketentuan</span> pengiriman pasir.
               </p>
             </form>
           </div>
@@ -390,25 +302,12 @@
       </div>
 
     </div>
-  </main>
+  </div>
 
-  <footer class="mt-20 bg-surface-container-low py-12 px-6">
-    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-      <div class="flex flex-col">
-        <span class="text-2xl font-black text-blue-900 tracking-tighter">Pasir Ku</span>
-        <p class="text-sm text-on-surface-variant mt-1">Industrial Raw Material Hub</p>
-      </div>
-      <div class="flex gap-8">
-        <a class="text-xs font-bold uppercase text-on-surface-variant hover:text-primary" href="#">Bantuan</a>
-        <a class="text-xs font-bold uppercase text-on-surface-variant hover:text-primary" href="#">Kebijakan Pengembalian</a>
-        <a class="text-xs font-bold uppercase text-on-surface-variant hover:text-primary" href="#">Kontak Support</a>
-      </div>
-      <div class="text-[10px] font-medium text-slate-400">
-        ﾂｩ 2024 Pasir Ku. All rights reserved.
-      </div>
-    </div>
-  </footer>
-
+  @push('scripts')
+  {{-- Leaflet JS --}}
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  
   <script>
     /* -- Helpers ------------------------------------------- */
     function formatRupiah(angka) {
@@ -424,6 +323,8 @@
     function loadQris(tokoId, tokoNama, grandTotal) {
       const loading = document.getElementById('qris_loading');
       const content = document.getElementById('qris_content');
+      if(loading) loading.classList.remove('hidden');
+      if(content) content.classList.add('hidden');
 
       fetch(`/api/store/${tokoId}/qris`)
         .then(res => res.json())
@@ -433,36 +334,39 @@
 
           if (data.status === 'success') {
             content.innerHTML = `
-              <div class="w-full bg-surface-container-low rounded-2xl border border-outline-variant/20 p-4 flex flex-col items-center gap-3">
-                <div class="flex items-center justify-between w-full">
+              <div class="w-full bg-surface-container-low/50 rounded-2xl border border-outline-variant/30 p-5 flex flex-col items-center gap-4 animate-fadeUp">
+                <div class="flex items-center justify-between w-full pb-3 border-b border-outline-variant/20">
                   <div class="flex items-center gap-2">
                     <span class="material-symbols-outlined text-primary text-[18px]" style="font-variation-settings:'FILL' 1">storefront</span>
                     <span class="text-xs font-bold text-on-surface">${tokoNama}</span>
                   </div>
                   <span class="text-xs font-black text-primary">${formatRupiah(grandTotal)}</span>
                 </div>
-                <div class="w-full border-t border-outline-variant/20 pt-3 flex justify-center">
+                <div class="w-full flex justify-center py-2 relative group">
+                  <div class="absolute inset-0 bg-primary/5 rounded-2xl scale-110 blur-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
                   <img src="${data.url}"
                        alt="QRIS ${tokoNama}"
-                       class="w-52 h-52 object-contain rounded-xl border border-outline-variant/30 shadow-sm bg-white p-2">
+                       class="w-56 h-56 object-contain rounded-2xl border border-outline-variant/30 shadow-sm bg-white p-3 relative z-10">
                 </div>
-                <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider text-center">
-                  Scan QRIS ini untuk membayar ke <span class="text-primary">${tokoNama}</span>
-                </p>
-                <div class="flex items-center gap-2 text-[10px] text-green-700 bg-green-50 border border-green-100 px-3 py-1.5 rounded-full">
-                  <span class="material-symbols-outlined text-[14px]" style="font-variation-settings:'FILL' 1">verified</span>
-                  QRIS Terverifikasi
+                <div class="text-center">
+                  <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest leading-relaxed">
+                    Scan QRIS ini untuk membayar ke <br><span class="text-primary">${tokoNama}</span>
+                  </p>
+                </div>
+                <div class="flex items-center gap-2 text-[10px] text-green-700 bg-green-50 border border-green-100 px-4 py-2 rounded-full font-bold">
+                  <span class="material-symbols-outlined text-[16px]" style="font-variation-settings:'FILL' 1">verified</span>
+                  QRIS TERVERIFIKASI
                 </div>
               </div>
             `;
           } else {
             content.innerHTML = `
-              <div class="w-full bg-amber-50 border border-amber-200 rounded-2xl p-5 flex flex-col items-center gap-3 text-center">
-                <span class="material-symbols-outlined text-amber-500 text-4xl">qr_code_scanner</span>
+              <div class="w-full bg-amber-50 border border-amber-200 rounded-2xl p-6 flex flex-col items-center gap-3 text-center">
+                <span class="material-symbols-outlined text-amber-500 text-5xl">qr_code_scanner</span>
                 <div>
-                  <p class="text-sm font-bold text-amber-800">QRIS Toko Belum Tersedia</p>
-                  <p class="text-xs text-amber-700 mt-1 leading-relaxed">
-                    Toko <strong>${tokoNama}</strong> belum mengunggah QRIS. Silakan hubungi toko melalui fitur Chat untuk informasi pembayaran.
+                  <p class="text-sm font-bold text-amber-900">QRIS Toko Belum Tersedia</p>
+                  <p class="text-[11px] text-amber-700 mt-1 leading-relaxed">
+                    Toko <strong>${tokoNama}</strong> belum mengunggah QRIS. Silakan hubungi toko melalui fitur <a href="{{ route('Pesan') }}" class="text-primary font-bold hover:underline">Chat</a> untuk metode pembayaran lainnya.
                   </p>
                 </div>
               </div>
@@ -473,113 +377,165 @@
           if(loading) loading.classList.add('hidden');
           if(content) content.classList.remove('hidden');
           if(content) content.innerHTML = `
-            <div class="w-full bg-red-50 border border-red-200 rounded-2xl p-5 flex flex-col items-center gap-2 text-center">
-              <span class="material-symbols-outlined text-red-500 text-3xl">error</span>
-              <p class="text-sm font-bold text-red-700">Gagal Memuat QRIS</p>
-              <p class="text-xs text-red-600">Periksa koneksi internet Anda dan muat ulang halaman.</p>
+            <div class="w-full bg-red-50 border border-red-200 rounded-2xl p-6 flex flex-col items-center gap-2 text-center">
+              <span class="material-symbols-outlined text-red-500 text-4xl">error</span>
+              <p class="text-sm font-bold text-red-900">Gagal Memuat QRIS</p>
+              <p class="text-xs text-red-700">Periksa koneksi internet Anda dan muat ulang halaman.</p>
             </div>
           `;
         });
     }
 
-    /* -- Checkout Render ----------------------------------- */
-    function renderCheckout() {
-      const cartRaw  = sessionStorage.getItem('pasirku_cart');
-      const tokoRaw  = sessionStorage.getItem('pasirku_toko');
+    /* -- Cart Management ----------------------------------- */
+    function removeItem(key) {
+      if (!confirm('Apakah Anda yakin ingin menghapus item ini dari keranjang?')) return;
+      const cartRaw = sessionStorage.getItem('pasirku_cart');
+      if (!cartRaw) return;
+      let cartItems = JSON.parse(cartRaw);
+      cartItems = cartItems.filter(item => item.key !== key);
+      sessionStorage.setItem('pasirku_cart', JSON.stringify(cartItems));
+      renderCheckout();
+    }
 
+    function updateStoreMarker(store) {
+      if (!window.checkoutMap) return;
+      const lat = parseFloat(store.latitude);
+      const lng = parseFloat(store.longitude);
+      if (!isNaN(lat) && !isNaN(lng)) {
+        window.checkoutMap.setView([lat, lng], 13);
+        if (window.storeMarker) window.checkoutMap.removeLayer(window.storeMarker);
+        const redIcon = new L.Icon({
+          iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+          shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+          iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]
+        });
+        window.storeMarker = L.marker([lat, lng], { icon: redIcon }).addTo(window.checkoutMap);
+        window.storeMarker.bindPopup(`<strong class="text-primary font-headline">${store.nama}</strong><br><span class="text-xs text-on-surface-variant">Material dimuat dari sini</span>`).openPopup();
+        if (window.routeLine && window.deliveryMarker) {
+          const dPos = window.deliveryMarker.getLatLng();
+          window.routeLine.setLatLngs([[lat, lng], [dPos.lat, dPos.lng]]);
+        }
+      }
+    }
+
+    function renderCheckout() {
+      const cartRaw = sessionStorage.getItem('pasirku_cart');
       const cartItemsList = document.getElementById('cart-items-list');
       const paymentLines  = document.getElementById('payment-summary-lines');
       const ongkirSection = document.getElementById('ongkir-section');
       const grandTotalEl  = document.getElementById('grand-total');
       const emptyNotice   = document.getElementById('cart-empty-notice');
-      const storeName     = document.getElementById('checkout-store-name');
+      const storeNameText = document.getElementById('store-name-text');
 
-      if (!cartRaw || !tokoRaw) {
-        cartItemsList.innerHTML = '';
-        emptyNotice.classList.remove('hidden');
-        paymentLines.innerHTML  = '<p class="text-white/50 text-sm text-center">Tidak ada item</p>';
-        ongkirSection.innerHTML = '';
-        grandTotalEl.textContent = formatRupiah(0);
+      if (!cartRaw || JSON.parse(cartRaw).length === 0) {
+        if(cartItemsList) cartItemsList.innerHTML = '';
+        if(emptyNotice) emptyNotice.classList.remove('hidden');
+        if(paymentLines) paymentLines.innerHTML = '<p class="text-surface/50 text-xs text-center font-bold">TIDAK ADA ITEM</p>';
+        if(ongkirSection) ongkirSection.innerHTML = '';
+        if(grandTotalEl) grandTotalEl.textContent = formatRupiah(0);
         const loading = document.getElementById('qris_loading');
         if(loading) loading.classList.add('hidden');
         return;
       }
 
       const cartItems = JSON.parse(cartRaw);
-      const toko      = JSON.parse(tokoRaw);
+      const groupedItems = cartItems.reduce((acc, item) => {
+        if (!acc[item.tokoId]) {
+          acc[item.tokoId] = {
+            id: item.tokoId, nama: item.tokoNama, lokasi: item.tokoLokasi,
+            ongkirPickUp: item.ongkirPickUp, ongkirTruck: item.ongkirTruck,
+            latitude: item.latitude || null, longitude: item.longitude || null,
+            items: []
+          };
+        }
+        acc[item.tokoId].items.push(item);
+        return acc;
+      }, {});
 
-      storeName.textContent = 'Toko: ' + toko.nama + ' | ' + toko.lokasi;
-
-      if (!cartItems || cartItems.length === 0) {
-        cartItemsList.innerHTML = '';
-        emptyNotice.classList.remove('hidden');
-        paymentLines.innerHTML  = '<p class="text-white/50 text-sm text-center">Tidak ada item</p>';
-        ongkirSection.innerHTML = '';
-        grandTotalEl.textContent = formatRupiah(0);
-        return;
+      const storeIds = Object.keys(groupedItems);
+      let selectedStoreId = sessionStorage.getItem('pasirku_selected_store');
+      if (!selectedStoreId || !groupedItems[selectedStoreId]) {
+        selectedStoreId = storeIds[0];
+        sessionStorage.setItem('pasirku_selected_store', selectedStoreId);
       }
 
-      /*Render cart items*/
+      const selectedStore = groupedItems[selectedStoreId];
+      if(storeNameText) storeNameText.textContent = selectedStore.nama + ' | ' + selectedStore.lokasi;
+
       cartItemsList.innerHTML = '';
-      let subtotalPickUp = 0, subtotalTruck = 0;
-      let qtyPickUp = 0,      qtyTruck = 0;
-      let subTotal  = 0;
-
-      cartItems.forEach(item => {
-        const lineTotal = item.harga * item.qty;
-        subTotal += lineTotal;
-        if (item.type === 'pickup') { subtotalPickUp += lineTotal; qtyPickUp += item.qty; }
-        else                        { subtotalTruck  += lineTotal; qtyTruck  += item.qty; }
-
-        const typeLabel = item.type === 'pickup'
-          ? '<span class="inline-flex items-center gap-1 text-blue-600 font-bold text-xs bg-blue-50 px-2 py-0.5 rounded-full"><span class="material-symbols-outlined text-[13px]">directions_car</span>Pick Up</span>'
-          : '<span class="inline-flex items-center gap-1 text-amber-600 font-bold text-xs bg-amber-50 px-2 py-0.5 rounded-full"><span class="material-symbols-outlined text-[13px]">local_shipping</span>Truk</span>';
-
-        const row = document.createElement('div');
-        row.className = 'flex flex-col gap-2 bg-white rounded-xl px-4 py-3 shadow-sm border border-outline-variant/20';
-        row.innerHTML = `
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-3">
-              <div class="w-9 h-9 bg-surface-container rounded-lg flex items-center justify-center flex-shrink-0">
-                <span class="material-symbols-outlined text-[18px] text-on-surface-variant">landscape</span>
-              </div>
-              <div>
-                <p class="font-bold text-sm text-on-surface leading-tight">${item.namaPasir}</p>
-                <div class="flex items-center gap-2 mt-0.5">
-                  ${typeLabel}
-                  <span class="text-xs text-on-surface-variant font-medium">x ${item.qty}</span>
-                </div>
-              </div>
+      storeIds.forEach(tId => {
+        const store = groupedItems[tId];
+        const isSelected = tId === selectedStoreId;
+        const storeHeader = document.createElement('div');
+        storeHeader.className = `flex items-center justify-between p-4 rounded-xl mb-2 transition-all cursor-pointer border ${isSelected ? 'bg-primary/10 border-primary' : 'bg-surface-container-low border-outline-variant/30 hover:border-primary/50'}`;
+        storeHeader.onclick = () => { sessionStorage.setItem('pasirku_selected_store', tId); renderCheckout(); };
+        storeHeader.innerHTML = `
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 ${isSelected ? 'bg-primary text-on-primary' : 'bg-surface-container-high text-on-surface-variant'} rounded-lg flex items-center justify-center">
+              <span class="material-symbols-outlined text-[18px]">${isSelected ? 'check_circle' : 'storefront'}</span>
             </div>
-            <div class="text-right flex flex-col items-end">
-              <p class="font-black text-sm text-on-surface leading-none">${formatRupiah(lineTotal)}</p>
-              <p class="text-[10px] text-on-surface-variant mt-1">${formatRupiah(item.harga)} / unit</p>
+            <div>
+              <p class="font-headline font-bold text-sm text-on-surface">${store.nama}</p>
+              <p class="text-[10px] text-on-surface-variant font-medium">${store.lokasi}</p>
             </div>
           </div>
-          <div class="flex flex-wrap items-center justify-between border-t border-slate-100 pt-2 mt-1 gap-2">
-            <div id="stock-badge-${item.key}">
-              <span class="inline-flex items-center gap-1 text-[10px] text-slate-400 bg-slate-50 border border-slate-200 px-2 py-0.5 rounded-full">
-                <span class="w-1.5 h-1.5 rounded-full bg-slate-300 animate-pulse"></span>Memeriksa stok...
-              </span>
-            </div>
-            <div id="stock-warning-${item.key}"></div>
+          <div class="flex items-center gap-4">
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${isSelected ? 'bg-primary/20 text-primary' : 'bg-surface-container-highest text-on-surface-variant'}">${store.items.length} Item</span>
+            <span class="material-symbols-outlined text-[18px] text-outline transition-transform ${isSelected ? 'rotate-0' : '-rotate-90'}">expand_more</span>
           </div>`;
-        cartItemsList.appendChild(row);
+        cartItemsList.appendChild(storeHeader);
+
+        if (isSelected) {
+          const itemsContainer = document.createElement('div');
+          itemsContainer.className = 'space-y-3 mb-6 ml-4 pl-4 border-l-2 border-primary/20 animate-fadeUp';
+          store.items.forEach(item => {
+            const lineTotal = item.harga * item.qty;
+            const typeLabel = item.type === 'pickup'
+              ? '<span class="inline-flex items-center gap-1.5 text-blue-700 font-bold text-[10px] bg-blue-50 px-2.5 py-1 rounded-full border border-blue-100 uppercase tracking-wider"><span class="material-symbols-outlined text-[14px]">directions_car</span>Pick Up</span>'
+              : '<span class="inline-flex items-center gap-1.5 text-amber-700 font-bold text-[10px] bg-amber-50 px-2.5 py-1 rounded-full border border-amber-100 uppercase tracking-wider"><span class="material-symbols-outlined text-[14px]">local_shipping</span>Truk</span>';
+            const row = document.createElement('div');
+            row.className = 'flex flex-col gap-3 bg-surface-container-lowest rounded-2xl px-5 py-4 shadow-sm border border-outline-variant/30 hover:border-primary/20 transition-colors group/item';
+            row.innerHTML = `
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                  <div class="w-10 h-10 bg-surface-container-low rounded-xl flex items-center justify-center flex-shrink-0 border border-outline-variant/20">
+                    <span class="material-symbols-outlined text-xl text-primary" style="font-variation-settings:'FILL' 1">landscape</span>
+                  </div>
+                  <div class="flex flex-col gap-0.5">
+                    <p class="font-headline font-bold text-xs text-on-surface leading-tight">${item.namaPasir}</p>
+                    <div class="flex items-center gap-2 mt-1">
+                      ${typeLabel} <span class="text-[10px] text-on-surface-variant font-bold px-2 py-0.5 bg-surface-container rounded-lg">x ${item.qty} UNIT</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex items-center gap-4">
+                  <div class="text-right flex flex-col items-end">
+                    <p class="font-headline font-black text-sm text-on-surface leading-none">${formatRupiah(lineTotal)}</p>
+                    <p class="text-[9px] text-on-surface-variant font-medium mt-1 opacity-70">${formatRupiah(item.harga)} / unit</p>
+                  </div>
+                  <button onclick="removeItem('${item.key}')" class="p-2 text-outline hover:text-error hover:bg-error/10 rounded-xl transition-all opacity-0 group-hover/item:opacity-100 focus:opacity-100" title="Hapus Item"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+                </div>
+              </div>
+              <div class="flex flex-wrap items-center justify-between border-t border-outline-variant/10 pt-3 mt-1 gap-2">
+                <div id="stock-badge-${item.key}" class="flex items-center">
+                  <span class="inline-flex items-center gap-1.5 text-[9px] font-bold text-outline bg-surface-container/30 px-2.5 py-1 rounded-full border border-outline-variant/20">
+                    <span class="w-1.5 h-1.5 rounded-full bg-outline/30 animate-pulse"></span>MEMERIKSA STOK...
+                  </span>
+                </div>
+                <div id="stock-warning-${item.key}"></div>
+              </div>`;
+            itemsContainer.appendChild(row);
+          });
+          cartItemsList.appendChild(itemsContainer);
+        }
       });
 
-      // ── Live Stock Checking API Call ──────────────────────────────
-      const productIds = [...new Set(cartItems.map(item => {
-        const parts = item.key.split('_');
-        return parseInt(parts[0], 10);
-      }))];
-
+      // Stock check for selected store
+      const productIds = [...new Set(selectedStore.items.map(item => parseInt(item.key.split('_')[0], 10)))];
       if (productIds.length > 0) {
         fetch('/api/products/check-stock', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-          },
+          headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content') },
           body: JSON.stringify({ ids: productIds })
         })
         .then(res => res.json())
@@ -587,379 +543,187 @@
           if (response.status === 'success') {
             const stocks = response.data;
             let hasInsufficientStock = false;
-
-            cartItems.forEach(item => {
-              const parts = item.key.split('_');
-              const productId = parseInt(parts[0], 10);
+            selectedStore.items.forEach(item => {
+              const productId = parseInt(item.key.split('_')[0], 10);
               const prodStock = stocks.find(s => s.ID_Isi_Toko === productId);
-
               const badgeContainer = document.getElementById(`stock-badge-${item.key}`);
               const warningContainer = document.getElementById(`stock-warning-${item.key}`);
-
               if (prodStock && badgeContainer && warningContainer) {
                 const availableStock = item.type === 'pickup' ? prodStock.Stock_PickUp : prodStock.Stock_Truck;
-
-                let badgeHtml = '';
-                if (availableStock === 0) {
-                  badgeHtml = `<span class="inline-flex items-center gap-1 text-[10px] font-bold text-rose-700 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>Stok Habis</span>`;
-                } else if (availableStock <= 10) {
-                  badgeHtml = `<span class="inline-flex items-center gap-1 text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>Stok Menipis (Sisa ${availableStock})</span>`;
-                } else {
-                  badgeHtml = `<span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Stok Tersedia (Sisa ${availableStock})</span>`;
-                }
+                let badgeHtml = availableStock === 0 
+                  ? `<span class="inline-flex items-center gap-1.5 text-[9px] font-black text-error bg-error/5 border border-error/20 px-2.5 py-1 rounded-full uppercase tracking-wider"><span class="w-2 h-2 rounded-full bg-error"></span>Stok Habis</span>`
+                  : availableStock <= 10 
+                  ? `<span class="inline-flex items-center gap-1.5 text-[9px] font-black text-amber-700 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-full uppercase tracking-wider"><span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>Stok Menipis (${availableStock})</span>`
+                  : `<span class="inline-flex items-center gap-1.5 text-[9px] font-black text-green-700 bg-green-50 border border-green-200 px-2.5 py-1 rounded-full uppercase tracking-wider"><span class="w-2 h-2 rounded-full bg-green-500"></span>Stok Tersedia (${availableStock})</span>`;
                 badgeContainer.innerHTML = badgeHtml;
-
-                if (item.qty > availableStock) {
-                  hasInsufficientStock = true;
-                  warningContainer.innerHTML = `<p class="text-rose-600 text-[10px] font-semibold flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">warning</span>Melebihi sisa stok (Sisa: ${availableStock})</p>`;
-                } else {
-                  warningContainer.innerHTML = '';
-                }
+                if (item.qty > availableStock) { hasInsufficientStock = true; warningContainer.innerHTML = `<p class="text-error text-[10px] font-bold flex items-center gap-1 bg-error/5 px-2 py-0.5 rounded-lg border border-error/10"><span class="material-symbols-outlined text-[14px]">warning</span>Melebihi stok!</p>`; } 
+                else { warningContainer.innerHTML = ''; }
               }
             });
-
             const btnKonfirmasi = document.getElementById('btn-konfirmasi');
             if (hasInsufficientStock) {
-              if (btnKonfirmasi) {
-                btnKonfirmasi.disabled = true;
-                btnKonfirmasi.classList.add('opacity-50', 'cursor-not-allowed');
-                btnKonfirmasi.classList.remove('hover:bg-primary-container');
-
-                let errorAlert = document.getElementById('stock-error-alert');
-                if (!errorAlert) {
-                  errorAlert = document.createElement('div');
-                  errorAlert.id = 'stock-error-alert';
-                  errorAlert.className = 'mt-3 p-3 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-xs font-semibold text-center flex items-center justify-center gap-2';
-                  errorAlert.innerHTML = `<span class="material-symbols-outlined text-[16px]">error</span> Unit pesanan melebihi stok yang tersedia.`;
-                  btnKonfirmasi.parentNode.insertBefore(errorAlert, btnKonfirmasi);
-                }
+              if (btnKonfirmasi) { btnKonfirmasi.disabled = true; btnKonfirmasi.classList.add('opacity-50', 'cursor-not-allowed'); }
+              if (!document.getElementById('stock-error-alert')) {
+                const alert = document.createElement('div'); alert.id = 'stock-error-alert'; alert.className = 'mt-4 p-4 bg-error/5 border border-error/20 text-error rounded-2xl text-[11px] font-bold text-center animate-fadeUp'; alert.innerHTML = `Stok tidak mencukupi untuk item terpilih.`;
+                btnKonfirmasi.parentNode.insertBefore(alert, btnKonfirmasi);
               }
             } else {
-              if (btnKonfirmasi) {
-                btnKonfirmasi.disabled = false;
-                btnKonfirmasi.classList.remove('opacity-50', 'cursor-not-allowed');
-                btnKonfirmasi.classList.add('hover:bg-primary-container');
-                const errorAlert = document.getElementById('stock-error-alert');
-                if (errorAlert) errorAlert.remove();
-              }
+              if (btnKonfirmasi) { btnKonfirmasi.disabled = false; btnKonfirmasi.classList.remove('opacity-50', 'cursor-not-allowed'); }
+              const alert = document.getElementById('stock-error-alert'); if (alert) alert.remove();
             }
           }
-        })
-        .catch(err => {
-          console.error('Gagal mengambil informasi stok:', err);
         });
       }
 
-      /* -- Ongkir & grand total ---------------------------- */
-      const ongkirPickUpTotal = qtyPickUp > 0 ? toko.ongkirPickUp : 0;
-      const ongkirTruckTotal  = qtyTruck  > 0 ? toko.ongkirTruck  : 0;
-      const totalOngkir       = ongkirPickUpTotal + ongkirTruckTotal;
-      const grandTotal        = subTotal + totalOngkir;
+      let subtotalPickUp = 0, subtotalTruck = 0, qtyPickUp = 0, qtyTruck = 0, subTotal = 0;
+      selectedStore.items.forEach(item => {
+        const lineTotal = item.harga * item.qty; subTotal += lineTotal;
+        if (item.type === 'pickup') { subtotalPickUp += lineTotal; qtyPickUp += item.qty; } else { subtotalTruck += lineTotal; qtyTruck += item.qty; }
+      });
 
-      /* -- Payment summary lines --------------------------- */
+      const ongPick = qtyPickUp > 0 ? (selectedStore.ongkirPickUp || 0) : 0;
+      const ongTruck = qtyTruck > 0 ? (selectedStore.ongkirTruck || 0) : 0;
+      const totalOngkir = ongPick + ongTruck;
+      const grandTotal = subTotal + totalOngkir;
+
       paymentLines.innerHTML = '';
-      if (qtyPickUp > 0) {
-        const r = document.createElement('div');
-        r.className = 'flex justify-between text-sm opacity-80 items-center';
-        r.innerHTML = `<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[14px]">directions_car</span>Pick Up (${qtyPickUp} unit)</span><span>${formatRupiah(subtotalPickUp)}</span>`;
-        paymentLines.appendChild(r);
-      }
-      if (qtyTruck > 0) {
-        const r = document.createElement('div');
-        r.className = 'flex justify-between text-sm opacity-80 items-center';
-        r.innerHTML = `<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[14px]">local_shipping</span>Truk (${qtyTruck} unit)</span><span>${formatRupiah(subtotalTruck)}</span>`;
-        paymentLines.appendChild(r);
-      }
-      const subtotalRow = document.createElement('div');
-      subtotalRow.className = 'flex justify-between text-sm opacity-60 border-t border-white/10 pt-3 mt-1';
-      subtotalRow.innerHTML = `<span>Subtotal Produk</span><span>${formatRupiah(subTotal)}</span>`;
-      paymentLines.appendChild(subtotalRow);
+      if (qtyPickUp > 0) { const r = document.createElement('div'); r.className = 'flex justify-between text-xs font-bold items-center'; r.innerHTML = `<span class="flex items-center gap-2 text-primary-fixed-dim/80"><span class="material-symbols-outlined text-[16px]">directions_car</span>Pick Up (${qtyPickUp} unit)</span><span class="text-surface">${formatRupiah(subtotalPickUp)}</span>`; paymentLines.appendChild(r); }
+      if (qtyTruck > 0) { const r = document.createElement('div'); r.className = 'flex justify-between text-xs font-bold items-center'; r.innerHTML = `<span class="flex items-center gap-2 text-primary-fixed-dim/80"><span class="material-symbols-outlined text-[16px]">local_shipping</span>Truk (${qtyTruck} unit)</span><span class="text-surface">${formatRupiah(subtotalTruck)}</span>`; paymentLines.appendChild(r); }
+      const subRow = document.createElement('div'); subRow.className = 'flex justify-between text-[11px] font-black text-primary-fixed uppercase tracking-widest pt-4 mt-2 border-t border-surface-variant/5'; subRow.innerHTML = `<span>Subtotal Produk</span><span>${formatRupiah(subTotal)}</span>`; paymentLines.appendChild(subRow);
 
-      /* -- Ongkir section ---------------------------------- */
       ongkirSection.innerHTML = '';
-      if (ongkirPickUpTotal > 0) {
-        const r = document.createElement('div');
-        r.className = 'flex justify-between text-sm opacity-80 items-center';
-        r.innerHTML = `<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[14px]">directions_car</span>Ongkir Pick Up</span><span>${formatRupiah(ongkirPickUpTotal)}</span>`;
-        ongkirSection.appendChild(r);
-      }
-      if (ongkirTruckTotal > 0) {
-        const r = document.createElement('div');
-        r.className = 'flex justify-between text-sm opacity-80 items-center';
-        r.innerHTML = `<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[14px]">local_shipping</span>Ongkir Truk</span><span>${formatRupiah(ongkirTruckTotal)}</span>`;
-        ongkirSection.appendChild(r);
-      }
-      if (totalOngkir === 0) {
-        const r = document.createElement('div');
-        r.className = 'flex justify-between text-sm opacity-50 items-center';
-        r.innerHTML = `<span>Ongkos Kirim</span><span>-</span>`;
-        ongkirSection.appendChild(r);
-      }
+      if (ongPick > 0) { const r = document.createElement('div'); r.className = 'flex justify-between text-xs font-bold items-center'; r.innerHTML = `<span class="flex items-center gap-2 text-primary-fixed-dim/70 font-medium"><span class="material-symbols-outlined text-[16px]">directions_car</span>Ongkir Pick Up</span><span class="text-surface-variant">${formatRupiah(ongPick)}</span>`; ongkirSection.appendChild(r); }
+      if (ongTruck > 0) { const r = document.createElement('div'); r.className = 'flex justify-between text-xs font-bold items-center'; r.innerHTML = `<span class="flex items-center gap-2 text-primary-fixed-dim/70 font-medium"><span class="material-symbols-outlined text-[16px]">local_shipping</span>Ongkir Truk</span><span class="text-surface-variant">${formatRupiah(ongTruck)}</span>`; ongkirSection.appendChild(r); }
+      if (totalOngkir === 0) { const r = document.createElement('div'); r.className = 'flex justify-between text-[10px] font-bold items-center text-primary-fixed-dim/50 uppercase tracking-widest'; r.innerHTML = `<span>Ongkos Kirim</span><span>- GRATIS -</span>`; ongkirSection.appendChild(r); }
 
       grandTotalEl.textContent = formatRupiah(grandTotal);
-
-      /* -- Isi hidden inputs dari sessionStorage ----------- */
-      document.getElementById('h-id-toko').value      = toko.id   ?? '';
-      document.getElementById('h-cart-items').value   = cartRaw;
-
-      // Set product string, delivery types, and grand total for backend
-      const namaProdukArray = cartItems.map(item => item.namaPasir + ' (' + item.qty + ' ' + (item.type === 'pickup' ? 'Pick Up' : 'Truk') + ')');
-      document.getElementById('h-nama-produk').value = namaProdukArray.join(', ');
-      
-      const tipePengirimanArray = [];
-      if (qtyPickUp > 0) tipePengirimanArray.push('pickup');
-      if (qtyTruck > 0) tipePengirimanArray.push('truck');
-      document.getElementById('h-tipe-pengiriman').value = tipePengirimanArray.join(',');
-      
+      document.getElementById('h-id-toko').value = selectedStore.id;
+      document.getElementById('h-cart-items').value = JSON.stringify(selectedStore.items);
+      document.getElementById('h-nama-produk').value = selectedStore.items.map(item => item.namaPasir + ' (' + item.qty + ' ' + (item.type === 'pickup' ? 'Pick Up' : 'Truk') + ')').join(', ');
+      const tps = []; if (qtyPickUp > 0) tps.push('pickup'); if (qtyTruck > 0) tps.push('truck');
+      document.getElementById('h-tipe-pengiriman').value = tps.join(',');
       document.getElementById('h-total-harga').value = grandTotal;
+      document.getElementById('h-unit').value = qtyPickUp + qtyTruck;
 
-      // Unit = total qty semua item (pickUp + truck)
-      const totalQty = qtyPickUp + qtyTruck;
-      document.getElementById('h-unit').value = totalQty > 0 ? totalQty : 1;
-
-      /* Load QRIS from API */
-      loadQris(toko.id, toko.nama, grandTotal);
+      loadQris(selectedStore.id, selectedStore.nama, grandTotal);
+      updateStoreMarker(selectedStore);
     }
 
-    /* ── File Upload Preview ─────────────────────────────── */
+    /* ── Initial Load ─────────────────────────────── */
     document.addEventListener('DOMContentLoaded', () => {
-      renderCheckout();
-      hitungEstimasi(); // inisialisasi estimasi awal
+      // Setup Map
+      const checkoutMap = L.map('checkout-map', { scrollWheelZoom: false }).setView([-6.2, 106.8], 13);
+      window.checkoutMap = checkoutMap;
+      L.tileLayer('https://{s}.google.com/vt?lyrs=m&x={x}&y={y}&z={z}', { maxZoom: 20, subdomains: ['mt0', 'mt1', 'mt2', 'mt3'] }).addTo(checkoutMap);
 
-      // Leaflet Interactive Checkout Map Setup
-      let storeLat = -6.2088; // default Jakarta
-      let storeLng = 106.8456;
-      let hasStoreCoordinates = false;
+      const deliveryMarker = L.marker([-6.197, 106.827], { draggable: true }).addTo(checkoutMap);
+      deliveryMarker.bindPopup(`<strong class="text-secondary font-headline">Titik Bongkar Pasir</strong>`).openPopup();
+      window.deliveryMarker = deliveryMarker;
+      window.deliveryLat = -6.197; window.deliveryLng = 106.827;
 
-      const tokoRaw = sessionStorage.getItem('pasirku_toko');
-      if (tokoRaw) {
-        const toko = JSON.parse(tokoRaw);
-        if (toko.latitude && toko.longitude) {
-          storeLat = parseFloat(toko.latitude);
-          storeLng = parseFloat(toko.longitude);
-          hasStoreCoordinates = true;
-        }
-      }
-
-      const checkoutMap = L.map('checkout-map').setView([storeLat, storeLng], 13);
-      
-      L.tileLayer('https://{s}.google.com/vt?lyrs=m&x={x}&y={y}&z={z}', {
-        maxZoom: 20,
-        subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
-      }).addTo(checkoutMap);
-
-      // Custom red marker for Store
-      const redIcon = new L.Icon({
-        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
-        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-        iconSize: [25, 41],
-        iconAnchor: [12, 41],
-        popupAnchor: [1, -34],
-        shadowSize: [41, 41]
-      });
-
-      if (hasStoreCoordinates) {
-        const storeMarker = L.marker([storeLat, storeLng], { icon: redIcon }).addTo(checkoutMap);
-        storeMarker.bindPopup(`<strong class="text-primary font-headline">Titik Asal Toko</strong><br><span class="text-xs text-on-surface-variant">Material dimuat dari sini</span>`).openPopup();
-      }
-
-      // Delivery Destination marker (draggable)
-      let deliveryLat = storeLat + 0.003;
-      let deliveryLng = storeLng + 0.003;
-      
-      const deliveryMarker = L.marker([deliveryLat, deliveryLng], { draggable: true }).addTo(checkoutMap);
-      deliveryMarker.bindPopup(`<strong class="text-secondary font-headline">Titik Bongkar Pasir</strong><br><span class="text-xs text-on-surface-variant">Geser pin ke lokasi drop-off Anda</span>`).openPopup();
-
-      window.deliveryLat = deliveryLat;
-      window.deliveryLng = deliveryLng;
-
-      // Polyline to draw shipping line
-      const routeLine = L.polyline([[storeLat, storeLng], [deliveryLat, deliveryLng]], {
-        color: '#944a00',
-        dashArray: '6, 12',
-        weight: 3
-      }).addTo(checkoutMap);
-
-      function updateRoute(newLat, newLng, updateText = true) {
-        window.deliveryLat = parseFloat(newLat).toFixed(8);
-        window.deliveryLng = parseFloat(newLng).toFixed(8);
-        
-        routeLine.setLatLngs([[storeLat, storeLng], [newLat, newLng]]);
-        
-        if (updateText) {
-          fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${newLat}&lon=${newLng}`)
-            .then(res => res.json())
-            .then(data => {
-              if (data && data.display_name) {
-                const shortAddress = data.display_name.split(',').slice(0, 4).join(',').trim();
-                document.getElementById('lokasi-pengantaran').value = shortAddress;
-              }
-            })
-            .catch(() => {});
-        }
-      }
+      const routeLine = L.polyline([], { color: '#944a00', dashArray: '8, 12', weight: 3, opacity: 0.6 }).addTo(checkoutMap);
+      window.routeLine = routeLine;
 
       deliveryMarker.on('dragend', function (e) {
-        const position = deliveryMarker.getLatLng();
-        updateRoute(position.lat, position.lng, true);
-      });
-
-      checkoutMap.on('click', function (e) {
-        deliveryMarker.setLatLng(e.latlng);
-        updateRoute(e.latlng.lat, e.latlng.lng, true);
-      });
-
-      document.getElementById('btn-search-delivery').addEventListener('click', () => {
-        const query = document.getElementById('lokasi-pengantaran').value.trim();
-        if (!query) {
-          alert('Silakan ketik lokasi pengantaran terlebih dahulu!');
-          return;
+        const pos = e.target.getLatLng();
+        window.deliveryLat = pos.lat.toFixed(8); window.deliveryLng = pos.lng.toFixed(8);
+        if (window.storeMarker) {
+          const sPos = window.storeMarker.getLatLng();
+          routeLine.setLatLngs([[sPos.lat, sPos.lng], [pos.lat, pos.lng]]);
         }
-
-        const btn = document.getElementById('btn-search-delivery');
-        btn.disabled = true;
-        btn.innerHTML = `<span class="material-symbols-outlined text-[16px] animate-spin">autorenew</span> Mencari...`;
-
-        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`)
-          .then(res => res.json())
-          .then(data => {
-            btn.disabled = false;
-            btn.innerHTML = `<span class="material-symbols-outlined text-[16px]">search</span> Cari & Plot di Peta`;
-
-            if (data && data.length > 0) {
-              const newLat = parseFloat(data[0].lat);
-              const newLng = parseFloat(data[0].lon);
-              
-              checkoutMap.setView([newLat, newLng], 14);
-              deliveryMarker.setLatLng([newLat, newLng]);
-              updateRoute(newLat, newLng, false);
-            } else {
-              alert('Alamat tidak ditemukan. Silakan periksa kembali ejaan alamat Anda.');
-            }
-          })
-          .catch(() => {
-            btn.disabled = false;
-            btn.innerHTML = `<span class="material-symbols-outlined text-[16px]">search</span> Cari & Plot di Peta`;
-            alert('Gagal menghubungi layanan peta. Coba lagi.');
-          });
+        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.lat}&lon=${pos.lng}`)
+          .then(res => res.json()).then(data => { if(data && data.display_name) document.getElementById('lokasi-pengantaran').value = data.display_name.split(',').slice(0, 4).join(',').trim(); });
       });
 
-      const inputBukti   = document.getElementById('input-bukti');
-      const previewBox   = document.getElementById('preview-bukti');
-      const previewImg   = document.getElementById('preview-img');
-      const previewName  = document.getElementById('preview-filename');
-      const previewSize  = document.getElementById('preview-filesize');
-      const uploadLabel  = document.getElementById('upload-label');
-      const btnUpload    = document.getElementById('btn-upload-bukti');
+      renderCheckout();
+      hitungEstimasi();
 
-      inputBukti.addEventListener('change', function () {
-        const file = this.files[0];
-        if (!file) return;
+      const btnSearch = document.getElementById('btn-search-delivery');
+      if(btnSearch) {
+        btnSearch.addEventListener('click', () => {
+          const query = document.getElementById('lokasi-pengantaran').value.trim();
+          if (!query) return alert('Silakan ketik lokasi!');
+          btnSearch.disabled = true;
+          fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`)
+            .then(res => res.json()).then(data => {
+              btnSearch.disabled = false;
+              if (data && data.length > 0) {
+                const lat = parseFloat(data[0].lat), lon = parseFloat(data[0].lon);
+                checkoutMap.setView([lat, lon], 14);
+                deliveryMarker.setLatLng([lat, lon]);
+                window.deliveryLat = lat; window.deliveryLng = lon;
+                if (window.storeMarker) routeLine.setLatLngs([[window.storeMarker.getLatLng().lat, window.storeMarker.getLatLng().lng], [lat, lon]]);
+              }
+            });
+        });
+      }
 
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          previewImg.src      = e.target.result;
-          previewName.textContent = file.name;
-          previewSize.textContent = formatBytes(file.size) + ' | ' + file.type.split('/')[1].toUpperCase();
-          previewBox.classList.remove('hidden');
-          btnUpload.classList.add('hidden');
-        };
-        reader.readAsDataURL(file);
-      });
+      const inputBukti = document.getElementById('input-bukti');
+      if(inputBukti) {
+        inputBukti.addEventListener('change', function () {
+          const file = this.files[0]; if (!file) return;
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            document.getElementById('preview-img').src = e.target.result;
+            document.getElementById('preview-filename').textContent = file.name;
+            document.getElementById('preview-filesize').textContent = formatBytes(file.size);
+            document.getElementById('preview-bukti').classList.remove('hidden');
+            document.getElementById('btn-upload-bukti').classList.add('hidden');
+          };
+          reader.readAsDataURL(file);
+        });
+      }
     });
 
     function resetUpload() {
-      document.getElementById('input-bukti').value  = '';
+      document.getElementById('input-bukti').value = '';
       document.getElementById('preview-bukti').classList.add('hidden');
       document.getElementById('btn-upload-bukti').classList.remove('hidden');
-      document.getElementById('preview-img').src = '';
     }
 
-    /* ── Hitung Estimasi Waktu Tiba (+4 jam) ────────────── */
     function hitungEstimasi() {
       const input = document.getElementById('jam-mulai');
-      if (!input || !input.value) return;
-
-      const [jamStr, menitStr] = input.value.split(':');
-      const jamMulai   = parseInt(jamStr,  10);
-      const menitMulai = parseInt(menitStr, 10);
-
-      const totalMenitSelesai = jamMulai * 60 + menitMulai + 240;
-      const jamSelesai   = Math.floor(totalMenitSelesai / 60) % 24;
-      const menitSelesai = totalMenitSelesai % 60;
-
+      const label = document.getElementById('estimasi-label');
+      if (!input || !input.value || !label) return;
+      const [h, m] = input.value.split(':').map(Number);
+      const total = h * 60 + m + 240;
+      const h2 = Math.floor(total / 60) % 24, m2 = total % 60;
       const pad = (n) => String(n).padStart(2, '0');
-      document.getElementById('estimasi-label').textContent =
-        `${pad(jamMulai)}:${pad(menitMulai)} – ${pad(jamSelesai)}:${pad(menitSelesai)}`;
+      label.textContent = `${pad(h)}:${pad(m)} – ${pad(h2)}:${pad(m2)}`;
     }
 
-    /* ── Form Submit: validasi + isi lokasi + loading ───── */
-    document.getElementById('form-konfirmasi').addEventListener('submit', function (e) {
-      const lokasiUtama = (document.getElementById('lokasi-pengantaran')?.value ?? '').trim();
-      const detailTambahan = (document.getElementById('detail-lokasi')?.value ?? '').trim();
-      
-      const deliveryLat = window.deliveryLat || '';
-      const deliveryLng = window.deliveryLng || '';
-      let lokasiString = lokasiUtama;
-      if (deliveryLat && deliveryLng) {
-        lokasiString += ` | Koordinat: ${deliveryLat}, ${deliveryLng}`;
-      }
-      
-      document.getElementById('h-lokasi').value = lokasiString || 'Belum diisi';
-      document.getElementById('h-detail-lokasi').value = detailTambahan;
+    const formKonfirmasi = document.getElementById('form-konfirmasi');
+    if(formKonfirmasi) {
+      formKonfirmasi.addEventListener('submit', function (e) {
+        const lok = (document.getElementById('lokasi-pengantaran')?.value ?? '').trim();
+        const det = (document.getElementById('detail-lokasi')?.value ?? '').trim();
+        document.getElementById('h-lokasi').value = lok + (window.deliveryLat ? ` | Koordinat: ${window.deliveryLat}, ${window.deliveryLng}` : '');
+        document.getElementById('h-detail-lokasi').value = det;
+        document.getElementById('h-tanggal').value = document.getElementById('tanggal-pengiriman').value;
+        document.getElementById('h-jam-tiba').value = document.getElementById('estimasi-label').textContent;
 
-      const tanggalPengiriman = (document.getElementById('tanggal-pengiriman')?.value ?? '').trim();
-      const jamTiba = (document.getElementById('estimasi-label')?.textContent ?? '').trim();
-      
-      document.getElementById('h-tanggal').value = tanggalPengiriman;
-      document.getElementById('h-jam-tiba').value = jamTiba;
-
-      const file = document.getElementById('input-bukti').files[0];
-      if (!file) {
-        e.preventDefault();
-        alert('Harap upload bukti pembayaran terlebih dahulu!');
-        document.getElementById('btn-upload-bukti').classList.add('ring-2', 'ring-red-400');
-        setTimeout(() => document.getElementById('btn-upload-bukti').classList.remove('ring-2', 'ring-red-400'), 2000);
-        return;
-      }
-
-      const overlay = document.getElementById('loading-overlay');
-      if (overlay) {
-        overlay.classList.remove('hidden');
-        overlay.classList.add('flex');
-      }
-
-      const btn   = document.getElementById('btn-konfirmasi');
-      const icon  = document.getElementById('konfirmasi-icon');
-      const label = document.getElementById('konfirmasi-label');
-      if (btn) btn.disabled   = true;
-      if (icon) {
-        icon.textContent  = 'hourglass_top';
-        icon.style.animation = 'spin 1s linear infinite';
-      }
-      if (label) label.textContent = 'Memproses...';
-    });
+        if (!document.getElementById('input-bukti').files[0]) {
+          e.preventDefault(); return alert('Harap upload bukti pembayaran!');
+        }
+        document.getElementById('loading-overlay').classList.remove('hidden');
+        document.getElementById('loading-overlay').classList.add('flex');
+        const btn = document.getElementById('btn-konfirmasi');
+        btn.disabled = true; btn.innerHTML = '<span class="material-symbols-outlined animate-spin">autorenew</span> Memproses...';
+      });
+    }
   </script>
 
-  <!-- Loading Overlay Glassmorphic Premium -->
-  <div id="loading-overlay" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md hidden flex flex-col items-center justify-center z-[99999] transition-all duration-300">
-    <div class="bg-white/95 backdrop-blur-xl p-8 rounded-3xl shadow-2xl flex flex-col items-center max-w-sm text-center border border-white/20 transform scale-100 transition-transform duration-300">
-      <div class="relative w-24 h-24 mb-6">
-        <!-- Outer Animated Spin Ring -->
-        <div class="absolute inset-0 rounded-full border-[6px] border-slate-100"></div>
+  <!-- Loading Overlay -->
+  <div id="loading-overlay" class="fixed inset-0 bg-on-surface/80 backdrop-blur-md hidden flex flex-col items-center justify-center z-[99999]">
+    <div class="bg-surface-container-lowest p-10 rounded-[40px] shadow-2xl flex flex-col items-center max-w-sm text-center">
+      <div class="relative w-24 h-24 mb-8">
+        <div class="absolute inset-0 rounded-full border-[6px] border-surface-container-highest"></div>
         <div class="absolute inset-0 rounded-full border-[6px] border-t-primary border-r-primary animate-spin"></div>
-        <!-- Inner Decorative Pulse Icon -->
-        <div class="absolute inset-0 flex items-center justify-center">
-          <span class="material-symbols-outlined text-4xl text-primary animate-pulse">local_shipping</span>
-        </div>
       </div>
-      <h3 class="font-headline font-black text-xl text-on-surface mb-2">Memproses Pesanan</h3>
-      <p class="text-on-surface-variant text-sm px-4 leading-relaxed font-medium">Mohon tunggu sebentar, kami sedang mengunggah bukti pembayaran dan menyimpan pesanan Anda...</p>
+      <h3 class="font-headline font-black text-2xl text-on-surface mb-3">Memproses Pesanan</h3>
+      <p class="text-on-surface-variant text-sm px-4 font-medium">Mohon tunggu sebentar...</p>
     </div>
   </div>
+  @endpush
 
-  <style>
-    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-  </style>
-
-</body>
+</x-layout-user>

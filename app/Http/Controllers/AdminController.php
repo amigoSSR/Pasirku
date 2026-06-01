@@ -33,8 +33,16 @@ class AdminController extends Controller
      */
     public function shopeRegistry()
     {
-        $tokoList = Toko::all();
-        return view('tampilanUntukAdmin.ShopeRegistry', compact('tokoList'));
+        $tokoList = Toko::latest()->paginate(2);
+
+        $stats = [
+            'total'    => Toko::count(),
+            'approved' => Toko::where('Status', 'approved')->count(),
+            'pending'  => Toko::where('Status', 'pending')->count(),
+            'komisi'   => Toko::sum('Komisi_Admin'),
+        ];
+
+        return view('tampilanUntukAdmin.ShopeRegistry', compact('tokoList', 'stats'));
     }
 
     public function profile()
