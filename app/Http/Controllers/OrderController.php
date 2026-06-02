@@ -17,10 +17,55 @@ class OrderController extends Controller
     public function userOrders()
     {
         $orders = Pesanan::where('ID_Akun', Auth::id())
+            ->whereNotIn('Status_Pesanan', [Pesanan::STATUS_SELESAI, Pesanan::STATUS_DIBATALKAN])
             ->orderBy('created_at', 'desc')
             ->get();
 
         return view('tampilaUntukUser.ordertracking', compact('orders'));
+    }
+
+    /**
+     * User's Order History Page (completed & cancelled orders)
+     * Supports: pagination, status filter, sort, search
+     */
+    public function userHistory(Request $request)
+    {
+        // Update riwayat_seen_at to mark notifications as read
+        $user = Auth::user();
+        $user->riwayat_seen_at = now();
+        $user->save();
+
+        $query = Pesanan::where('ID_Akun', Auth::id())
+            ->whereIn('Status_Pesanan', [Pesanan::STATUS_SELESAI, Pesanan::STATUS_DIBATALKAN]);
+
+        // Filter by status
+        if ($request->filled('status') && $request->status !== 'Semua') {
+            $statusMap = [
+                'Selesai'    => Pesanan::STATUS_SELESAI,
+                'Dibatalkan' => Pesanan::STATUS_DIBATALKAN,
+            ];
+            if (isset($statusMap[$request->status])) {
+                $query->where('Status_Pesanan', $statusMap[$request->status]);
+            }
+        }
+
+        // Search by order ID or product name
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('ID_Pesanan', 'like', "%{$search}%")
+                  ->orWhere('nama_produk', 'like', "%{$search}%")
+                  ->orWhere('Nama_Toko', 'like', "%{$search}%");
+            });
+        }
+
+        // Sort order
+        $sortOrder = $request->input('sort', 'terbaru');
+        $query->orderBy('updated_at', $sortOrder === 'terlama' ? 'asc' : 'desc');
+
+        $orders = $query->paginate(10)->appends($request->query());
+
+        return view('tampilaUntukUser.riwayat', compact('orders'));
     }
 
     /**

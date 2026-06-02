@@ -15,6 +15,7 @@
 
     $isMenuUtama = request()->routeIs('MenuUtama') || request()->routeIs('MenuUtamaStore');
     $isOrderTracking = request()->routeIs('ordertracking') || request()->routeIs('ordertrackingStore');
+    $isRiwayat = !$isStore && request()->routeIs('riwayat');
     $isPesan = request()->routeIs('Pesan') || request()->routeIs('PesanStore');
     $isProfil = request()->routeIs('Profil') || request()->routeIs('ProfilStore');
     
@@ -59,6 +60,19 @@
       <span class="material-symbols-outlined text-[20px]" @if($isOrderTracking) style="font-variation-settings: 'FILL' 1" @endif>local_shipping</span>
       <span class="font-label-md text-sm">Orders</span>
     </a>
+
+    {{-- Riwayat (User Only) --}}
+    @if(!$isStore)
+    <a href="{{ route('riwayat') }}"
+      class="flex items-center gap-4 px-6 py-3 transition-all duration-200 ease-in-out border-l-4
+        {{ $isRiwayat
+          ? 'border-primary bg-primary-fixed/20 text-primary font-bold'
+          : 'border-transparent text-on-surface-variant hover:text-primary hover:bg-surface-container-low' }}">
+      <span class="material-symbols-outlined text-[20px]" @if($isRiwayat) style="font-variation-settings: 'FILL' 1" @endif>history</span>
+      <span class="font-label-md text-sm flex-1">Riwayat</span>
+      <span id="sidebar-riwayat-badge" class="hidden ml-auto bg-error text-on-error text-2xs font-bold w-5 h-5 rounded-full flex items-center justify-center shrink-0">0</span>
+    </a>
+    @endif
 
     {{-- Messages --}}
     <a href="{{ $pesanRoute }}"
@@ -199,6 +213,40 @@
 
       // Poll every 30 seconds
       setInterval(checkUnreadMessages, 30000);
+
+      // ── Riwayat Notification Badge ──
+      const sidebarRiwayatBadge = document.getElementById('sidebar-riwayat-badge');
+      const mobileRiwayatBadge = document.getElementById('mobile-riwayat-badge');
+
+      function checkRiwayatCount() {
+          fetch('/api/riwayat/count', {
+              headers: { 'X-Requested-With': 'XMLHttpRequest' }
+          })
+          .then(response => {
+              if (!response.ok) throw new Error('error');
+              return response.json();
+          })
+          .then(data => {
+              const count = data.count || 0;
+              if (count > 0) {
+                  if (sidebarRiwayatBadge) {
+                      sidebarRiwayatBadge.textContent = count > 99 ? '99+' : count;
+                      sidebarRiwayatBadge.classList.remove('hidden');
+                  }
+                  if (mobileRiwayatBadge) {
+                      mobileRiwayatBadge.textContent = count > 99 ? '99+' : count;
+                      mobileRiwayatBadge.classList.remove('hidden');
+                  }
+              } else {
+                  if (sidebarRiwayatBadge) sidebarRiwayatBadge.classList.add('hidden');
+                  if (mobileRiwayatBadge) mobileRiwayatBadge.classList.add('hidden');
+              }
+          })
+          .catch(() => {});
+      }
+
+      checkRiwayatCount();
+      setInterval(checkRiwayatCount, 30000);
   });
   </script>
 

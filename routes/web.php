@@ -80,6 +80,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/Pesan', fn() => view('tampilaUntukUser.Pesan'))->name('Pesan');
         Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
         Route::get('/ordertracking', [OrderController::class, 'userOrders'])->name('ordertracking');
+        Route::get('/riwayat', [OrderController::class, 'userHistory'])->name('riwayat');
         Route::get('/Profil', function () {
             $toko = \App\Models\Toko::where('ID_Akun', \Illuminate\Support\Facades\Auth::id())->latest('created_at')->first();
             return view('tampilaUntukUser.profil', compact('toko'));
@@ -101,6 +102,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Notification API
     Route::get('/api/notifications/count', [NotificationController::class, 'unreadCount'])->name('api.notifications.count');
+    Route::get('/api/riwayat/count', [NotificationController::class, 'riwayatCount'])->name('api.riwayat.count');
 
     // Public API for Checkout (Requires Auth)
     Route::get('/api/store/{id}/qris', [QrisController::class, 'getQrisUrl'])->name('api.store.qris');

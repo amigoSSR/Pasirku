@@ -132,25 +132,30 @@ tailwind.config = {
   </div>
 
   {{-- ===== MOBILE BOTTOM NAV ===== --}}
-  <nav class="md:hidden fixed bottom-0 left-0 w-full z-50 bg-surface-container-lowest/90 backdrop-blur-xl border-t border-outline-variant/30 flex justify-around items-center px-2 pb-safe pt-2">
-    <a href="{{ route('MenuUtama') }}" class="flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-xl {{ request()->routeIs('MenuUtama') ? 'text-primary' : 'text-on-surface-variant' }}">
+  <nav class="md:hidden fixed bottom-0 left-0 w-full z-50 bg-surface-container-lowest/90 backdrop-blur-xl border-t border-outline-variant/30 flex justify-around items-center px-1 pb-safe pt-2">
+    <a href="{{ route('MenuUtama') }}" class="flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-xl {{ request()->routeIs('MenuUtama') ? 'text-primary' : 'text-on-surface-variant' }}">
       <span class="material-symbols-outlined text-2xl" @style(["font-variation-settings: 'FILL' 1" => request()->routeIs('MenuUtama')])>home</span>
       <span class="text-[10px] font-bold">Home</span>
     </a>
-    <a href="{{ route('ordertracking') }}" class="flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-xl {{ request()->routeIs('ordertracking') ? 'text-primary' : 'text-on-surface-variant' }}">
+    <a href="{{ route('ordertracking') }}" class="flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-xl {{ request()->routeIs('ordertracking') ? 'text-primary' : 'text-on-surface-variant' }}">
       <span class="material-symbols-outlined text-2xl" @style(["font-variation-settings: 'FILL' 1" => request()->routeIs('ordertracking')])>local_shipping</span>
       <span class="text-[10px] font-bold">Orders</span>
     </a>
-    <a href="{{ route('keranjang') }}" class="flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-xl {{ request()->routeIs('keranjang') ? 'text-primary' : 'text-on-surface-variant' }}">
+    <a href="{{ route('riwayat') }}" class="flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-xl {{ request()->routeIs('riwayat') ? 'text-primary' : 'text-on-surface-variant' }} relative">
+      <span class="material-symbols-outlined text-2xl" @style(["font-variation-settings: 'FILL' 1" => request()->routeIs('riwayat')])>history</span>
+      <span id="mobile-riwayat-badge" class="hidden absolute top-0.5 right-1 bg-error text-on-error text-[9px] font-bold min-w-[16px] h-4 px-1 rounded-full flex items-center justify-center shrink-0">0</span>
+      <span class="text-[10px] font-bold">Riwayat</span>
+    </a>
+    <a href="{{ route('keranjang') }}" class="flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-xl {{ request()->routeIs('keranjang') ? 'text-primary' : 'text-on-surface-variant' }}">
       <span class="material-symbols-outlined text-2xl" @style(["font-variation-settings: 'FILL' 1" => request()->routeIs('keranjang')])>shopping_cart</span>
       <span class="text-[10px] font-bold">Cart</span>
     </a>
-    <a href="{{ route('Pesan') }}" class="flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-xl {{ request()->routeIs('Pesan') ? 'text-primary' : 'text-on-surface-variant' }} relative">
+    <a href="{{ route('Pesan') }}" class="flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-xl {{ request()->routeIs('Pesan') ? 'text-primary' : 'text-on-surface-variant' }} relative">
       <span class="material-symbols-outlined text-2xl" @style(["font-variation-settings: 'FILL' 1" => request()->routeIs('Pesan')])>forum</span>
-      <span id="mobile-chat-badge" class="hidden absolute top-1 right-3 bg-error text-on-error text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center shrink-0">0</span>
+      <span id="mobile-chat-badge" class="hidden absolute top-0.5 right-1 bg-error text-on-error text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center shrink-0">0</span>
       <span class="text-[10px] font-bold">Chat</span>
     </a>
-    <a href="{{ route('Profil') }}" class="flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-xl {{ request()->routeIs('Profil') ? 'text-primary' : 'text-on-surface-variant' }}">
+    <a href="{{ route('Profil') }}" class="flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-xl {{ request()->routeIs('Profil') ? 'text-primary' : 'text-on-surface-variant' }}">
       <span class="material-symbols-outlined text-2xl" @style(["font-variation-settings: 'FILL' 1" => request()->routeIs('Profil')])>person</span>
       <span class="text-[10px] font-bold">Profile</span>
     </a>

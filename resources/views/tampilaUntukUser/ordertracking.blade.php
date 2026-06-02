@@ -1,12 +1,32 @@
-<x-layout-user title="Active Orders | Pasir Ku" :fullHeight="false">
+<x-layout-user title="Pesanan Saya | Pasir Ku" :fullHeight="false">
   @push('head')
   <style>
     .tectonic-shadow {
       box-shadow: 0px 24px 48px rgba(11, 28, 48, 0.08);
     }
-    .glass-overlay {
-      backdrop-filter: blur(20px);
-      background-color: rgba(248, 249, 255, 0.8);
+    .order-card {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .order-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(11, 28, 48, 0.12);
+    }
+    .step-line {
+      transition: background-color 0.5s ease;
+    }
+    .status-pulse {
+      animation: statusPulse 2s infinite;
+    }
+    @keyframes statusPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    .empty-state-icon {
+      animation: float 3s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
     }
   </style>
   @endpush
@@ -20,9 +40,7 @@
         <span class="material-symbols-outlined text-sm leading-none">close</span>
       </button>
     </div>
-    
     <script>
-      // Otomatis hilangkan toast setelah 5 detik
       setTimeout(() => {
         const toast = document.getElementById('toast-success');
         if (toast) {
@@ -35,161 +53,343 @@
   @endif
 
   <!-- Content Shell -->
-  <div class="p-6 md:p-10 max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-8 mb-24 md:mb-10">
+  <div class="p-6 md:p-10 max-w-5xl mx-auto w-full mb-24 md:mb-10">
 
-    <!-- Tracking Map Section (Large Bento Block) -->
-    <section class="lg:col-span-8 bg-surface-container-low rounded-xl overflow-hidden min-h-[400px] lg:min-h-[600px] relative tectonic-shadow">
-      <div class="absolute inset-0 z-0">
-        <img
-          class="w-full h-full object-cover grayscale-[0.2] contrast-[1.1]"
-          alt="Peta pengiriman"
-          src="https://lh3.googleusercontent.com/aida-public/AB6AXuBq5DKJKlNW9YxlkLe8drqR2ugGoBGO38hppAxGA_7ZRhJoPUN9JUBOBmsKazSDOSh5nyakHj_yUyzqqU6iJydop5T5rVVBva1ExQuQ7sLpAu2HHBCONcxXMdRSu6HvhzBEv6FfEPXaE2Z0wzYSOx9PWBoWRvcPZ6rmHXHYjWJc4HlvIZpkOtwlaJ495zKRONy41DdJcrLpZlNTrDCyUpIsfKEGEgHwBywLPnLgehdcMeU-ux4foCAH40IO_GR3dTb3GjVwLzKX5A" />
-      </div>
-
-      <!-- Floating Map Controls -->
-      <div class="absolute top-6 left-6 z-10 glass-overlay p-4 rounded-xl shadow-lg border border-white/20">
-        <div class="flex items-center gap-4">
-          <div class="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white">
-            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">local_shipping</span>
-          </div>
-          <div>
-            <h3 class="text-on-surface font-bold text-lg tracking-tight">TRUCK-992-B</h3>
-            <p class="text-on-surface-variant text-sm font-medium">Hino Ranger - Sand Delivery</p>
-          </div>
+    <!-- Page Header -->
+    <div class="mb-8">
+      <div class="flex items-center gap-3 mb-2">
+        <div class="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center">
+          <span class="material-symbols-outlined text-primary text-2xl" style="font-variation-settings: 'FILL' 1">receipt_long</span>
+        </div>
+        <div>
+          <h1 class="text-on-surface text-2xl md:text-3xl font-extrabold tracking-tight">Pesanan Saya</h1>
+          <p class="text-on-surface-variant text-sm font-medium">Pantau status pesanan Anda secara real-time</p>
         </div>
       </div>
+    </div>
 
-      <!-- Map Zoom Controls -->
-      <div class="absolute bottom-6 right-6 z-10 flex flex-col gap-2">
-        <button class="bg-surface-container-lowest p-3 rounded-lg shadow-md text-on-surface hover:bg-surface-variant transition-colors">
-          <span class="material-symbols-outlined">add</span>
-        </button>
-        <button class="bg-surface-container-lowest p-3 rounded-lg shadow-md text-on-surface hover:bg-surface-variant transition-colors">
-          <span class="material-symbols-outlined">remove</span>
-        </button>
-        <button class="bg-primary text-on-primary p-3 rounded-lg shadow-md hover:bg-primary-container transition-all">
-          <span class="material-symbols-outlined">my_location</span>
-        </button>
-      </div>
-    </section>
+    <!-- Orders List -->
+    @forelse($orders as $order)
+      @php
+        // Determine which step the order is at
+        $status = $order->Status_Pesanan;
+        $isCancelled = $status === \App\Models\Pesanan::STATUS_DIBATALKAN;
 
-    <!-- Status & Details Section -->
-    <section class="lg:col-span-4 space-y-6">
+        // Steps: 1=Pending, 2=Diproses, 3=Dikirim, 4=Selesai
+        $stepMap = [
+            \App\Models\Pesanan::STATUS_PENDING => 1,
+            \App\Models\Pesanan::STATUS_DIPROSES => 2,
+            \App\Models\Pesanan::STATUS_DIKIRIM => 3,
+            \App\Models\Pesanan::STATUS_SELESAI => 4,
+            \App\Models\Pesanan::STATUS_DIBATALKAN => 0,
+        ];
+        $currentStep = $stepMap[$status] ?? 0;
 
-      <!-- Delivery Stepper Card -->
-      <div class="bg-surface-container-lowest p-8 rounded-xl tectonic-shadow border-b-4 border-primary">
-        <div class="mb-8">
-          <p class="text-secondary font-bold text-xs uppercase tracking-[0.2em] mb-1">Status Pengiriman</p>
-          <h2 class="text-on-surface text-3xl font-extrabold tracking-tighter leading-none">Menuju ke lokasi anda</h2>
-        </div>
-        <div class="space-y-0">
+        // Delivery type
+        $cartItems = $order->cart_items;
+        $deliveryTypes = [];
+        if (is_array($cartItems)) {
+            foreach ($cartItems as $item) {
+                $type = $item['type'] ?? 'pickup';
+                if (!in_array($type, $deliveryTypes)) {
+                    $deliveryTypes[] = $type;
+                }
+            }
+        }
 
-          <!-- Step 1: Done -->
-          <div class="flex gap-4 min-h-[80px]">
-            <div class="flex flex-col items-center">
-              <div class="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
-                <span class="material-symbols-outlined text-[14px] text-white font-bold">check</span>
-              </div>
-              <div class="w-0.5 flex-1 bg-primary"></div>
-            </div>
-            <div class="pb-6">
-              <h4 class="text-on-surface font-bold text-sm">Diterima oleh toko</h4>
-              <p class="text-on-surface-variant text-xs mt-1">12 Oct, 09:15 AM</p>
-            </div>
-          </div>
+        // Status colors for the main badge
+        $statusColors = match($status) {
+            \App\Models\Pesanan::STATUS_PENDING => 'bg-amber-100 text-amber-700 border-amber-200',
+            \App\Models\Pesanan::STATUS_DIPROSES => 'bg-blue-100 text-blue-700 border-blue-200',
+            \App\Models\Pesanan::STATUS_DIKIRIM => 'bg-purple-100 text-purple-700 border-purple-200',
+            \App\Models\Pesanan::STATUS_SELESAI => 'bg-green-100 text-green-700 border-green-200',
+            \App\Models\Pesanan::STATUS_DIBATALKAN => 'bg-red-100 text-red-600 border-red-200',
+            default => 'bg-gray-100 text-gray-600 border-gray-200',
+        };
+      @endphp
 
-          <!-- Step 2: Done -->
-          <div class="flex gap-4 min-h-[80px]">
-            <div class="flex flex-col items-center">
-              <div class="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
-                <span class="material-symbols-outlined text-[14px] text-white font-bold">check</span>
-              </div>
-              <div class="w-0.5 flex-1 bg-primary"></div>
-            </div>
-            <div class="pb-6">
-              <h4 class="text-on-surface font-bold text-sm">Sedang di proses</h4>
-              <p class="text-on-surface-variant text-xs mt-1">12 Oct, 10:30 AM</p>
-            </div>
-          </div>
+      <div class="order-card bg-surface-container-lowest rounded-2xl tectonic-shadow overflow-hidden mb-6 border border-outline-variant/20">
 
-          <!-- Step 3: Active -->
-          <div class="flex gap-4">
-            <div class="flex flex-col items-center">
-              <div class="w-8 h-8 -ml-1 rounded-full bg-surface-container-high border-2 border-primary flex items-center justify-center">
-                <div class="w-3 h-3 bg-primary rounded-full"></div>
-              </div>
+        <!-- Order Header -->
+        <div class="px-6 py-4 bg-surface-container-low/50 border-b border-outline-variant/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl {{ $isCancelled ? 'bg-red-100' : ($currentStep >= 4 ? 'bg-green-100' : 'bg-primary/10') }} flex items-center justify-center">
+              <span class="material-symbols-outlined {{ $isCancelled ? 'text-red-500' : ($currentStep >= 4 ? 'text-green-600' : 'text-primary') }}" style="font-variation-settings: 'FILL' 1">
+                {{ $isCancelled ? 'cancel' : ($currentStep >= 4 ? 'task_alt' : 'local_shipping') }}
+              </span>
             </div>
             <div>
-              <h4 class="text-primary font-extrabold text-sm">Menuju ke lokasi anda</h4>
-              <p class="text-on-surface-variant text-xs mt-1">Estimasi tiba: 15 Menit</p>
+              <h3 class="text-on-surface font-bold text-base tracking-tight">#ORD-{{ str_pad($order->ID_Pesanan, 4, '0', STR_PAD_LEFT) }}</h3>
+              <p class="text-on-surface-variant text-xs font-medium">{{ $order->created_at->format('d M Y, H:i') }} · {{ $order->Nama_Toko ?? 'Toko' }}</p>
             </div>
           </div>
+          <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] uppercase font-black tracking-wider border {{ $statusColors }}">
+            <span class="material-symbols-outlined text-[13px]" style="font-variation-settings: 'FILL' 1">{{ $order->statusIcon() }}</span>
+            {{ $order->statusLabel() }}
+          </span>
+        </div>
 
+        <div class="p-6">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+            {{-- Status Stepper --}}
+            <div class="lg:col-span-7">
+              @if($isCancelled)
+                {{-- Cancelled State --}}
+                <div class="bg-red-50 border border-red-200/50 rounded-xl p-5">
+                  <div class="flex items-start gap-3">
+                    <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center shrink-0 mt-0.5">
+                      <span class="material-symbols-outlined text-red-500" style="font-variation-settings: 'FILL' 1">block</span>
+                    </div>
+                    <div>
+                      <h4 class="text-red-700 font-bold text-sm">Pesanan Dibatalkan</h4>
+                      <p class="text-red-600/80 text-xs mt-1 leading-relaxed">
+                        @if($order->alasan_tolak)
+                          Alasan: {{ $order->alasan_tolak }}
+                        @else
+                          Pesanan ini telah dibatalkan oleh toko. Silakan hubungi toko untuk informasi lebih lanjut.
+                        @endif
+                      </p>
+                      @if($order->updated_at)
+                        <p class="text-red-400 text-[10px] mt-2 font-semibold">{{ $order->updated_at->format('d M Y, H:i') }}</p>
+                      @endif
+                    </div>
+                  </div>
+                </div>
+              @else
+                {{-- Active Stepper --}}
+                <div class="space-y-0">
+
+                  {{-- Step 1: Menunggu Konfirmasi Toko --}}
+                  <div class="flex gap-4 min-h-[70px]">
+                    <div class="flex flex-col items-center">
+                      @if($currentStep >= 1)
+                        <div class="w-7 h-7 rounded-full {{ $currentStep > 1 ? 'bg-primary' : 'bg-primary/20 border-2 border-primary' }} flex items-center justify-center">
+                          @if($currentStep > 1)
+                            <span class="material-symbols-outlined text-[14px] text-white font-bold">check</span>
+                          @else
+                            <div class="w-2.5 h-2.5 bg-primary rounded-full status-pulse"></div>
+                          @endif
+                        </div>
+                      @else
+                        <div class="w-7 h-7 rounded-full bg-surface-container-high border-2 border-outline-variant/40 flex items-center justify-center">
+                          <div class="w-2 h-2 bg-outline-variant/40 rounded-full"></div>
+                        </div>
+                      @endif
+                      <div class="w-0.5 flex-1 {{ $currentStep > 1 ? 'bg-primary' : 'bg-outline-variant/30' }} step-line"></div>
+                    </div>
+                    <div class="pb-5">
+                      <h4 class="{{ $currentStep == 1 ? 'text-primary font-extrabold' : ($currentStep > 1 ? 'text-on-surface font-bold' : 'text-on-surface-variant font-medium') }} text-sm">
+                        Menunggu Konfirmasi Toko
+                      </h4>
+                      <p class="text-on-surface-variant text-xs mt-0.5">
+                        @if($currentStep == 1)
+                          Pesanan Anda sedang menunggu konfirmasi dari toko
+                        @elseif($currentStep > 1)
+                          Pesanan telah diterima oleh toko
+                        @else
+                          —
+                        @endif
+                      </p>
+                    </div>
+                  </div>
+
+                  {{-- Step 2: Sedang Diproses --}}
+                  <div class="flex gap-4 min-h-[70px]">
+                    <div class="flex flex-col items-center">
+                      @if($currentStep >= 2)
+                        <div class="w-7 h-7 rounded-full {{ $currentStep > 2 ? 'bg-primary' : 'bg-primary/20 border-2 border-primary' }} flex items-center justify-center">
+                          @if($currentStep > 2)
+                            <span class="material-symbols-outlined text-[14px] text-white font-bold">check</span>
+                          @else
+                            <div class="w-2.5 h-2.5 bg-primary rounded-full status-pulse"></div>
+                          @endif
+                        </div>
+                      @else
+                        <div class="w-7 h-7 rounded-full bg-surface-container-high border-2 border-outline-variant/40 flex items-center justify-center">
+                          <div class="w-2 h-2 bg-outline-variant/40 rounded-full"></div>
+                        </div>
+                      @endif
+                      <div class="w-0.5 flex-1 {{ $currentStep > 2 ? 'bg-primary' : 'bg-outline-variant/30' }} step-line"></div>
+                    </div>
+                    <div class="pb-5">
+                      <h4 class="{{ $currentStep == 2 ? 'text-primary font-extrabold' : ($currentStep > 2 ? 'text-on-surface font-bold' : 'text-on-surface-variant font-medium') }} text-sm">
+                        Sedang Diproses
+                      </h4>
+                      <p class="text-on-surface-variant text-xs mt-0.5">
+                        @if($currentStep == 2)
+                          Toko sedang menyiapkan pesanan Anda
+                        @elseif($currentStep > 2)
+                          Pesanan telah selesai diproses
+                        @else
+                          —
+                        @endif
+                      </p>
+                    </div>
+                  </div>
+
+                  {{-- Step 3: Dalam Pengiriman --}}
+                  <div class="flex gap-4 min-h-[70px]">
+                    <div class="flex flex-col items-center">
+                      @if($currentStep >= 3)
+                        <div class="w-7 h-7 rounded-full {{ $currentStep > 3 ? 'bg-primary' : 'bg-primary/20 border-2 border-primary' }} flex items-center justify-center">
+                          @if($currentStep > 3)
+                            <span class="material-symbols-outlined text-[14px] text-white font-bold">check</span>
+                          @else
+                            <div class="w-2.5 h-2.5 bg-primary rounded-full status-pulse"></div>
+                          @endif
+                        </div>
+                      @else
+                        <div class="w-7 h-7 rounded-full bg-surface-container-high border-2 border-outline-variant/40 flex items-center justify-center">
+                          <div class="w-2 h-2 bg-outline-variant/40 rounded-full"></div>
+                        </div>
+                      @endif
+                      <div class="w-0.5 flex-1 {{ $currentStep > 3 ? 'bg-primary' : 'bg-outline-variant/30' }} step-line"></div>
+                    </div>
+                    <div class="pb-5">
+                      <h4 class="{{ $currentStep == 3 ? 'text-primary font-extrabold' : ($currentStep > 3 ? 'text-on-surface font-bold' : 'text-on-surface-variant font-medium') }} text-sm">
+                        Dalam Pengiriman
+                      </h4>
+                      <p class="text-on-surface-variant text-xs mt-0.5">
+                        @if($currentStep == 3)
+                          {{ $order->info_pengiriman ?? 'Pesanan sedang dikirim menuju lokasi Anda' }}
+                        @elseif($currentStep > 3)
+                          Pesanan telah sampai
+                        @else
+                          —
+                        @endif
+                      </p>
+                    </div>
+                  </div>
+
+                  {{-- Step 4: Selesai --}}
+                  <div class="flex gap-4">
+                    <div class="flex flex-col items-center">
+                      @if($currentStep >= 4)
+                        <div class="w-7 h-7 rounded-full bg-green-500 flex items-center justify-center">
+                          <span class="material-symbols-outlined text-[14px] text-white font-bold">check</span>
+                        </div>
+                      @else
+                        <div class="w-7 h-7 rounded-full bg-surface-container-high border-2 border-outline-variant/40 flex items-center justify-center">
+                          <div class="w-2 h-2 bg-outline-variant/40 rounded-full"></div>
+                        </div>
+                      @endif
+                    </div>
+                    <div>
+                      <h4 class="{{ $currentStep >= 4 ? 'text-green-600 font-extrabold' : 'text-on-surface-variant font-medium' }} text-sm">
+                        Pesanan Selesai
+                      </h4>
+                      <p class="text-on-surface-variant text-xs mt-0.5">
+                        @if($currentStep >= 4)
+                          Pesanan telah selesai. Terima kasih!
+                        @else
+                          —
+                        @endif
+                      </p>
+                    </div>
+                  </div>
+
+                </div>
+              @endif
+            </div>
+
+            {{-- Order Details --}}
+            <div class="lg:col-span-5 space-y-4">
+              {{-- Product Info --}}
+              <div class="bg-surface-container-low/50 rounded-xl p-4 space-y-3">
+                <div>
+                  <p class="text-on-surface-variant text-[10px] uppercase font-black tracking-widest mb-1">Produk</p>
+                  <h4 class="text-on-surface font-bold text-base leading-snug">{{ $order->nama_produk }}</h4>
+                </div>
+
+                {{-- Price --}}
+                <div class="flex flex-wrap gap-2">
+                  @if($order->Harga_PickUp)
+                    <div class="bg-blue-50 border border-blue-100 rounded-lg px-3 py-2 flex items-center gap-2">
+                      <span class="material-symbols-outlined text-[14px] text-blue-600">directions_car</span>
+                      <div>
+                        <span class="text-[9px] font-bold text-blue-500 uppercase tracking-wide block">Pick Up</span>
+                        <span class="text-blue-800 font-black text-sm">Rp {{ number_format($order->Harga_PickUp, 0, ',', '.') }}</span>
+                      </div>
+                    </div>
+                  @endif
+                  @if($order->Harga_Truck)
+                    <div class="bg-amber-50 border border-amber-100 rounded-lg px-3 py-2 flex items-center gap-2">
+                      <span class="material-symbols-outlined text-[14px] text-amber-600">local_shipping</span>
+                      <div>
+                        <span class="text-[9px] font-bold text-amber-500 uppercase tracking-wide block">Truk</span>
+                        <span class="text-amber-800 font-black text-sm">Rp {{ number_format($order->Harga_Truck, 0, ',', '.') }}</span>
+                      </div>
+                    </div>
+                  @endif
+                </div>
+
+                {{-- Total --}}
+                <div class="pt-2 border-t border-outline-variant/20 flex items-center justify-between">
+                  <span class="text-on-surface-variant text-xs font-semibold">Total Bayar</span>
+                  <span class="text-primary font-black text-lg">Rp {{ number_format($order->total_harga, 0, ',', '.') }}</span>
+                </div>
+              </div>
+
+              {{-- Delivery Location --}}
+              @if($order->Lokasi_Pengantaran)
+                <div class="flex items-start gap-3 bg-surface-container-low/50 rounded-xl p-4">
+                  <span class="material-symbols-outlined text-secondary shrink-0" style="font-variation-settings: 'FILL' 1">location_on</span>
+                  <div>
+                    <p class="text-on-surface-variant text-[10px] uppercase font-black tracking-widest mb-0.5">Lokasi Pengantaran</p>
+                    <p class="text-on-surface text-xs leading-relaxed font-medium">{{ $order->Lokasi_Pengantaran }}</p>
+                  </div>
+                </div>
+              @endif
+
+              {{-- Payment Status --}}
+              <div class="flex items-center gap-3 bg-surface-container-low/50 rounded-xl p-4">
+                <span class="material-symbols-outlined text-on-surface-variant shrink-0">payments</span>
+                <div class="flex-1">
+                  <p class="text-on-surface-variant text-[10px] uppercase font-black tracking-widest mb-0.5">Pembayaran</p>
+                  @php
+                    $payStatus = $order->Status_Pembayaran;
+                    if ($payStatus === 'Lunas' || $payStatus === 'paid') {
+                        $payLabel = 'Lunas';
+                        $payBadge = 'bg-green-100 text-green-700 border-green-200';
+                    } elseif ($payStatus === 'Dibatalkan') {
+                        $payLabel = 'Dibatalkan';
+                        $payBadge = 'bg-red-100 text-red-600 border-red-200';
+                    } else {
+                        $payLabel = 'Menunggu';
+                        $payBadge = 'bg-amber-100 text-amber-700 border-amber-200';
+                    }
+                  @endphp
+                  <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider border {{ $payBadge }}">{{ $payLabel }}</span>
+                </div>
+                @if($order->Bukti_Pembayaran)
+                  <a href="{{ route('bukti.image', basename($order->Bukti_Pembayaran)) }}" target="_blank" class="flex items-center gap-1 text-[11px] font-bold text-primary hover:underline transition-all shrink-0">
+                    <span class="material-symbols-outlined text-[14px]" style="font-variation-settings:'FILL' 1">receipt</span>Bukti
+                  </a>
+                @endif
+              </div>
+            </div>
+
+          </div>
         </div>
       </div>
-
-      <!-- Driver Card -->
-      <div class="bg-surface-container-high p-6 rounded-xl flex items-center justify-between">
-        <div class="flex items-center gap-4">
-          <img
-            class="w-14 h-14 rounded-full object-cover border-2 border-white"
-            alt="Foto pengemudi"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuByKeGgBGPyb-1LrlmcJl9Tr5oKO1fSuuolVQHCpNgA-QAvE5pE3nfTBIX85hfox0WV4CZ5_-KqRsnXDWLPMZmzbjsDEZXKsWsqU0HhA0CoEXdCckfBAGrXd8TsJidbUrMloqtfP1zeImk7OoqITYWzNkgt7hsEPBmtXhvyZLZCUerLobHs8JfiGRJAU0SOo7nUI1ORwDzlwdPwW5HNAIsc_iDGvWY-nY7ZPOB9ORFlH_z0AoN5vlgf-llKRZSTLcqKLLxONxbgPw" />
-          <div>
-            <h4 class="text-on-surface font-bold">Budi Santoso</h4>
-            <div class="flex items-center gap-1">
-              <span class="material-symbols-outlined text-sm text-secondary"
-                style="font-variation-settings: 'FILL' 1;">star</span>
-              <span class="text-xs font-bold text-on-surface-variant">4.9 (240+ reviews)</span>
-            </div>
-          </div>
+    @empty
+      {{-- Empty State --}}
+      <div class="bg-surface-container-lowest rounded-2xl tectonic-shadow p-12 text-center">
+        <div class="empty-state-icon inline-flex items-center justify-center w-20 h-20 bg-primary/10 rounded-full mb-5">
+          <span class="material-symbols-outlined text-primary text-4xl" style="font-variation-settings: 'FILL' 1">shopping_bag</span>
         </div>
-        <button class="bg-surface-container-lowest p-3 rounded-full text-primary hover:bg-primary hover:text-white transition-all shadow-sm">
-          <span class="material-symbols-outlined">call</span>
-        </button>
+        <h3 class="text-on-surface font-bold text-lg mb-2">Belum Ada Pesanan</h3>
+        <p class="text-on-surface-variant text-sm max-w-md mx-auto mb-6">
+          Anda belum memiliki pesanan. Mulai belanja dan temukan berbagai jenis pasir berkualitas dari toko terdekat.
+        </p>
+        <a href="{{ route('MenuUtama') }}" class="inline-flex items-center gap-2 bg-primary text-on-primary px-6 py-3 rounded-xl font-bold text-sm hover:opacity-90 transition-all shadow-md">
+          <span class="material-symbols-outlined text-lg">storefront</span>
+          Mulai Belanja
+        </a>
       </div>
+    @endforelse
 
-      <!-- Order Details Card -->
-      <div class="bg-surface-container-lowest p-6 rounded-xl space-y-4 tectonic-shadow">
-        <div class="flex justify-between items-end">
-          <div>
-            <p class="text-on-surface-variant text-[10px] uppercase font-black tracking-widest mb-1">Material</p>
-            <h4 class="text-on-surface font-bold text-lg">Pasir Cor Super (5m³)</h4>
-          </div>
-        </div>
-        <!-- Dual Price Display -->
-        <div class="grid grid-cols-2 gap-3 pt-2">
-          <div class="bg-blue-50 border border-blue-100 rounded-xl p-3 flex flex-col gap-1">
-            <div class="flex items-center gap-1.5">
-              <span class="material-symbols-outlined text-[15px] text-blue-600">directions_car</span>
-              <span class="text-[10px] font-bold text-blue-500 uppercase tracking-wide">Pick Up</span>
-            </div>
-            <span class="text-blue-800 font-black text-base">Rp 150.000</span>
-          </div>
-          <div class="bg-amber-50 border border-amber-100 rounded-xl p-3 flex flex-col gap-1">
-            <div class="flex items-center gap-1.5">
-              <span class="material-symbols-outlined text-[15px] text-amber-600">local_shipping</span>
-              <span class="text-[10px] font-bold text-amber-500 uppercase tracking-wide">Truk</span>
-            </div>
-            <span class="text-amber-800 font-black text-base">Rp 350.000</span>
-          </div>
-        </div>
-        <div class="pt-4 border-t border-outline-variant/30 flex items-start gap-3">
-          <span class="material-symbols-outlined text-secondary">location_on</span>
-          <p class="text-on-surface-variant text-xs leading-relaxed font-medium">
-            Jl. Menteng No. 45, Blok C12, <br />
-            Kecamatan Menteng, Jakarta Pusat
-          </p>
-        </div>
-      </div>
-
-    </section>
   </div>
-
-  <!-- Floating Action Button: Chat dengan Toko -->
-  <button class="fixed bottom-24 right-6 md:bottom-10 md:right-10 bg-gradient-to-br from-primary to-primary-container text-white px-6 py-4 rounded-full flex items-center gap-3 shadow-2xl z-50 active:scale-95 transition-transform hover:shadow-primary/30">
-    <span class="material-symbols-outlined">chat_bubble</span>
-    <span class="font-bold tracking-tight">Chat dengan Toko</span>
-  </button>
 
 </x-layout-user>
