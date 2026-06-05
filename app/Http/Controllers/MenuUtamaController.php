@@ -104,6 +104,9 @@ class MenuUtamaController extends Controller
             ->where('is_read', false)
             ->count();
 
+        // Total Komisi Admin
+        $totalKomisiAdmin = $toko->Komisi_Admin;
+
         return view('tampilanPenjualStore.MenuUtamaStore', compact(
             'toko',
             'totalPendapatan',
@@ -116,7 +119,8 @@ class MenuUtamaController extends Controller
             'topProducts',
             'completionRate',
             'complaintsCount',
-            'unreadChatCount'
+            'unreadChatCount',
+            'totalKomisiAdmin'
         ));
     }
 
@@ -178,7 +182,8 @@ class MenuUtamaController extends Controller
             'produk_aktif' => number_format($produkAktif, 0, ',', '.'),
             'unread_chat' => $unreadChatCount,
             'recent_orders' => $recentOrders,
-            'top_products' => $topProductsData
+            'top_products' => $topProductsData,
+            'total_komisi_admin' => 'Rp ' . number_format($toko->Komisi_Admin, 0, ',', '.'),
         ]);
     }
 

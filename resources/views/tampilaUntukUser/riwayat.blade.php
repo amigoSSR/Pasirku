@@ -253,8 +253,11 @@
                 </div>
 
                 {{-- Price --}}
+                @php
+                  $orderedTypes = array_map('trim', explode(',', $order->tipe_pengiriman ?? ''));
+                @endphp
                 <div class="flex flex-wrap gap-2">
-                  @if($order->Harga_PickUp)
+                  @if(in_array('pickup', $orderedTypes) && $order->Harga_PickUp)
                     <div class="bg-blue-50 border border-blue-100 rounded-lg px-3 py-2 flex items-center gap-2">
                       <span class="material-symbols-outlined text-[14px] text-blue-600">directions_car</span>
                       <div>
@@ -263,7 +266,7 @@
                       </div>
                     </div>
                   @endif
-                  @if($order->Harga_Truck)
+                  @if(in_array('truck', $orderedTypes) && $order->Harga_Truck)
                     <div class="bg-amber-50 border border-amber-100 rounded-lg px-3 py-2 flex items-center gap-2">
                       <span class="material-symbols-outlined text-[14px] text-amber-600">local_shipping</span>
                       <div>

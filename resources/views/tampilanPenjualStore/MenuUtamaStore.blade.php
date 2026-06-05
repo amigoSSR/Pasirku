@@ -47,15 +47,15 @@
         <p class="text-xs text-on-surface-variant mt-1 font-medium font-sans">Pasir Terjual</p>
       </div>
 
-      {{-- Active Products Card --}}
+      {{-- Komisi Admin Card --}}
       <div class="stat-card bg-surface-container-lowest rounded-2xl p-5 shadow-sm border border-outline-variant/30 cursor-default hover:shadow-md transition-shadow">
         <div class="flex justify-between items-start mb-4">
-          <div class="w-11 h-11 bg-amber-500/10 rounded-xl flex items-center justify-center">
-            <span class="material-symbols-outlined text-amber-600" style="font-variation-settings:'FILL' 1">storefront</span>
+          <div class="w-11 h-11 bg-red-500/10 rounded-xl flex items-center justify-center">
+            <span class="material-symbols-outlined text-red-500" style="font-variation-settings:'FILL' 1">percent</span>
           </div>
         </div>
-        <p id="stat-products" class="text-2xl font-headline font-bold text-on-surface">{{ number_format($produkAktif, 0, ',', '.') }}</p>
-        <p class="text-xs text-on-surface-variant mt-1 font-medium font-sans">Produk Aktif</p>
+        <p id="stat-komisi" class="text-2xl font-headline font-bold text-on-surface">Rp {{ number_format($totalKomisiAdmin, 0, ',', '.') }}</p>
+        <p class="text-xs text-on-surface-variant mt-1 font-medium font-sans">Total Komisi Admin</p>
       </div>
     </div>
 
@@ -248,7 +248,7 @@
       const revenueEl = document.getElementById('stat-revenue');
       const ordersEl = document.getElementById('stat-orders');
       const volumeEl = document.getElementById('stat-volume');
-      const productsEl = document.getElementById('stat-products');
+      const komisiEl = document.getElementById('stat-komisi');
       const recentOrdersEl = document.getElementById('recent-orders-list');
       const topProductsEl = document.getElementById('top-products-list');
 
@@ -268,6 +268,7 @@
               if (ordersEl) ordersEl.textContent = data.total_pesanan;
               if (volumeEl) volumeEl.textContent = data.pasir_terjual;
               if (productsEl) productsEl.textContent = data.produk_aktif;
+              if (komisiEl) komisiEl.textContent = data.total_komisi_admin;
 
               // Update recent orders
               if (recentOrdersEl && data.recent_orders) {

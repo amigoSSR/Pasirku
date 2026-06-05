@@ -41,6 +41,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/PesanStore', fn() => view('tampilanPenjualStore.PesanStore'))->name('PesanStore');
         Route::get('/ordertrackingStore', [OrderController::class, 'storeOrders'])->name('ordertrackingStore');
         Route::put('/ordertrackingStore/{id}/status', [OrderController::class, 'updateStatus'])->name('ordertrackingStore.updateStatus');
+        Route::get('/ordertrackingStore/{id}/detail', [OrderController::class, 'storeOrderDetail'])->name('ordertrackingStore.detail');
         Route::get('/MonitoringPelangganStore', [MenuUtamaController::class, 'monitoringPelanggan'])->name('MonitoringPelangganStore');
         Route::get('/tambahProduk', [ProdukController::class, 'create'])->name('tambahProduk');
         Route::post('/tambahProduk', [ProdukController::class, 'store'])->name('tambahProduk.store');
@@ -80,6 +81,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/Pesan', fn() => view('tampilaUntukUser.Pesan'))->name('Pesan');
         Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
         Route::get('/ordertracking', [OrderController::class, 'userOrders'])->name('ordertracking');
+        Route::put('/ordertracking/{id}/selesai', [OrderController::class, 'userCompleteOrder'])->name('ordertracking.selesai');
+        Route::post('/ordertracking/{id}/report', [OrderController::class, 'reportOrder'])->name('ordertracking.report');
         Route::get('/riwayat', [OrderController::class, 'userHistory'])->name('riwayat');
         Route::get('/Profil', function () {
             $toko = \App\Models\Toko::where('ID_Akun', \Illuminate\Support\Facades\Auth::id())->latest('created_at')->first();

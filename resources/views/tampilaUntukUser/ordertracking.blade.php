@@ -28,6 +28,25 @@
       0%, 100% { transform: translateY(0px); }
       50% { transform: translateY(-10px); }
     }
+    /* Report Modal */
+    .report-overlay {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .report-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .report-modal {
+      transform: scale(0.9) translateY(20px);
+      opacity: 0;
+      transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .report-overlay.active .report-modal {
+      transform: scale(1) translateY(0);
+      opacity: 1;
+    }
   </style>
   @endpush
 
@@ -123,10 +142,17 @@
               <p class="text-on-surface-variant text-xs font-medium">{{ $order->created_at->format('d M Y, H:i') }} · {{ $order->Nama_Toko ?? 'Toko' }}</p>
             </div>
           </div>
-          <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] uppercase font-black tracking-wider border {{ $statusColors }}">
-            <span class="material-symbols-outlined text-[13px]" style="font-variation-settings: 'FILL' 1">{{ $order->statusIcon() }}</span>
-            {{ $order->statusLabel() }}
-          </span>
+          <div class="flex items-center gap-2">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] uppercase font-black tracking-wider border {{ $statusColors }}">
+              <span class="material-symbols-outlined text-[13px]" style="font-variation-settings: 'FILL' 1">{{ $order->statusIcon() }}</span>
+              {{ $order->statusLabel() }}
+            </span>
+            {{-- Report Button --}}
+            <button type="button" onclick="openReportModal({{ $order->ID_Pesanan }})" title="Laporkan Pesanan"
+              class="w-9 h-9 rounded-xl bg-red-50 hover:bg-red-100 border border-red-200/50 flex items-center justify-center transition-all duration-200 group">
+              <span class="material-symbols-outlined text-red-400 group-hover:text-red-600 text-[18px] transition-colors" style="font-variation-settings: 'FILL' 1">flag</span>
+            </button>
+          </div>
         </div>
 
         <div class="p-6">
@@ -275,17 +301,47 @@
                         </div>
                       @endif
                     </div>
-                    <div>
+                    <div class="flex-1">
                       <h4 class="{{ $currentStep >= 4 ? 'text-green-600 font-extrabold' : 'text-on-surface-variant font-medium' }} text-sm">
                         Pesanan Selesai
                       </h4>
                       <p class="text-on-surface-variant text-xs mt-0.5">
                         @if($currentStep >= 4)
                           Pesanan telah selesai. Terima kasih!
+                        @elseif($currentStep == 3)
+                          Konfirmasi bahwa pesanan sudah diterima
                         @else
                           —
                         @endif
                       </p>
+
+                      {{-- Tombol Konfirmasi Pesanan Diterima (hanya saat status Dikirim) --}}
+                      @if($currentStep == 3)
+                        <div class="mt-4 bg-green-50 border border-green-200/50 rounded-xl p-4 space-y-3">
+                          <div class="flex items-start gap-2.5">
+                            <span class="material-symbols-outlined text-green-600 text-lg shrink-0 mt-0.5" style="font-variation-settings: 'FILL' 1">package_2</span>
+                            <div>
+                              <p class="text-green-800 font-bold text-xs">Pesanan sudah sampai?</p>
+                              <p class="text-green-700/70 text-[11px] mt-0.5 leading-relaxed">Tekan tombol di bawah untuk mengkonfirmasi bahwa pesanan telah Anda terima dengan baik.</p>
+                            </div>
+                          </div>
+                          <form method="POST" action="{{ route('ordertracking.selesai', $order->ID_Pesanan) }}" onsubmit="return confirm('Apakah Anda yakin pesanan sudah diterima dengan baik?')">
+                            @csrf
+                            @method('PUT')
+                            <button type="submit" class="w-full flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white py-3 px-5 rounded-xl text-sm font-bold transition-all shadow-sm hover:shadow-md active:scale-[0.98]">
+                              <span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1">check_circle</span>
+                              Konfirmasi Pesanan Diterima
+                            </button>
+                          </form>
+                          @php
+                            $autoCompleteDate = \Carbon\Carbon::parse($order->Tanggal_Pengiriman)->addDays(3);
+                          @endphp
+                          <p class="text-[10px] text-green-600/60 text-center font-medium leading-relaxed">
+                            <span class="material-symbols-outlined text-[12px] align-middle">info</span>
+                            Pesanan akan otomatis selesai pada <strong>{{ $autoCompleteDate->format('d M Y') }}</strong> jika tidak dikonfirmasi.
+                          </p>
+                        </div>
+                      @endif
                     </div>
                   </div>
 
@@ -302,9 +358,12 @@
                   <h4 class="text-on-surface font-bold text-base leading-snug">{{ $order->nama_produk }}</h4>
                 </div>
 
-                {{-- Price --}}
+                {{-- Price — hanya tampilkan tipe yang dipesan --}}
+                @php
+                  $orderedTypes = array_map('trim', explode(',', $order->tipe_pengiriman ?? ''));
+                @endphp
                 <div class="flex flex-wrap gap-2">
-                  @if($order->Harga_PickUp)
+                  @if(in_array('pickup', $orderedTypes) && $order->Harga_PickUp)
                     <div class="bg-blue-50 border border-blue-100 rounded-lg px-3 py-2 flex items-center gap-2">
                       <span class="material-symbols-outlined text-[14px] text-blue-600">directions_car</span>
                       <div>
@@ -313,7 +372,7 @@
                       </div>
                     </div>
                   @endif
-                  @if($order->Harga_Truck)
+                  @if(in_array('truck', $orderedTypes) && $order->Harga_Truck)
                     <div class="bg-amber-50 border border-amber-100 rounded-lg px-3 py-2 flex items-center gap-2">
                       <span class="material-symbols-outlined text-[14px] text-amber-600">local_shipping</span>
                       <div>
@@ -373,6 +432,63 @@
           </div>
         </div>
       </div>
+
+      {{-- Report Modal for this order --}}
+      <div id="reportOverlay-{{ $order->ID_Pesanan }}" class="report-overlay fixed inset-0 z-[99999] flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeReportModal({{ $order->ID_Pesanan }})"></div>
+        <div class="report-modal bg-surface-container-lowest rounded-2xl shadow-2xl w-full max-w-md relative overflow-hidden border border-outline-variant/20">
+          {{-- Modal Header --}}
+          <div class="px-6 py-5 bg-red-50 border-b border-red-200/30">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center">
+                <span class="material-symbols-outlined text-red-500 text-xl" style="font-variation-settings: 'FILL' 1">flag</span>
+              </div>
+              <div class="flex-1">
+                <h3 class="text-red-800 font-bold text-base">Laporkan Pesanan</h3>
+                <p class="text-red-600/70 text-xs font-medium">#ORD-{{ str_pad($order->ID_Pesanan, 4, '0', STR_PAD_LEFT) }} · {{ $order->nama_produk }}</p>
+              </div>
+              <button type="button" onclick="closeReportModal({{ $order->ID_Pesanan }})" class="w-8 h-8 rounded-lg hover:bg-red-100 flex items-center justify-center transition-colors">
+                <span class="material-symbols-outlined text-red-400 text-lg">close</span>
+              </button>
+            </div>
+          </div>
+
+          {{-- Modal Body --}}
+          <form method="POST" action="{{ route('ordertracking.report', $order->ID_Pesanan) }}">
+            @csrf
+            <div class="p-6 space-y-4">
+              <div>
+                <label class="block text-on-surface text-sm font-bold mb-2">Alasan Laporan <span class="text-red-500">*</span></label>
+                <textarea name="alasan_report" rows="4" required maxlength="1000"
+                  class="w-full bg-surface-container border border-outline-variant/30 rounded-xl px-4 py-3 text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:ring-2 focus:ring-red-300 focus:border-red-300 transition-all resize-none"
+                  placeholder="Jelaskan masalah yang Anda alami dengan pesanan ini..."></textarea>
+                <p class="text-on-surface-variant text-[10px] mt-1.5 font-medium">Laporan akan dikirim ke Customer Support dan Toko.</p>
+              </div>
+
+              <div class="bg-amber-50 border border-amber-200/50 rounded-xl p-3 flex items-start gap-2.5">
+                <span class="material-symbols-outlined text-amber-500 text-lg shrink-0 mt-0.5" style="font-variation-settings: 'FILL' 1">info</span>
+                <p class="text-amber-700 text-[11px] leading-relaxed font-medium">
+                  Pastikan Anda memberikan detail yang jelas agar tim kami dapat membantu menyelesaikan masalah Anda dengan cepat.
+                </p>
+              </div>
+            </div>
+
+            {{-- Modal Footer --}}
+            <div class="px-6 py-4 bg-surface-container-low/50 border-t border-outline-variant/20 flex items-center justify-end gap-3">
+              <button type="button" onclick="closeReportModal({{ $order->ID_Pesanan }})"
+                class="px-5 py-2.5 rounded-xl text-sm font-bold text-on-surface-variant hover:bg-surface-container-high transition-all">
+                Batal
+              </button>
+              <button type="submit"
+                class="px-5 py-2.5 rounded-xl text-sm font-bold bg-red-600 hover:bg-red-700 text-white transition-all shadow-sm hover:shadow-md flex items-center gap-2 active:scale-[0.97]">
+                <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1">send</span>
+                Kirim Laporan
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
     @empty
       {{-- Empty State --}}
       <div class="bg-surface-container-lowest rounded-2xl tectonic-shadow p-12 text-center">
@@ -391,5 +507,42 @@
     @endforelse
 
   </div>
+
+  @push('scripts')
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Pindahkan semua modal ke dalam <body> agar posisi 'fixed' tidak terganggu oleh 'transform' dari parent
+      document.querySelectorAll('.report-overlay').forEach(function(modal) {
+        document.body.appendChild(modal);
+      });
+    });
+
+    function openReportModal(orderId) {
+      const overlay = document.getElementById('reportOverlay-' + orderId);
+      if (overlay) {
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    function closeReportModal(orderId) {
+      const overlay = document.getElementById('reportOverlay-' + orderId);
+      if (overlay) {
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    }
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.report-overlay.active').forEach(el => {
+          el.classList.remove('active');
+        });
+        document.body.style.overflow = '';
+      }
+    });
+  </script>
+  @endpush
 
 </x-layout-user>

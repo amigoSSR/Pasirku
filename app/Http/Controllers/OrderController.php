@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Pesanan;
 use App\Models\Toko;
+use App\Models\User;
 use App\Models\Message;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -22,6 +23,54 @@ class OrderController extends Controller
             ->get();
 
         return view('tampilaUntukUser.ordertracking', compact('orders'));
+    }
+
+    /**
+     * User confirms order completion (only when status = Dikirim).
+     */
+    public function userCompleteOrder(Request $request, $id)
+    {
+        try {
+            DB::beginTransaction();
+
+            $pesanan = Pesanan::where('ID_Akun', Auth::id())
+                ->where('Status_Pesanan', Pesanan::STATUS_DIKIRIM)
+                ->lockForUpdate()
+                ->findOrFail($id);
+
+            $oldStatus = $pesanan->Status_Pesanan;
+            $oldPaymentStatus = $pesanan->Status_Pembayaran;
+
+            $pesanan->Status_Pesanan = Pesanan::STATUS_SELESAI;
+            $pesanan->Status_Pembayaran = 'Lunas';
+
+            // Hitung komisi admin 1,05% dari total harga
+            $komisiAdmin = (int) floor($pesanan->total_harga * 0.0105);
+            $pesanan->komisi_admin = $komisiAdmin;
+            $pesanan->save();
+
+            // Update Pendapatan & Total Pembelian & Komisi Admin Toko
+            $toko = Toko::where('ID_Toko', $pesanan->ID_Toko)->first();
+            if ($toko && $oldPaymentStatus !== 'Lunas') {
+                $toko->Pendapatan_Toko += $pesanan->total_harga;
+                $toko->Total_Pembelian += 1;
+                $toko->Komisi_Admin += $komisiAdmin;
+                $toko->save();
+            }
+
+            DB::commit();
+
+            // Send auto-notification chat to store
+            if ($toko) {
+                $this->sendOrderNotificationChat($pesanan, $toko, Pesanan::STATUS_SELESAI);
+            }
+
+            return back()->with('success', 'Pesanan telah dikonfirmasi selesai. Terima kasih!');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Gagal mengkonfirmasi pesanan: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -110,7 +159,10 @@ class OrderController extends Controller
             'selesai_hari_ini'=> Pesanan::where('ID_Toko', $toko->ID_Toko)->where('Status_Pesanan', Pesanan::STATUS_SELESAI)->whereDate('updated_at', today())->count(),
         ];
 
-        return view('tampilanPenjualStore.ordertrackingStore', compact('orders', 'statuses'));
+        // Total komisi admin dari seluruh pesanan selesai milik toko ini
+        $totalKomisiAdmin = $toko->Komisi_Admin;
+
+        return view('tampilanPenjualStore.ordertrackingStore', compact('orders', 'statuses', 'totalKomisiAdmin'));
     }
 
     /**
@@ -236,12 +288,20 @@ class OrderController extends Controller
             $newPaymentStatus = $pesanan->Status_Pembayaran;
 
             if ($oldPaymentStatus !== 'Lunas' && $newPaymentStatus === 'Lunas') {
+                // Hitung komisi admin 1,05%
+                $komisiAdmin = (int) floor($pesanan->total_harga * 0.0105);
+                $pesanan->komisi_admin = $komisiAdmin;
+
                 $toko->Pendapatan_Toko += $pesanan->total_harga;
                 $toko->Total_Pembelian += 1;
+                $toko->Komisi_Admin += $komisiAdmin;
                 $toko->save();
             } elseif ($oldPaymentStatus === 'Lunas' && $newPaymentStatus === 'Dibatalkan') {
+                $komisiAdmin = $pesanan->komisi_admin;
+
                 $toko->Pendapatan_Toko -= $pesanan->total_harga;
                 $toko->Total_Pembelian = max(0, $toko->Total_Pembelian - 1);
+                $toko->Komisi_Admin = max(0, $toko->Komisi_Admin - $komisiAdmin);
                 $toko->save();
             }
 
@@ -305,6 +365,144 @@ class OrderController extends Controller
             'toko_id'     => $toko->ID_Toko,
             'message'     => $messageText,
             'is_read'     => false,
+        ]);
+    }
+
+    /**
+     * User reports an order — sends report message to Customer Support (admin) and to the store.
+     */
+    public function reportOrder(Request $request, $id)
+    {
+        $request->validate([
+            'alasan_report' => 'required|string|max:1000',
+        ]);
+
+        $user = Auth::user();
+        $pesanan = Pesanan::where('ID_Akun', $user->ID_Akun)->findOrFail($id);
+        $toko = Toko::where('ID_Toko', $pesanan->ID_Toko)->first();
+        $admin = User::where('Role', 'admin')->first();
+
+        $orderCode = '#ORD-' . str_pad($pesanan->ID_Pesanan, 4, '0', STR_PAD_LEFT);
+        $produk = $pesanan->nama_produk ?? 'produk pasir';
+        $alasan = $request->alasan_report;
+
+        // ── 1. Send to Customer Support (Admin) ─────────────────────
+        if ($admin) {
+            $adminMsg = "🚨 *LAPORAN PESANAN*\n\n"
+                . "Pesanan: {$orderCode}\n"
+                . "Produk: {$produk}\n"
+                . "Toko: {$pesanan->Nama_Toko}\n"
+                . "Pelapor: {$user->Username}\n\n"
+                . "Alasan:\n{$alasan}";
+
+            // Ensure admin chat room exists
+            $adminChatExists = Message::whereNull('toko_id')
+                ->where(function ($q) use ($user, $admin) {
+                    $q->where('sender_id', $user->ID_Akun)->where('receiver_id', $admin->ID_Akun)
+                      ->orWhere('sender_id', $admin->ID_Akun)->where('receiver_id', $user->ID_Akun);
+                })->exists();
+
+            if (!$adminChatExists) {
+                Message::create([
+                    'sender_id'   => $user->ID_Akun,
+                    'receiver_id' => $admin->ID_Akun,
+                    'toko_id'     => null,
+                    'message'     => 'Halo Customer Support, saya butuh bantuan.',
+                    'is_read'     => true,
+                ]);
+            }
+
+            Message::create([
+                'sender_id'   => $user->ID_Akun,
+                'receiver_id' => $admin->ID_Akun,
+                'toko_id'     => null,
+                'message'     => $adminMsg,
+                'is_read'     => false,
+            ]);
+        }
+
+        // ── 2. Send to Store ────────────────────────────────────────
+        if ($toko) {
+            $tokoMsg = "🚨 *LAPORAN PESANAN*\n\n"
+                . "Pesanan: {$orderCode}\n"
+                . "Produk: {$produk}\n"
+                . "Pelapor: {$user->Username}\n\n"
+                . "Alasan:\n{$alasan}";
+
+            // Ensure store chat room exists
+            $tokoChatExists = Message::where('toko_id', $toko->ID_Toko)
+                ->where(function ($q) use ($user, $toko) {
+                    $q->where('sender_id', $user->ID_Akun)->where('receiver_id', $toko->ID_Akun)
+                      ->orWhere('sender_id', $toko->ID_Akun)->where('receiver_id', $user->ID_Akun);
+                })->exists();
+
+            if (!$tokoChatExists) {
+                Message::create([
+                    'sender_id'   => $user->ID_Akun,
+                    'receiver_id' => $toko->ID_Akun,
+                    'toko_id'     => $toko->ID_Toko,
+                    'message'     => "Halo, saya memesan produk dari toko Anda ({$orderCode}).",
+                    'is_read'     => true,
+                ]);
+            }
+
+            Message::create([
+                'sender_id'   => $user->ID_Akun,
+                'receiver_id' => $toko->ID_Akun,
+                'toko_id'     => $toko->ID_Toko,
+                'message'     => $tokoMsg,
+                'is_read'     => false,
+            ]);
+        }
+
+        return back()->with('success', 'Laporan berhasil dikirim ke Customer Support dan Toko.');
+    }
+
+    /**
+     * API: Ambil detail satu pesanan untuk modal di halaman store.
+     */
+    public function storeOrderDetail($id)
+    {
+        $toko = Toko::where('ID_Akun', Auth::id())->first();
+        if (!$toko) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $pesanan = Pesanan::where('ID_Toko', $toko->ID_Toko)->findOrFail($id);
+
+        // Hitung komisi admin (jika belum tersimpan, hitung dari total_harga)
+        $komisiAdmin = $pesanan->komisi_admin > 0
+            ? $pesanan->komisi_admin
+            : (int) floor($pesanan->total_harga * 0.0105);
+
+        $pendapatanBersih = $pesanan->total_harga - $komisiAdmin;
+
+        // Parse cart items untuk breakdown produk
+        $cartItems = is_array($pesanan->cart_items) ? $pesanan->cart_items : json_decode($pesanan->cart_items ?? '[]', true);
+
+        return response()->json([
+            'id'                  => $pesanan->ID_Pesanan,
+            'order_code'          => '#ORD-' . str_pad($pesanan->ID_Pesanan, 4, '0', STR_PAD_LEFT),
+            'nama_pembeli'        => $pesanan->nama_pembeli ?? $pesanan->Username,
+            'nama_produk'         => $pesanan->nama_produk,
+            'tipe_pengiriman'     => $pesanan->tipe_pengiriman,
+            'lokasi_pengantaran'  => $pesanan->Lokasi_Pengantaran,
+            'unit'                => $pesanan->Unit,
+            'tanggal_pengiriman'  => $pesanan->Tanggal_Pengiriman ? \Carbon\Carbon::parse($pesanan->Tanggal_Pengiriman)->format('d M Y') : '-',
+            'jam_tiba'            => $pesanan->Jam_Tiba ?? '-',
+            'total_harga'         => $pesanan->total_harga,
+            'total_harga_formatted' => 'Rp ' . number_format($pesanan->total_harga, 0, ',', '.'),
+            'komisi_admin'        => $komisiAdmin,
+            'komisi_admin_formatted' => 'Rp ' . number_format($komisiAdmin, 0, ',', '.'),
+            'pendapatan_bersih'   => $pendapatanBersih,
+            'pendapatan_bersih_formatted' => 'Rp ' . number_format($pendapatanBersih, 0, ',', '.'),
+            'status_pesanan'      => $pesanan->statusLabel(),
+            'status_pembayaran'   => $pesanan->Status_Pembayaran,
+            'bukti_pembayaran'    => $pesanan->Bukti_Pembayaran ? route('bukti.image', basename($pesanan->Bukti_Pembayaran)) : null,
+            'cart_items'          => $cartItems,
+            'created_at'          => $pesanan->created_at->format('d M Y, H:i'),
+            'info_pengiriman'     => $pesanan->info_pengiriman,
+            'alasan_tolak'        => $pesanan->alasan_tolak,
         ]);
     }
 }

@@ -42,6 +42,7 @@ class Pesanan extends Model
         'Jam_Tiba',
         'alasan_tolak',
         'info_pengiriman',
+        'komisi_admin',
     ];
 
     protected $casts = [
