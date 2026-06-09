@@ -28,6 +28,38 @@
       0%, 100% { transform: translateY(0px); }
       50% { transform: translateY(-10px); }
     }
+    .fade-in-up {
+      animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .slide-in-right {
+      animation: slideInRight 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    @keyframes slideInRight {
+      from { opacity: 0; transform: translateX(-20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    .pulse-ring {
+      position: relative;
+    }
+    .pulse-ring::before {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background-color: var(--md-sys-color-primary, #944a00);
+      opacity: 0.4;
+      animation: ringScale 1.5s infinite ease-out;
+      z-index: -1;
+    }
+    @keyframes ringScale {
+      0% { transform: scale(1); opacity: 0.4; }
+      100% { transform: scale(1.8); opacity: 0; }
+    }
   </style>
   @endpush
 
@@ -53,7 +85,7 @@
   @endif
 
   <!-- Content Shell -->
-  <div class="p-6 md:p-10 max-w-5xl mx-auto w-full mb-24 md:mb-10">
+  <div class="p-6 md:p-10 max-w-5xl mx-auto w-full mb-24 md:mb-10 fade-in-up">
 
     <!-- Page Header -->
     <div class="mb-8">
@@ -69,7 +101,7 @@
     </div>
 
     <!-- Orders List -->
-    @forelse($orders as $order)
+    @forelse($orders as $index => $order)
       @php
         // Determine which step the order is at
         $status = $order->Status_Pesanan;
@@ -108,7 +140,7 @@
         };
       @endphp
 
-      <div class="order-card bg-surface-container-lowest rounded-2xl tectonic-shadow overflow-hidden mb-6 border border-outline-variant/20">
+      <div class="order-card bg-surface-container-lowest rounded-2xl tectonic-shadow overflow-hidden mb-6 border border-outline-variant/20 slide-in-right" style="animation-delay: {{ $index * 150 }}ms">
 
         <!-- Order Header -->
         <div class="px-6 py-4 bg-surface-container-low/50 border-b border-outline-variant/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -164,7 +196,7 @@
                   <div class="flex gap-4 min-h-[70px]">
                     <div class="flex flex-col items-center">
                       @if($currentStep >= 1)
-                        <div class="w-7 h-7 rounded-full {{ $currentStep > 1 ? 'bg-primary' : 'bg-primary/20 border-2 border-primary' }} flex items-center justify-center">
+                        <div class="w-7 h-7 rounded-full {{ $currentStep > 1 ? 'bg-primary' : 'bg-primary/20 border-2 border-primary pulse-ring' }} flex items-center justify-center">
                           @if($currentStep > 1)
                             <span class="material-symbols-outlined text-[14px] text-white font-bold">check</span>
                           @else
@@ -198,7 +230,7 @@
                   <div class="flex gap-4 min-h-[70px]">
                     <div class="flex flex-col items-center">
                       @if($currentStep >= 2)
-                        <div class="w-7 h-7 rounded-full {{ $currentStep > 2 ? 'bg-primary' : 'bg-primary/20 border-2 border-primary' }} flex items-center justify-center">
+                        <div class="w-7 h-7 rounded-full {{ $currentStep > 2 ? 'bg-primary' : 'bg-primary/20 border-2 border-primary pulse-ring' }} flex items-center justify-center">
                           @if($currentStep > 2)
                             <span class="material-symbols-outlined text-[14px] text-white font-bold">check</span>
                           @else
@@ -232,7 +264,7 @@
                   <div class="flex gap-4 min-h-[70px]">
                     <div class="flex flex-col items-center">
                       @if($currentStep >= 3)
-                        <div class="w-7 h-7 rounded-full {{ $currentStep > 3 ? 'bg-primary' : 'bg-primary/20 border-2 border-primary' }} flex items-center justify-center">
+                        <div class="w-7 h-7 rounded-full {{ $currentStep > 3 ? 'bg-primary' : 'bg-primary/20 border-2 border-primary pulse-ring' }} flex items-center justify-center">
                           @if($currentStep > 3)
                             <span class="material-symbols-outlined text-[14px] text-white font-bold">check</span>
                           @else

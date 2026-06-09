@@ -38,8 +38,12 @@
           class="shop-card stat-card bg-surface-container-lowest p-5 rounded-2xl shadow-sm border border-outline-variant/30 cursor-pointer group hover:border-primary/30"
           data-shop-name="{{ strtolower($toko->Nama_Toko) }}">
           <div class="flex justify-between items-start mb-4">
-            <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-              <span class="material-symbols-outlined text-2xl text-primary" style="font-variation-settings:'FILL' 1">storefront</span>
+            <div class="w-20 h-20 rounded-2xl bg-primary/10 flex items-center justify-center overflow-hidden shadow-sm border border-outline-variant/20">
+              @if($toko->Foto_Toko)
+                <img src="{{ asset('storage/' . $toko->Foto_Toko) }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt="{{ $toko->Nama_Toko }}">
+              @else
+                <span class="material-symbols-outlined text-4xl text-primary" style="font-variation-settings:'FILL' 1">storefront</span>
+              @endif
             </div>
             <span class="text-xs font-bold bg-green-50 text-green-600 px-3 py-1 rounded-full flex items-center gap-1">
               <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse inline-block"></span>
@@ -87,7 +91,11 @@
     </section>
 
     {{-- Right: Map --}}
-    <div id="map" class="flex-1 h-full"></div>
+    <div id="map" class="flex-1 h-full relative">
+      <button id="btn-locate-me" class="absolute top-4 right-4 z-[500] bg-surface-container-lowest p-3 rounded-2xl shadow-xl border border-outline-variant/30 hover:bg-surface-container-low transition-all active:scale-95 group" title="Cari Lokasi Saya">
+        <span class="material-symbols-outlined text-[20px] text-primary group-hover:rotate-12 transition-transform">my_location</span>
+      </button>
+    </div>
 
     <script>
       window.MAP_CONFIG = {

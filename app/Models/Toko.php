@@ -17,6 +17,7 @@ class Toko extends Model
         'Email_Toko',
         'Lokasi_Toko',
         'Username',
+        'Foto_Toko',
         'Pendapatan_Toko',
         'Total_Pembelian',
         'Komisi_Admin',
@@ -64,5 +65,40 @@ class Toko extends Model
     public function produk()
     {
         return $this->hasMany(IsiToko::class, 'ID_Toko', 'ID_Toko');
+    }
+
+    /**
+     * Relasi ke review (reviews).
+     */
+    public function reviews()
+    {
+        return $this->hasMany(Review::class, 'ID_Toko', 'ID_Toko');
+    }
+
+    /**
+     * Get average rating.
+     */
+    public function averageRating()
+    {
+        return $this->reviews()->avg('Rating') ?: 0;
+    }
+
+    /**
+     * Get rating distribution.
+     */
+    public function ratingDistribution()
+    {
+        $counts = $this->reviews()
+            ->select('Rating', \Illuminate\Support\Facades\DB::raw('count(*) as total'))
+            ->groupBy('Rating')
+            ->pluck('total', 'Rating')
+            ->toArray();
+
+        $distribution = [];
+        for ($i = 5; $i >= 1; $i--) {
+            $distribution[$i] = $counts[$i] ?? 0;
+        }
+
+        return $distribution;
     }
 }

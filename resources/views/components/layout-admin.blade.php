@@ -144,9 +144,10 @@ tailwind.config = {
     @php
       $isMenuAdmin = request()->routeIs('MenuUtamaAdmin', 'admin.dashboard');
       $isShopAdmin = request()->routeIs('ShopeRegistry');
+      $isQueryAdmin = request()->routeIs('admin.queryToko');
       $isUserAdmin = request()->routeIs('UserRegistry');
       $isProfilAdmin = request()->routeIs('ProfilAdmin');
-      $isChatAdmin = request()->routeIs('chat.*') || request()->is('chat/*');
+      $isChatAdmin = request()->routeIs('chat.*') || request()->is('chat/*') || request()->routeIs('PesanAdmin');
     @endphp
 
     <nav class="flex-1 space-y-0.5 px-3">
@@ -165,6 +166,14 @@ tailwind.config = {
           {{ $isShopAdmin ? 'bg-primary/10 text-primary font-bold border-primary/10' : 'text-on-surface-variant hover:text-primary hover:bg-surface-container-low' }}">
         <span class="material-symbols-outlined text-[20px]" @if($isShopAdmin) style="font-variation-settings:'FILL' 1" @endif>storefront</span>
         <span class="text-sm">Manajemen Toko</span>
+      </a>
+
+      {{-- Query Toko (Monitoring) --}}
+      <a href="{{ route('admin.queryToko') }}"
+        class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 border border-transparent
+          {{ $isQueryAdmin ? 'bg-primary/10 text-primary font-bold border-primary/10' : 'text-on-surface-variant hover:text-primary hover:bg-surface-container-low' }}">
+        <span class="material-symbols-outlined text-[20px]" @if($isQueryAdmin) style="font-variation-settings:'FILL' 1" @endif>monitoring</span>
+        <span class="text-sm">Query Toko</span>
       </a>
 
       {{-- Manajemen Pengguna --}}

@@ -39,6 +39,7 @@ class StoreRegistrationController extends Controller
             'Nomer_Telepon_Toko' => 'required|string|max:20',
             'latitude' => 'required|numeric|between:-90,90',
             'longitude' => 'required|numeric|between:-180,180',
+            'foto_toko' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         try {
@@ -46,6 +47,11 @@ class StoreRegistrationController extends Controller
             $validation = $this->registrationService->validateRegistration(Auth::id());
             if (!$validation['allowed']) {
                 return redirect()->route('Profil')->with('error', $validation['message']);
+            }
+
+            $fotoPath = null;
+            if ($request->hasFile('foto_toko')) {
+                $fotoPath = $request->file('foto_toko')->store('store_photos', 'public');
             }
 
             $this->registrationService->register(Auth::id(), [
@@ -56,6 +62,7 @@ class StoreRegistrationController extends Controller
                 'Nomer_Telepon_Toko' => $request->Nomer_Telepon_Toko,
                 'latitude' => $request->latitude,
                 'longitude' => $request->longitude,
+                'Foto_Toko' => $fotoPath,
             ]);
 
             return redirect()->route('Profil')->with('success', 'Pendaftaran toko berhasil diajukan!');

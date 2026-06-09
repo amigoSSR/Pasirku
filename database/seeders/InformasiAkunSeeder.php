@@ -30,6 +30,15 @@ class InformasiAkunSeeder extends Seeder
                 'updated_at'     => now(),
             ],
             [
+                'Username'       => 'iyyan',
+                'Nomer_Telepon'  => '082188936473',
+                'Email'          => 'iyyan@example.com',
+                'Password'       => Hash::make('12345678'),
+                'Role'           => 'admin',
+                'created_at'     => now(),
+                'updated_at'     => now(),
+            ],
+            [
                 'Username'       => 'siti_rahayu',
                 'Nomer_Telepon'  => '6289876543210',
                 'Email'          => 'siti@example.com',

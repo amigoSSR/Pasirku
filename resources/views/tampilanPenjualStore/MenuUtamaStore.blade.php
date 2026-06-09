@@ -4,9 +4,27 @@
     <nav class="flex items-center gap-2 text-xs text-on-surface-variant mb-2">
       <span class="font-semibold text-primary">Dashboard</span>
     </nav>
-    <div>
-      <h1 class="font-headline text-3xl font-bold text-on-surface">Selamat datang, {{ Auth::user()->Username ?? 'Penjual' }} 👋</h1>
-      <p class="text-on-surface-variant text-sm mt-1">Berikut ringkasan aktivitas toko Anda hari ini.</p>
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div>
+        <h1 class="font-headline text-3xl font-bold text-on-surface">Selamat datang, {{ Auth::user()->Username ?? 'Penjual' }} 👋</h1>
+        <p class="text-on-surface-variant text-sm mt-1">Berikut ringkasan aktivitas toko Anda hari ini.</p>
+      </div>
+      <div class="flex items-center gap-4 bg-surface-container-lowest p-2 pr-6 rounded-2xl border border-outline-variant/30 shadow-sm">
+        <div class="w-14 h-14 rounded-xl overflow-hidden bg-primary/10 flex items-center justify-center shrink-0">
+          @if($toko->Foto_Toko)
+            <img src="{{ asset('storage/' . $toko->Foto_Toko) }}" class="w-full h-full object-cover" alt="Foto Toko">
+          @else
+            <span class="material-symbols-outlined text-primary text-3xl" style="font-variation-settings:'FILL' 1">storefront</span>
+          @endif
+        </div>
+        <div>
+          <p class="text-[10px] font-black text-outline uppercase tracking-widest">Toko Anda</p>
+          <p class="text-sm font-bold text-on-surface">{{ $toko->Nama_Toko }}</p>
+          <a href="{{ route('ProfilStore') }}" class="text-[10px] font-bold text-primary hover:underline flex items-center gap-0.5">
+            Kelola Profil <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+          </a>
+        </div>
+      </div>
     </div>
   </x-slot>
 
@@ -94,6 +112,58 @@
         <div class="flex items-center gap-4 mt-4">
           <span class="flex items-center gap-1.5 text-xs text-on-surface-variant font-medium"><span class="w-3 h-3 rounded-full bg-[#944a00] inline-block"></span>Hari ini</span>
           <span class="flex items-center gap-1.5 text-xs text-on-surface-variant font-medium"><span class="w-3 h-3 rounded-full bg-[#ffdcc5] inline-block"></span>Hari sebelumnya</span>
+        </div>
+      </div>
+
+      {{-- Rating Distribution Card --}}
+      <div class="bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant/30 p-6">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="font-headline font-bold text-base text-on-surface">Statistik Rating</h2>
+            <div class="flex items-center gap-1 text-amber-500">
+                <span class="material-symbols-outlined text-lg" style="font-variation-settings:'FILL' 1">star</span>
+                <span class="text-lg font-black">{{ number_format($averageRating, 1) }}</span>
+            </div>
+        </div>
+        
+        <div class="space-y-3">
+            @foreach($ratingDistribution as $star => $count)
+              @php
+                $percentage = $totalReviews > 0 ? ($count / $totalReviews) * 100 : 0;
+              @endphp
+              <div class="flex items-center gap-3">
+                <span class="text-xs font-bold text-on-surface-variant w-4">{{ $star }}</span>
+                <div class="flex-1 h-2 bg-surface-container rounded-full overflow-hidden">
+                  <div class="h-full bg-amber-500 rounded-full" style="width: {{ $percentage }}%"></div>
+                </div>
+                <span class="text-xs font-bold text-on-surface-variant w-8 text-right">{{ $count }}</span>
+              </div>
+            @endforeach
+        </div>
+
+        <div class="mt-8 pt-6 border-t border-outline-variant/20">
+            <h3 class="text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-4">Ulasan Terakhir</h3>
+            <div class="space-y-4">
+                @forelse($recentReviews->take(3) as $review)
+                    <div class="flex gap-3">
+                        <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                            <span class="material-symbols-outlined text-primary text-sm">person</span>
+                        </div>
+                        <div class="min-w-0">
+                            <div class="flex items-center justify-between mb-0.5">
+                                <p class="text-xs font-bold text-on-surface truncate">{{ $review->is_anonymous ? 'Anonim' : ($review->akun->Username ?? 'User') }}</p>
+                                <div class="flex text-amber-500 scale-75 origin-right">
+                                    @for($i=1; $i<=5; $i++)
+                                        <span class="material-symbols-outlined text-sm {{ $i <= $review->Rating ? '' : 'opacity-30' }}" style="font-variation-settings:'FILL' 1">star</span>
+                                    @endfor
+                                </div>
+                            </div>
+                            <p class="text-[11px] text-on-surface-variant line-clamp-2 leading-relaxed">{{ $review->Ulasan ?: 'Tanpa ulasan' }}</p>
+                        </div>
+                    </div>
+                @empty
+                    <p class="text-center text-xs text-on-surface-variant py-4">Belum ada ulasan.</p>
+                @endforelse
+            </div>
         </div>
       </div>
 
@@ -207,7 +277,7 @@
               <span class="material-symbols-outlined text-amber-500" style="font-variation-settings:'FILL' 1">star</span>
               <span class="text-sm font-semibold text-on-surface font-sans">Rating Toko</span>
             </div>
-            <span class="text-sm font-bold text-amber-500 font-sans">4.9/5</span>
+            <span class="text-sm font-bold text-amber-500 font-sans">{{ number_format($averageRating, 1) }}/5 ({{ $totalReviews }})</span>
           </div>
 
           {{-- Tingkat Respon --}}

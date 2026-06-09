@@ -31,7 +31,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Store & Admin Profile management
     Route::middleware(['role:store,admin'])->group(function () {
         Route::get('/ProfilStore', [\App\Http\Controllers\StoreProfileController::class, 'showProfile'])->name('ProfilStore');
+        Route::post('/ProfilStore/info', [\App\Http\Controllers\StoreProfileController::class, 'updateGeneralInfo'])->name('ProfilStore.updateGeneralInfo');
         Route::post('/ProfilStore/alamat', [\App\Http\Controllers\StoreProfileController::class, 'updateAddress'])->name('ProfilStore.updateAddress');
+        Route::post('/ProfilStore/foto', [\App\Http\Controllers\StoreProfileController::class, 'updatePhoto'])->name('ProfilStore.updatePhoto');
     });
 
     // Store Routes
@@ -63,6 +65,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/admin/menuutama', [AdminController::class, 'index'])->name('MenuUtamaAdmin');
         Route::get('/admin/shop-registration', [AdminController::class, 'shopeRegistry'])->name('ShopeRegistry');
         Route::get('/admin/user-registry', [ShoopeRegistryController::class, 'index'])->name('UserRegistry');
+        Route::get('/admin/query-toko', [AdminController::class, 'queryToko'])->name('admin.queryToko');
         Route::get('/admin/profil', [AdminController::class, 'profile'])->name('ProfilAdmin');
         Route::get('/admin/pesan', fn() => view('tampilanUntukAdmin.PesanAdmin'))->name('PesanAdmin');
         Route::put('/admin/shope-registry/{id}/toggle-status', [AdminController::class, 'toggleStatus'])
@@ -91,6 +94,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/daftarPenjual', [\App\Http\Controllers\StoreRegistrationController::class, 'store'])
             ->name('daftarPenjual.store')
             ->middleware('check.store.registration');
+
+        // Review Routes
+        Route::post('/reviews', [\App\Http\Controllers\ReviewController::class, 'store'])->name('reviews.store');
+        Route::put('/reviews/{id}', [\App\Http\Controllers\ReviewController::class, 'update'])->name('reviews.update');
     });
 
     // Chat API Routes

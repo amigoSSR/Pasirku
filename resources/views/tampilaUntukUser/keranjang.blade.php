@@ -103,12 +103,23 @@
           
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div class="space-y-6">
-              <div class="flex flex-col gap-2">
-                <label for="lokasi-pengantaran" class="text-[10px] font-bold text-secondary uppercase tracking-[0.15em] px-1">Lokasi Pengantaran</label>
+              <div class="flex flex-col gap-2 relative">
+                <div class="flex items-center justify-between px-1">
+                  <label for="lokasi-pengantaran" class="text-[10px] font-bold text-secondary uppercase tracking-[0.15em]">Lokasi Pengantaran</label>
+                  <button type="button" id="btn-load-saved" class="hidden text-[10px] font-bold text-primary hover:underline flex items-center gap-1 transition-all">
+                    <span class="material-symbols-outlined text-[14px]">history</span>
+                    Gunakan Alamat Sebelumnya
+                  </button>
+                </div>
                 <div class="relative group">
                   <span class="material-symbols-outlined absolute left-4 top-4 text-on-surface-variant group-focus-within:text-primary transition-colors">location_on</span>
-                  <input id="lokasi-pengantaran" class="bg-surface-container-highest/50 border-none rounded-xl pl-12 pr-4 py-4 w-full font-medium text-sm focus:ring-2 focus:ring-primary/20 transition-all"
-                         placeholder="Masukkan alamat lengkap..." type="text" />
+                  <input id="lokasi-pengantaran" class="bg-surface-container-highest/50 border-none rounded-xl pl-12 pr-12 py-4 w-full font-medium text-sm focus:ring-2 focus:ring-primary/20 transition-all"
+                         placeholder="Masukkan alamat lengkap..." type="text" autocomplete="off" />
+                  <button type="button" id="btn-locate-me" class="absolute right-4 top-4 text-on-surface-variant hover:text-primary transition-colors" title="Gunakan Lokasi Saat Ini">
+                    <span class="material-symbols-outlined text-[20px]">my_location</span>
+                  </button>
+                </div>
+                <div id="search-suggestions" class="hidden absolute top-full left-0 right-0 z-[100] mt-1 bg-surface-container-lowest border border-outline-variant/30 rounded-xl shadow-xl overflow-hidden animate-fadeUp">
                 </div>
                 <p class="text-[10px] text-on-surface-variant font-medium">Contoh: Jl. Merdeka No. 10, Jakarta Pusat</p>
               </div>
@@ -631,32 +642,162 @@
           const sPos = window.storeMarker.getLatLng();
           routeLine.setLatLngs([[sPos.lat, sPos.lng], [pos.lat, pos.lng]]);
         }
-        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.lat}&lon=${pos.lng}`)
-          .then(res => res.json()).then(data => { if(data && data.display_name) document.getElementById('lokasi-pengantaran').value = data.display_name.split(',').slice(0, 4).join(',').trim(); });
+        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.lat}&lon=${pos.lng}&addressdetails=1`)
+          .then(res => res.json()).then(data => { 
+            if(data && data.address) {
+              const a = data.address;
+              const label = [
+                a.road || a.pedestrian || a.suburb || a.village || a.neighbourhood,
+                a.city_district || a.city || a.town,
+                a.state
+              ].filter(Boolean).join(', ');
+              document.getElementById('lokasi-pengantaran').value = label; 
+            }
+          });
       });
 
       renderCheckout();
       hitungEstimasi();
 
       const btnSearch = document.getElementById('btn-search-delivery');
+      const suggestionsCont = document.getElementById('search-suggestions');
+      const inputLokasi = document.getElementById('lokasi-pengantaran');
+
+      function selectLocation(lat, lon, displayName) {
+        const la = parseFloat(lat), lo = parseFloat(lon);
+        checkoutMap.setView([la, lo], 15);
+        deliveryMarker.setLatLng([la, lo]);
+        window.deliveryLat = la.toFixed(8); window.deliveryLng = lo.toFixed(8);
+        inputLokasi.value = displayName;
+        suggestionsCont.classList.add('hidden');
+        if (window.storeMarker) {
+          const sPos = window.storeMarker.getLatLng();
+          routeLine.setLatLngs([[sPos.lat, sPos.lng], [la, lo]]);
+        }
+      }
+
       if(btnSearch) {
         btnSearch.addEventListener('click', () => {
-          const query = document.getElementById('lokasi-pengantaran').value.trim();
+          const query = inputLokasi.value.trim();
           if (!query) return alert('Silakan ketik lokasi!');
+          
           btnSearch.disabled = true;
-          fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`)
-            .then(res => res.json()).then(data => {
+          btnSearch.innerHTML = '<span class="material-symbols-outlined animate-spin text-[18px]">autorenew</span> Mencari...';
+          
+          let url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&countrycodes=id&addressdetails=1`;
+          
+          if (window.storeMarker) {
+            const sPos = window.storeMarker.getLatLng();
+            const vBox = `${sPos.lng - 0.5},${sPos.lat + 0.5},${sPos.lng + 0.5},${sPos.lat - 0.5}`;
+            url += `&viewbox=${vBox}`;
+          }
+
+          fetch(url)
+            .then(res => res.json())
+            .then(data => {
               btnSearch.disabled = false;
+              btnSearch.innerHTML = '<span class="material-symbols-outlined text-[18px]">search</span> Cari & Plot di Peta';
+              
               if (data && data.length > 0) {
-                const lat = parseFloat(data[0].lat), lon = parseFloat(data[0].lon);
-                checkoutMap.setView([lat, lon], 14);
-                deliveryMarker.setLatLng([lat, lon]);
-                window.deliveryLat = lat; window.deliveryLng = lon;
-                if (window.storeMarker) routeLine.setLatLngs([[window.storeMarker.getLatLng().lat, window.storeMarker.getLatLng().lng], [lat, lon]]);
+                suggestionsCont.innerHTML = '';
+                data.forEach(item => {
+                  const div = document.createElement('div');
+                  div.className = 'px-4 py-3 hover:bg-surface-container-low cursor-pointer border-b border-outline-variant/10 text-sm flex items-start gap-3 transition-colors';
+                  div.innerHTML = `
+                    <span class="material-symbols-outlined text-primary text-[18px] mt-0.5">location_on</span>
+                    <div class="flex-1 min-w-0">
+                      <p class="font-bold text-on-surface leading-tight truncate">${item.display_name.split(',')[0]}</p>
+                      <p class="text-[10px] text-on-surface-variant mt-0.5 line-clamp-2">${item.display_name}</p>
+                    </div>
+                  `;
+                  div.onclick = () => selectLocation(item.lat, item.lon, item.display_name);
+                  suggestionsCont.appendChild(div);
+                });
+                suggestionsCont.classList.remove('hidden');
+                
+                if (data.length === 1) {
+                  selectLocation(data[0].lat, data[0].lon, data[0].display_name);
+                }
+              } else {
+                alert('Lokasi tidak ditemukan. Coba gunakan kata kunci yang lebih spesifik.');
               }
+            })
+            .catch(() => {
+              btnSearch.disabled = false;
+              btnSearch.innerHTML = '<span class="material-symbols-outlined text-[18px]">search</span> Cari & Plot di Peta';
+              alert('Terjadi kesalahan saat mencari lokasi.');
             });
         });
       }
+
+      // Close suggestions when clicking outside
+      document.addEventListener('click', (e) => {
+        if (suggestionsCont && !suggestionsCont.contains(e.target) && e.target !== inputLokasi) {
+          suggestionsCont.classList.add('hidden');
+        }
+      });
+
+      // Locate Me
+      const btnLocate = document.getElementById('btn-locate-me');
+      if (btnLocate) {
+        btnLocate.addEventListener('click', () => {
+          if (!navigator.geolocation) return alert('Browser Anda tidak mendukung geolokasi.');
+          
+          btnLocate.classList.add('animate-spin');
+          navigator.geolocation.getCurrentPosition((pos) => {
+            btnLocate.classList.remove('animate-spin');
+            const { latitude, longitude } = pos.coords;
+            selectLocation(latitude, longitude, 'Mencari alamat...');
+            
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&addressdetails=1`)
+              .then(res => res.json()).then(data => {
+                if (data && data.display_name) inputLokasi.value = data.display_name;
+              });
+          }, (err) => {
+            btnLocate.classList.remove('animate-spin');
+            alert('Gagal mendapatkan lokasi: ' + err.message);
+          });
+        });
+      }
+
+      // Saved Location Logic
+      const btnLoadSaved = document.getElementById('btn-load-saved');
+      const savedLocKey = 'pasirku_saved_location';
+
+      function checkSavedLocation() {
+        const saved = localStorage.getItem(savedLocKey);
+        if (saved && btnLoadSaved) {
+          btnLoadSaved.classList.remove('hidden');
+        }
+      }
+
+      if (btnLoadSaved) {
+        btnLoadSaved.addEventListener('click', () => {
+          const saved = JSON.parse(localStorage.getItem(savedLocKey));
+          if (saved) {
+            selectLocation(saved.lat, saved.lng, saved.address);
+            if (saved.detail) document.getElementById('detail-lokasi').value = saved.detail;
+            
+            // Notification toast or similar
+            btnLoadSaved.innerHTML = '<span class="material-symbols-outlined text-[14px]">check</span> Berhasil Dimuat';
+            setTimeout(() => {
+              btnLoadSaved.innerHTML = '<span class="material-symbols-outlined text-[14px]">history</span> Gunakan Alamat Sebelumnya';
+            }, 2000);
+          }
+        });
+      }
+
+      function saveDeliveryLocation() {
+        const locData = {
+          address: document.getElementById('lokasi-pengantaran').value,
+          detail: document.getElementById('detail-lokasi').value,
+          lat: window.deliveryLat,
+          lng: window.deliveryLng
+        };
+        localStorage.setItem(savedLocKey, JSON.stringify(locData));
+      }
+
+      checkSavedLocation();
 
       const inputBukti = document.getElementById('input-bukti');
       if(inputBukti) {
@@ -705,6 +846,10 @@
         if (!document.getElementById('input-bukti').files[0]) {
           e.preventDefault(); return alert('Harap upload bukti pembayaran!');
         }
+
+        // Save location for next time
+        saveDeliveryLocation();
+
         document.getElementById('loading-overlay').classList.remove('hidden');
         document.getElementById('loading-overlay').classList.add('flex');
         const btn = document.getElementById('btn-konfirmasi');

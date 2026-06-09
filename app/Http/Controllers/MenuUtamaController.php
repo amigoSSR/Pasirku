@@ -104,6 +104,12 @@ class MenuUtamaController extends Controller
             ->where('is_read', false)
             ->count();
 
+        // 6. Rating Stats
+        $averageRating = $toko->averageRating();
+        $totalReviews = $toko->reviews()->count();
+        $ratingDistribution = $toko->ratingDistribution();
+        $recentReviews = $toko->reviews()->with('akun')->latest()->take(5)->get();
+
         return view('tampilanPenjualStore.MenuUtamaStore', compact(
             'toko',
             'totalPendapatan',
@@ -116,7 +122,11 @@ class MenuUtamaController extends Controller
             'topProducts',
             'completionRate',
             'complaintsCount',
-            'unreadChatCount'
+            'unreadChatCount',
+            'averageRating',
+            'totalReviews',
+            'ratingDistribution',
+            'recentReviews'
         ));
     }
 

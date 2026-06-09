@@ -15,22 +15,33 @@
       <div class="absolute top-0 right-0 -mr-12 -mt-12 w-56 h-56 rounded-full bg-on-primary/10 blur-3xl pointer-events-none"></div>
       <div class="absolute bottom-0 left-0 -ml-12 -mb-12 w-40 h-40 rounded-full bg-on-primary/10 blur-3xl pointer-events-none"></div>
       <div class="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-5">
-        <div>
-          <span class="text-xs font-bold text-primary-fixed uppercase tracking-widest mb-2 block flex items-center gap-1.5">
-            <span class="material-symbols-outlined text-[15px]" style="font-variation-settings:'FILL' 1">storefront</span>
-            Profil Toko
-          </span>
-          <h1 class="text-3xl md:text-4xl font-headline font-extrabold tracking-tight mb-3 drop-shadow-sm">
-            {{ $toko->Nama_Toko }}
-          </h1>
-          <div class="flex flex-wrap gap-2 text-sm">
-            <div class="flex items-center gap-1.5 bg-on-primary/15 backdrop-blur-md py-1.5 px-3 rounded-full">
-              <span class="material-symbols-outlined text-[16px]">location_on</span>
-              {{ $toko->Lokasi_Toko }}
-            </div>
-            <div class="flex items-center gap-1.5 bg-on-primary/15 backdrop-blur-md py-1.5 px-3 rounded-full">
-              <span class="material-symbols-outlined text-[16px]">call</span>
-              {{ $toko->Nomer_Telepon_Toko }}
+        <div class="flex flex-col md:flex-row gap-6 md:items-center">
+          <div class="w-28 h-28 md:w-36 md:h-36 rounded-3xl bg-white/20 backdrop-blur-md border-4 border-white/30 overflow-hidden shadow-2xl shrink-0">
+            @if($toko->Foto_Toko)
+              <img src="{{ asset('storage/' . $toko->Foto_Toko) }}" class="w-full h-full object-cover" alt="{{ $toko->Nama_Toko }}">
+            @else
+              <div class="w-full h-full flex items-center justify-center">
+                <span class="material-symbols-outlined text-white text-6xl" style="font-variation-settings:'FILL' 1">storefront</span>
+              </div>
+            @endif
+          </div>
+          <div>
+            <span class="text-xs font-bold text-primary-fixed uppercase tracking-widest mb-2 block flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[15px]" style="font-variation-settings:'FILL' 1">storefront</span>
+              Profil Toko
+            </span>
+            <h1 class="text-3xl md:text-4xl font-headline font-extrabold tracking-tight mb-3 drop-shadow-sm">
+              {{ $toko->Nama_Toko }}
+            </h1>
+            <div class="flex flex-wrap gap-2 text-sm">
+              <div class="flex items-center gap-1.5 bg-on-primary/15 backdrop-blur-md py-1.5 px-3 rounded-full">
+                <span class="material-symbols-outlined text-[16px]">location_on</span>
+                {{ $toko->Lokasi_Toko }}
+              </div>
+              <div class="flex items-center gap-1.5 bg-on-primary/15 backdrop-blur-md py-1.5 px-3 rounded-full">
+                <span class="material-symbols-outlined text-[16px]">call</span>
+                {{ $toko->Nomer_Telepon_Toko }}
+              </div>
             </div>
           </div>
         </div>
@@ -121,6 +132,102 @@
             <p class="text-xs text-on-surface-variant max-w-xs">Toko belum memetakan lokasi operasional mereka di peta.</p>
           </div>
         @endif
+      </div>
+    </div>
+
+    {{-- Rating & Reviews Section --}}
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      {{-- Rating Summary --}}
+      <div class="lg:col-span-4 bg-surface-container-lowest p-6 rounded-3xl shadow-sm border border-outline-variant/30">
+        <h3 class="font-headline font-bold text-lg text-on-surface mb-6 flex items-center gap-2">
+          <span class="material-symbols-outlined text-amber-500" style="font-variation-settings:'FILL' 1">star</span>
+          Rating & Ulasan Toko
+        </h3>
+
+        <div class="flex items-center gap-6 mb-8">
+          <div class="text-center">
+            <div class="text-5xl font-black text-on-surface tracking-tighter">{{ number_format($averageRating, 1) }}</div>
+            <div class="flex text-amber-500 justify-center mt-1">
+              @for($i=1; $i<=5; $i++)
+                <span class="material-symbols-outlined text-lg {{ $i <= round($averageRating) ? '' : 'opacity-30' }}" style="font-variation-settings:'FILL' 1">star</span>
+              @endfor
+            </div>
+            <p class="text-[10px] font-bold text-on-surface-variant uppercase mt-2 tracking-widest">{{ $totalReviews }} Ulasan</p>
+          </div>
+          <div class="flex-1 space-y-2">
+             @foreach($ratingDistribution as $star => $count)
+               @php
+                 $percentage = $totalReviews > 0 ? ($count / $totalReviews) * 100 : 0;
+               @endphp
+               <div class="flex items-center gap-3">
+                 <span class="text-[10px] font-black text-on-surface-variant w-3">{{ $star }}</span>
+                 <div class="flex-1 h-2 bg-surface-container rounded-full overflow-hidden">
+                   <div class="h-full bg-amber-500 rounded-full" style="width: {{ $percentage }}%"></div>
+                 </div>
+                 <span class="text-[10px] font-bold text-on-surface-variant w-6 text-right">{{ $count }}</span>
+               </div>
+             @endforeach
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div class="bg-surface-container-low p-4 rounded-2xl border border-outline-variant/20">
+            <span class="material-symbols-outlined text-primary mb-1">groups</span>
+            <div class="text-lg font-black text-on-surface leading-none">{{ $totalBuyers }}</div>
+            <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mt-1">Total Pembeli</p>
+          </div>
+          <div class="bg-surface-container-low p-4 rounded-2xl border border-outline-variant/20">
+            <span class="material-symbols-outlined text-green-600 mb-1">verified</span>
+            <div class="text-lg font-black text-on-surface leading-none">{{ $totalReviews }}</div>
+            <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mt-1">Ulasan Valid</p>
+          </div>
+        </div>
+      </div>
+
+      {{-- Reviews List --}}
+      <div class="lg:col-span-8 bg-surface-container-lowest p-6 rounded-3xl shadow-sm border border-outline-variant/30 flex flex-col">
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="font-headline font-bold text-lg text-on-surface">Ulasan Terbaru</h3>
+          @if($totalReviews > 5)
+            <button class="text-sm font-bold text-primary hover:underline">Lihat Semua</button>
+          @endif
+        </div>
+
+        <div class="space-y-6 flex-1">
+          @forelse($recentReviews as $review)
+            <div class="flex gap-4 pb-6 border-b border-outline-variant/10 last:border-0">
+              <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-primary text-xl">person</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between gap-2 mb-1">
+                  <h4 class="font-bold text-sm text-on-surface truncate">
+                    {{ $review->is_anonymous ? 'Anonim' : ($review->akun->Username ?? 'User') }}
+                  </h4>
+                  <span class="text-[10px] font-medium text-on-surface-variant shrink-0">{{ $review->created_at->format('d M Y') }}</span>
+                </div>
+                <div class="flex text-amber-500 mb-2">
+                  @for($i=1; $i<=5; $i++)
+                    <span class="material-symbols-outlined text-sm {{ $i <= $review->Rating ? '' : 'opacity-30' }}" style="font-variation-settings:'FILL' 1">star</span>
+                  @endfor
+                </div>
+                <p class="text-sm text-on-surface-variant leading-relaxed">
+                  {{ $review->Ulasan ?: 'Tidak ada komentar.' }}
+                </p>
+                @if($review->Foto_Review)
+                  <div class="mt-3">
+                    <img src="{{ asset('storage/' . $review->Foto_Review) }}" class="w-24 h-24 object-cover rounded-xl border border-outline-variant/20 cursor-pointer hover:opacity-90 transition-opacity" onclick="window.open(this.src)">
+                  </div>
+                @endif
+              </div>
+            </div>
+          @empty
+            <div class="flex flex-col items-center justify-center h-full py-10 text-center">
+               <span class="material-symbols-outlined text-4xl text-outline-variant mb-2">rate_review</span>
+               <p class="text-sm text-on-surface-variant font-medium">Belum ada ulasan untuk toko ini.</p>
+            </div>
+          @endforelse
+        </div>
       </div>
     </div>
 

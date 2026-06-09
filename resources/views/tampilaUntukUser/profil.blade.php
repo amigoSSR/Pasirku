@@ -29,12 +29,8 @@
         {{-- Stats --}}
         <div class="flex gap-4">
           <div class="bg-on-primary/15 backdrop-blur-md px-5 py-3 rounded-xl text-center">
-            <p class="text-xl font-headline font-black">124</p>
+            <p class="text-xl font-headline font-black">{{ \App\Models\Pesanan::count() }}</p>
             <p class="text-xs text-primary-fixed font-bold uppercase tracking-wider">Orders</p>
-          </div>
-          <div class="bg-on-primary/15 backdrop-blur-md px-5 py-3 rounded-xl text-center">
-            <p class="text-xl font-headline font-black">9.8</p>
-            <p class="text-xs text-primary-fixed font-bold uppercase tracking-wider">Trust</p>
           </div>
         </div>
       </div>
