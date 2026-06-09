@@ -607,8 +607,8 @@
         }
       });
 
-      const ongPick = qtyPickUp > 0 ? (maxOngPick || selectedStore.ongkirPickUp || 0) : 0;
-      const ongTruck = qtyTruck > 0 ? (maxOngTruck || selectedStore.ongkirTruck || 0) : 0;
+      const ongPick = qtyPickUp > 0 ? (maxOngPick || selectedStore.ongkirPickUp || 0) * qtyPickUp : 0;
+      const ongTruck = qtyTruck > 0 ? (maxOngTruck || selectedStore.ongkirTruck || 0) * qtyTruck : 0;
       const totalOngkir = ongPick + ongTruck;
       const grandTotal = subTotal + totalOngkir;
 

@@ -50,9 +50,9 @@ class CheckoutController extends Controller
             }
         }
 
-        // Shipping Calculation: Use max product ongkir or fallback to store default
-        $ongkirPickUpTotal = $qtyPickUp > 0 ? ($maxOngPick ?: $toko->Ongkir_PickUp) : 0;
-        $ongkirTruckTotal = $qtyTruck > 0 ? ($maxOngTruck ?: $toko->Ongkir_Truck) : 0;
+        // Shipping Calculation: Use max product ongkir or fallback to store default, multiplied by quantity
+        $ongkirPickUpTotal = $qtyPickUp > 0 ? ($maxOngPick ?: $toko->Ongkir_PickUp) * $qtyPickUp : 0;
+        $ongkirTruckTotal = $qtyTruck > 0 ? ($maxOngTruck ?: $toko->Ongkir_Truck) * $qtyTruck : 0;
         
         $totalOngkir = $ongkirPickUpTotal + $ongkirTruckTotal;
         $grandTotal = $totalHarga + $totalOngkir;

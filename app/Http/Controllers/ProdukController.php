@@ -40,6 +40,8 @@ class ProdukController extends Controller
             'Harga'              => $request->Harga,
             'Ongkir_PickUp'      => $request->Ongkir_PickUp,
             'Ongkir_Truck'       => $request->Ongkir_Truck,
+            'Kubikasi_PickUp'    => $request->Kubikasi_PickUp ?? 1,
+            'Kubikasi_Truck'     => $request->Kubikasi_Truck ?? 1,
             'Stock_PickUp'       => $request->Stock_PickUp,
             'Stock_Truck'        => $request->Stock_Truck,
             'Satuan'             => $request->Satuan,

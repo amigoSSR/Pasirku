@@ -170,7 +170,7 @@
           {{-- Harga Pasir --}}
           <div class="sm:col-span-2">
             <label class="block text-sm font-semibold text-on-surface mb-1.5" for="Harga">
-              Harga Pasir (Rp) <span class="text-error">*</span>
+              Harga Pasir (per 1 m³) (Rp) <span class="text-error">*</span>
             </label>
             <div class="relative">
               <span class="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant font-semibold text-sm">Rp</span>
@@ -181,7 +181,7 @@
                             {{ $errors->has('Harga') ? 'border-error bg-error-container/20' : 'border-outline-variant bg-surface-container-low' }}
                             text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
             </div>
-            <p class="mt-1 text-xs text-on-surface-variant">Harga satuan pasir sebelum ongkir.</p>
+            <p class="mt-1 text-xs text-on-surface-variant">Harga satuan pasir (per 1 meter kubik) sebelum ongkir.</p>
             @error('Harga')
               <p class="mt-1.5 text-xs text-error flex items-center gap-1">
                 <span class="material-symbols-outlined text-xs">error</span>{{ $message }}
@@ -259,6 +259,42 @@
                           {{ $errors->has('Stock_Truck') ? 'border-error bg-error-container/20' : 'border-outline-variant bg-surface-container-low' }}
                           text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
             @error('Stock_Truck')
+              <p class="mt-1.5 text-xs text-error flex items-center gap-1">
+                <span class="material-symbols-outlined text-xs">error</span>{{ $message }}
+              </p>
+            @enderror
+          </div>
+
+          {{-- Kapasitas Pick Up --}}
+          <div>
+            <label class="block text-sm font-semibold text-on-surface mb-1.5" for="Kubikasi_PickUp">
+              Kapasitas Pick Up (m³) <span class="text-error">*</span>
+            </label>
+            <input id="Kubikasi_PickUp" name="Kubikasi_PickUp" type="number" step="0.01" min="0.1"
+                   value="{{ old('Kubikasi_PickUp', 1) }}"
+                   placeholder="1"
+                   class="w-full px-4 py-3 rounded-xl border text-sm
+                          {{ $errors->has('Kubikasi_PickUp') ? 'border-error bg-error-container/20' : 'border-outline-variant bg-surface-container-low' }}
+                          text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
+            @error('Kubikasi_PickUp')
+              <p class="mt-1.5 text-xs text-error flex items-center gap-1">
+                <span class="material-symbols-outlined text-xs">error</span>{{ $message }}
+              </p>
+            @enderror
+          </div>
+
+          {{-- Kapasitas Truck --}}
+          <div>
+            <label class="block text-sm font-semibold text-on-surface mb-1.5" for="Kubikasi_Truck">
+              Kapasitas Truk (m³) <span class="text-error">*</span>
+            </label>
+            <input id="Kubikasi_Truck" name="Kubikasi_Truck" type="number" step="0.01" min="0.1"
+                   value="{{ old('Kubikasi_Truck', 5) }}"
+                   placeholder="5"
+                   class="w-full px-4 py-3 rounded-xl border text-sm
+                          {{ $errors->has('Kubikasi_Truck') ? 'border-error bg-error-container/20' : 'border-outline-variant bg-surface-container-low' }}
+                          text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
+            @error('Kubikasi_Truck')
               <p class="mt-1.5 text-xs text-error flex items-center gap-1">
                 <span class="material-symbols-outlined text-xs">error</span>{{ $message }}
               </p>

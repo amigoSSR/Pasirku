@@ -147,6 +147,12 @@
                 <p class="text-xs text-yellow-700 mt-1">Anda sudah mengupload bukti pembayaran pada {{ $pendingPayment->created_at->format('d M Y, H:i') }}. Harap tunggu admin memverifikasi.</p>
               </div>
             </div>
+          @elseif(!$qrisAdmin)
+            <div class="bg-surface-container-low border border-outline-variant/30 rounded-2xl p-8 text-center space-y-3 flex flex-col justify-center items-center min-h-[300px]">
+              <span class="material-symbols-outlined text-on-surface-variant/40 text-4xl block">block</span>
+              <p class="text-sm font-medium text-on-surface-variant">Formulir dinonaktifkan</p>
+              <p class="text-xs text-on-surface-variant">Anda baru bisa mengunggah bukti setelah Admin menyediakan QRIS pembayaran.</p>
+            </div>
           @else
             <form action="{{ route('bayarKomisi.store') }}" method="POST" enctype="multipart/form-data" class="space-y-5">
               @csrf
@@ -156,9 +162,9 @@
                 <div class="relative group">
                   <input type="file" name="bukti_pembayaran" id="bukti_pembayaran" required accept="image/png, image/jpeg, image/jpg, image/webp"
                          class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                         @change="fileName = $event.target.files[0].name; const reader = new FileReader(); reader.onload = (e) => previewUrl = e.target.result; reader.readAsDataURL($event.target.files[0]);">
+                         @change="if($event.target.files.length > 0) { fileName = $event.target.files[0].name; const reader = new FileReader(); reader.onload = (e) => previewUrl = e.target.result; reader.readAsDataURL($event.target.files[0]); } else { fileName = ''; previewUrl = ''; }">
                   
-                  <div class="w-full border-2 border-dashed border-outline-variant/40 rounded-2xl p-8 text-center bg-surface-container-low group-hover:bg-surface-container-high transition-colors"
+                  <div class="w-full border-2 border-dashed border-outline-variant/40 rounded-2xl p-8 flex flex-col items-center justify-center text-center bg-surface-container-low group-hover:bg-surface-container-high transition-colors"
                        :class="previewUrl ? 'border-primary/50' : ''">
                     
                     <div x-show="!previewUrl">
@@ -184,7 +190,7 @@
                 Pastikan nominal yang Anda transfer sama persis dengan Tagihan Komisi: <strong class="text-on-surface">Rp {{ number_format($toko->Komisi_Admin, 0, ',', '.') }}</strong>
               </div>
 
-              <button type="submit" class="w-full bg-primary text-on-primary hover:bg-primary-container px-6 py-3 rounded-xl text-sm font-bold transition-all shadow-sm active:scale-[0.98] duration-200 flex items-center justify-center gap-2" {{ !$qrisAdmin ? 'disabled' : '' }}>
+              <button type="submit" class="w-full bg-primary text-on-primary hover:bg-primary-container disabled:opacity-50 disabled:cursor-not-allowed px-6 py-3 rounded-xl text-sm font-bold transition-all shadow-sm active:scale-[0.98] duration-200 flex items-center justify-center gap-2">
                 <span class="material-symbols-outlined text-[18px]">upload</span>
                 Upload & Kirim Pembayaran
               </button>

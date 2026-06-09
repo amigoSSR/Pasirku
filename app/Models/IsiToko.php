@@ -16,6 +16,8 @@ class IsiToko extends Model
         'Harga',
         'Ongkir_PickUp',
         'Ongkir_Truck',
+        'Kubikasi_PickUp',
+        'Kubikasi_Truck',
         'Stock_PickUp',
         'Stock_Truck',
         'Satuan',

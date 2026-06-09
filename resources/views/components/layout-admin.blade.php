@@ -146,6 +146,7 @@ tailwind.config = {
       $isShopAdmin = request()->routeIs('ShopeRegistry');
       $isQueryAdmin = request()->routeIs('admin.queryToko');
       $isUserAdmin = request()->routeIs('UserRegistry');
+      $isKomisiAdmin = request()->routeIs('admin.komisi');
       $isProfilAdmin = request()->routeIs('ProfilAdmin');
       $isChatAdmin = request()->routeIs('chat.*') || request()->is('chat/*') || request()->routeIs('PesanAdmin');
     @endphp
@@ -166,6 +167,14 @@ tailwind.config = {
           {{ $isShopAdmin ? 'bg-primary/10 text-primary font-bold border-primary/10' : 'text-on-surface-variant hover:text-primary hover:bg-surface-container-low' }}">
         <span class="material-symbols-outlined text-[20px]" @if($isShopAdmin) style="font-variation-settings:'FILL' 1" @endif>storefront</span>
         <span class="text-sm">Manajemen Toko</span>
+      </a>
+
+      {{-- Komisi & Masa Aktif --}}
+      <a href="{{ route('admin.komisi') }}"
+        class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 border border-transparent
+          {{ $isKomisiAdmin ? 'bg-primary/10 text-primary font-bold border-primary/10' : 'text-on-surface-variant hover:text-primary hover:bg-surface-container-low' }}">
+        <span class="material-symbols-outlined text-[20px]" @if($isKomisiAdmin) style="font-variation-settings:'FILL' 1" @endif>account_balance_wallet</span>
+        <span class="text-sm">Komisi & Masa Aktif</span>
       </a>
 
       {{-- Query Toko (Monitoring) --}}

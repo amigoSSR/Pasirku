@@ -218,7 +218,13 @@ class AdminController extends Controller
     public function komisiPayments()
     {
         $payments = \App\Models\PembayaranKomisi::with('toko')->latest()->paginate(10);
-        return view('tampilanUntukAdmin.konfirmasiKomisi', compact('payments'));
+        
+        $nearExpiryStores = \App\Models\Toko::whereNotNull('aktif_sampai')
+            ->whereDate('aktif_sampai', '<=', now()->addDays(7))
+            ->orderBy('aktif_sampai', 'asc')
+            ->get();
+
+        return view('tampilanUntukAdmin.konfirmasiKomisi', compact('payments', 'nearExpiryStores'));
     }
 
     /**
@@ -240,24 +246,32 @@ class AdminController extends Controller
 
             $toko = $payment->toko;
             
-            // Reset komisi toko
-            $toko->Komisi_Admin = 0;
+            // Kurangi komisi toko sesuai nominal yang dibayar, jangan reset ke 0
+            $toko->Komisi_Admin = max(0, $toko->Komisi_Admin - $payment->jumlah_komisi);
             
-            // Perpanjang masa aktif 1 bulan (ditambah dari masa aktif saat ini)
+            // Perpanjang masa aktif 1 bulan
             if ($toko->aktif_sampai) {
                 // Jika sudah expired, tambah dari hari ini. Jika belum, tambah dari masa aktif sebelumnya.
                 $baseDate = \Carbon\Carbon::parse($toko->aktif_sampai)->isPast() ? now() : \Carbon\Carbon::parse($toko->aktif_sampai);
-                $toko->aktif_sampai = $baseDate->addMonth()->toDateString();
+                $newDate = $baseDate->addMonth();
             } else {
-                $toko->aktif_sampai = now()->addMonth()->toDateString();
+                $newDate = now()->addMonth();
             }
+
+            // Batasi maksimal masa aktif adalah 3 bulan dari hari ini
+            $maxDate = now()->addMonths(3);
+            if ($newDate->greaterThan($maxDate)) {
+                $newDate = $maxDate;
+            }
+
+            $toko->aktif_sampai = $newDate->toDateString();
+            $toko->save();
             
             // Jika status toko expired, aktifkan kembali
             if ($toko->Status === 'expired') {
                 $toko->Status = 'approved';
                 event(new StoreStatusChanged($toko->ID_Toko, 'approved', $toko->ID_Akun));
             }
-            
             $toko->save();
         });
 

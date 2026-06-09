@@ -87,8 +87,8 @@ class PesananController extends Controller
 
         // Ambil Harga_PickUp & Harga_Truck dari tabel isi_toko untuk toko ini
         $produkToko = DB::table('isi_toko')->where('ID_Toko', $toko->ID_Toko)->first();
-        $hargaPickUp = $produkToko ? (int) $produkToko->Harga_PickUp : 0;
-        $hargaTruck  = $produkToko ? (int) $produkToko->Harga_Truck : 0;
+        $hargaPickUp = $produkToko ? (int) ($produkToko->Harga * ($produkToko->Kubikasi_PickUp ?? 1)) : 0;
+        $hargaTruck  = $produkToko ? (int) ($produkToko->Harga * ($produkToko->Kubikasi_Truck ?? 1)) : 0;
 
         $user = Auth::user();
         

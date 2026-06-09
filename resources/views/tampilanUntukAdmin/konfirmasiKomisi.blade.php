@@ -1,4 +1,4 @@
-<x-layout-admin title="Konfirmasi Komisi">
+<x-layout-admin title="Komisi & Masa Aktif">
 
   <div class="px-6 md:px-8 pb-24 md:pb-10 max-w-[1400px] mx-auto space-y-8">
 
@@ -9,8 +9,8 @@
           <span class="material-symbols-outlined text-[14px]" style="font-variation-settings:'FILL' 1">payments</span>
           Manajemen Platform
         </span>
-        <h1 class="font-headline text-3xl font-extrabold text-on-surface tracking-tight">Konfirmasi Komisi</h1>
-        <p class="text-sm text-on-surface-variant mt-1">Kelola dan konfirmasi pembayaran komisi dari toko.</p>
+        <h1 class="font-headline text-3xl font-extrabold text-on-surface tracking-tight">Komisi & Masa Aktif</h1>
+        <p class="text-sm text-on-surface-variant mt-1">Kelola masa aktif dan pembayaran komisi dari toko.</p>
       </div>
       <a href="{{ route('MenuUtamaAdmin') }}" class="text-xs font-bold text-primary hover:underline flex items-center gap-1">
         <span class="material-symbols-outlined text-[16px]">arrow_back</span> Kembali ke Dashboard
@@ -31,7 +31,64 @@
     </div>
     @endif
 
-    {{-- Table --}}
+    {{-- Tabel Masa Aktif Mendekati Habis --}}
+    <div class="bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant/20 overflow-hidden">
+      <div class="px-6 py-5 border-b border-outline-variant/20 flex items-center justify-between">
+        <h2 class="font-headline font-bold text-on-surface">Daftar Toko Mendekati Masa Aktif Habis (≤ 7 Hari)</h2>
+        <span class="bg-red-100 text-red-700 text-xs font-bold px-2.5 py-1 rounded-full">{{ $nearExpiryStores->count() }} Toko</span>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm">
+          <thead>
+            <tr class="border-b border-outline-variant/20 bg-surface-container-low/50">
+              <th class="px-6 py-3.5 text-xs font-bold uppercase tracking-wider text-on-surface-variant">Toko</th>
+              <th class="px-6 py-3.5 text-xs font-bold uppercase tracking-wider text-on-surface-variant">Pemilik</th>
+              <th class="px-6 py-3.5 text-xs font-bold uppercase tracking-wider text-on-surface-variant">Masa Aktif Berakhir</th>
+              <th class="px-6 py-3.5 text-xs font-bold uppercase tracking-wider text-on-surface-variant text-right">Sisa Waktu</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-outline-variant/10">
+            @forelse($nearExpiryStores as $store)
+            @php
+              $daysLeft = \Carbon\Carbon::now()->startOfDay()->diffInDays(\Carbon\Carbon::parse($store->aktif_sampai)->startOfDay(), false);
+            @endphp
+            <tr class="hover:bg-surface-container-low/40 transition-colors">
+              <td class="px-6 py-4">
+                <p class="font-bold text-on-surface">{{ $store->Nama_Toko }}</p>
+                <p class="text-[10px] text-on-surface-variant line-clamp-1 max-w-xs">{{ $store->Lokasi_Toko }}</p>
+              </td>
+              <td class="px-6 py-4 text-xs font-medium">{{ $store->nama_pemilik ?? '-' }}</td>
+              <td class="px-6 py-4 text-xs font-bold text-error">{{ \Carbon\Carbon::parse($store->aktif_sampai)->format('d M Y') }}</td>
+              <td class="px-6 py-4 text-right">
+                @if($daysLeft < 0)
+                  <span class="inline-flex items-center gap-1 bg-red-100 text-red-700 text-[10px] font-black uppercase px-2.5 py-1 rounded-full">
+                    Expired
+                  </span>
+                @elseif($daysLeft == 0)
+                  <span class="inline-flex items-center gap-1 bg-orange-100 text-orange-700 text-[10px] font-black uppercase px-2.5 py-1 rounded-full">
+                    Hari Ini
+                  </span>
+                @else
+                  <span class="inline-flex items-center gap-1 bg-yellow-100 text-yellow-700 text-[10px] font-black uppercase px-2.5 py-1 rounded-full">
+                    {{ $daysLeft }} Hari Lagi
+                  </span>
+                @endif
+              </td>
+            </tr>
+            @empty
+            <tr>
+              <td colspan="4" class="px-6 py-12 text-center text-on-surface-variant text-sm">
+                Tidak ada toko yang mendekati masa aktif habis.
+              </td>
+            </tr>
+            @endforelse
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    {{-- Table Komisi --}}
     <div class="bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant/20 overflow-hidden">
       <div class="px-6 py-5 border-b border-outline-variant/20">
         <h2 class="font-headline font-bold text-on-surface">Daftar Pembayaran Komisi</h2>
