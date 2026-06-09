@@ -254,7 +254,7 @@
                       onclick="document.getElementById('input-bukti').click()"
                       class="w-full flex flex-col items-center justify-center gap-2 bg-surface-container-low border-2 border-dashed border-outline-variant/50 py-8 rounded-2xl font-bold hover:bg-surface-container-high hover:border-primary/50 transition-all group">
                 <span class="material-symbols-outlined text-4xl text-outline group-hover:text-primary group-hover:scale-110 transition-all">cloud_upload</span>
-                <span id="upload-label" class="text-xs text-on-surface-variant group-hover:text-primary transition-colors">Unggah Bukti Pembayaran</span>
+                <span id="upload-label" class="text-xs text-on-surface-variant group-hover:text-primary transition-colors">Unggah Bukti Pembayaran (Max 5MB)</span>
               </button>
 
               <div id="preview-bukti" class="hidden rounded-2xl overflow-hidden border border-primary/30 bg-primary/5 p-4 animate-fadeUp">
@@ -342,15 +342,21 @@
                   </div>
                   <span class="text-xs font-black text-primary">${formatRupiah(grandTotal)}</span>
                 </div>
-                <div class="w-full flex justify-center py-2 relative group">
+                <div class="w-full flex justify-center py-2 relative group cursor-pointer" onclick="openQrisPreview('${data.url}', '${tokoNama}')">
                   <div class="absolute inset-0 bg-primary/5 rounded-2xl scale-110 blur-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
                   <img src="${data.url}"
                        alt="QRIS ${tokoNama}"
-                       class="w-56 h-56 object-contain rounded-2xl border border-outline-variant/30 shadow-sm bg-white p-3 relative z-10">
+                       class="w-56 h-56 object-contain rounded-2xl border border-outline-variant/30 shadow-sm bg-white p-3 relative z-10 transition-transform duration-200 group-hover:scale-[1.03]"
+                       title="Klik untuk memperbesar QRIS">
+                  <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20">
+                     <span class="bg-black/60 text-white text-xs px-3 py-1.5 rounded-full flex items-center gap-1 font-semibold backdrop-blur-sm">
+                       <span class="material-symbols-outlined text-[16px]">zoom_in</span> Perbesar
+                     </span>
+                  </div>
                 </div>
                 <div class="text-center">
                   <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest leading-relaxed">
-                    Scan QRIS ini untuk membayar ke <br><span class="text-primary">${tokoNama}</span>
+                    Scan QRIS ini untuk membayar ke <br><span class="text-primary">${tokoNama}</span> (Klik gambar untuk memperbesar)
                   </p>
                 </div>
                 <div class="flex items-center gap-2 text-[10px] text-green-700 bg-green-50 border border-green-100 px-4 py-2 rounded-full font-bold">
@@ -662,6 +668,13 @@
       if(inputBukti) {
         inputBukti.addEventListener('change', function () {
           const file = this.files[0]; if (!file) return;
+          
+          if (file.size > 5 * 1024 * 1024) {
+            alert('Ukuran file bukti pembayaran melebihi batas maksimal 5 MB.');
+            this.value = '';
+            return;
+          }
+
           const reader = new FileReader();
           reader.onload = (e) => {
             document.getElementById('preview-img').src = e.target.result;
@@ -711,6 +724,27 @@
         btn.disabled = true; btn.innerHTML = '<span class="material-symbols-outlined animate-spin">autorenew</span> Memproses...';
       });
     }
+
+    /* ── QRIS Preview Modal Functions ───────────────────────── */
+    window.openQrisPreview = function(url, storeName) {
+      const modal = document.getElementById('qris-preview-modal');
+      const img = document.getElementById('qris-preview-img');
+      const title = document.getElementById('qris-preview-toko-name');
+      if (modal && img && title) {
+        img.src = url;
+        title.textContent = `QRIS ${storeName}`;
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
+    }
+
+    window.closeQrisPreview = function() {
+      const modal = document.getElementById('qris-preview-modal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    }
   </script>
 
   <!-- Loading Overlay -->
@@ -722,6 +756,29 @@
       </div>
       <h3 class="font-headline font-black text-2xl text-on-surface mb-3">Memproses Pesanan</h3>
       <p class="text-on-surface-variant text-sm px-4 font-medium">Mohon tunggu sebentar...</p>
+    </div>
+  </div>
+
+  <!-- QRIS Preview Modal -->
+  <div id="qris-preview-modal" class="fixed inset-0 bg-on-surface/80 backdrop-blur-md hidden flex flex-col items-center justify-center z-[99999]" onclick="closeQrisPreview()">
+    <div class="bg-surface-container-lowest p-6 rounded-[32px] shadow-2xl flex flex-col items-center max-w-sm w-[90%] text-center relative animate-fadeUp" onclick="event.stopPropagation()">
+      <button onclick="closeQrisPreview()" class="absolute top-4 right-4 text-on-surface-variant hover:text-on-surface transition-colors p-1.5 hover:bg-surface-container rounded-full">
+        <span class="material-symbols-outlined text-[24px]">close</span>
+      </button>
+      <div class="flex items-center gap-2 mb-4 self-start">
+        <span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings:'FILL' 1">storefront</span>
+        <h4 id="qris-preview-toko-name" class="font-headline font-bold text-on-surface text-sm">Nama Toko</h4>
+      </div>
+      <div class="w-full flex justify-center py-4 bg-white rounded-2xl border border-outline-variant/30 shadow-inner mb-4">
+        <img id="qris-preview-img" src="" alt="QRIS Preview" class="w-64 h-64 object-contain">
+      </div>
+      <p class="text-xs text-on-surface-variant font-medium leading-relaxed mb-3">
+        Arahkan kamera aplikasi pembayaran/bank Anda ke kode QR ini untuk melakukan pembayaran.
+      </p>
+      <div class="flex items-center gap-1.5 text-[10px] text-green-700 bg-green-50 border border-green-100 px-4 py-1.5 rounded-full font-bold">
+        <span class="material-symbols-outlined text-[16px]" style="font-variation-settings:'FILL' 1">verified</span>
+        QRIS TERVERIFIKASI
+      </div>
     </div>
   </div>
   @endpush

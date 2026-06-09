@@ -52,6 +52,9 @@ class OrderController extends Controller
             // Update Pendapatan & Total Pembelian & Komisi Admin Toko
             $toko = Toko::where('ID_Toko', $pesanan->ID_Toko)->first();
             if ($toko && $oldPaymentStatus !== 'Lunas') {
+                if (is_null($toko->aktif_sampai)) {
+                    $toko->aktif_sampai = now()->addMonth()->toDateString();
+                }
                 $toko->Pendapatan_Toko += $pesanan->total_harga;
                 $toko->Total_Pembelian += 1;
                 $toko->Komisi_Admin += $komisiAdmin;
@@ -292,6 +295,9 @@ class OrderController extends Controller
                 $komisiAdmin = (int) floor($pesanan->total_harga * 0.0105);
                 $pesanan->komisi_admin = $komisiAdmin;
 
+                if (is_null($toko->aktif_sampai)) {
+                    $toko->aktif_sampai = now()->addMonth()->toDateString();
+                }
                 $toko->Pendapatan_Toko += $pesanan->total_harga;
                 $toko->Total_Pembelian += 1;
                 $toko->Komisi_Admin += $komisiAdmin;

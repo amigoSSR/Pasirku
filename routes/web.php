@@ -56,6 +56,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/stokPasir/data', [StokController::class, 'data'])->name('stokPasir.data');
         Route::post('/stokPasir/tambah', [StokController::class, 'tambahStok'])->name('stokPasir.tambah');
         Route::post('/stokPasir/kurangi', [StokController::class, 'kurangiStok'])->name('stokPasir.kurangi');
+
+        // Bayar Komisi
+        Route::get('/bayarKomisi', [\App\Http\Controllers\KomisiController::class, 'index'])->name('bayarKomisi');
+        Route::post('/bayarKomisi', [\App\Http\Controllers\KomisiController::class, 'store'])->name('bayarKomisi.store');
     });
 
     // Admin Routes
@@ -70,6 +74,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->name('admin.shope.toggleStatus');
         Route::put('/admin/shope-registry/{id}/update-location', [AdminController::class, 'updateLocation'])
             ->name('admin.shope.updateLocation');
+            
+        // Komisi Management
+        Route::post('/admin/upload-qris', [AdminController::class, 'uploadAdminQris'])->name('admin.uploadQris');
+        Route::get('/admin/komisi', [AdminController::class, 'komisiPayments'])->name('admin.komisi');
+        Route::put('/admin/komisi/{id}/confirm', [AdminController::class, 'confirmKomisi'])->name('admin.komisi.confirm');
+        Route::put('/admin/komisi/{id}/reject', [AdminController::class, 'rejectKomisi'])->name('admin.komisi.reject');
 
     });
 
@@ -124,7 +134,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Serve gambar bukti pembayaran dengan HTTP cache headers
     Route::get('/bukti-pembayaran/{filename}', [PesananController::class, 'serveImage'])
          ->name('bukti.image')
-         ->where('filename', '.+\.png');
+         ->where('filename', '.+\.(png|webp)');
 });
 
 

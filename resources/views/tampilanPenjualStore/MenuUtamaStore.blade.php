@@ -12,6 +12,37 @@
 
   <div class="px-6 md:px-8 pb-24 md:pb-10 max-w-[1400px] mx-auto space-y-8">
 
+      @php
+        $sisaHari = $toko->sisaHariAktif();
+        $isExpired = $toko->isExpired();
+        $isExpiringSoon = $toko->isExpiringSoon();
+        $hasKomisi = $toko->Komisi_Admin > 0;
+      @endphp
+
+      @if($hasKomisi || $isExpired || $isExpiringSoon)
+      <div class="bg-error/10 border border-error/20 rounded-2xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="flex items-start gap-3">
+          <span class="material-symbols-outlined text-error mt-0.5" style="font-variation-settings:'FILL' 1">warning</span>
+          <div>
+            <h3 class="font-bold text-error">Perhatian!</h3>
+            <p class="text-xs text-error/80 mt-0.5">
+              @if($isExpired)
+                Toko Anda saat ini dinonaktifkan karena masa aktif telah habis.
+              @elseif($isExpiringSoon)
+                Masa aktif toko Anda akan habis dalam {{ $sisaHari }} hari.
+              @elseif($hasKomisi)
+                Anda memiliki tagihan komisi sebesar Rp {{ number_format($toko->Komisi_Admin, 0, ',', '.') }}.
+              @endif
+              Segera lakukan pembayaran komisi untuk memperpanjang masa aktif.
+            </p>
+          </div>
+        </div>
+        <a href="{{ route('bayarKomisi') }}" class="bg-error text-on-error hover:bg-error/90 px-5 py-2 rounded-xl text-xs font-bold shrink-0 whitespace-nowrap shadow-sm">
+          Bayar Komisi Sekarang
+        </a>
+      </div>
+      @endif
+
     {{-- Stat Cards --}}
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-5">
       {{-- Revenue Card --}}

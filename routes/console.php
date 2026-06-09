@@ -10,3 +10,6 @@ Artisan::command('inspire', function () {
 
 // Auto-complete pesanan yang statusnya "Dikirim" dan sudah lewat 3 hari dari tanggal pengiriman
 Schedule::command('orders:auto-complete')->daily();
+
+// Auto-deactivate toko yang masa aktifnya sudah habis
+Schedule::command('stores:check-expiry')->daily();

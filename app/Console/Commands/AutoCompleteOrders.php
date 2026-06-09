@@ -54,6 +54,9 @@ class AutoCompleteOrders extends Command
                 // Update Pendapatan & Total Pembelian Toko
                 $toko = Toko::where('ID_Toko', $pesanan->ID_Toko)->first();
                 if ($toko && $oldPaymentStatus !== 'Lunas') {
+                    if (is_null($toko->aktif_sampai)) {
+                        $toko->aktif_sampai = now()->addMonth()->toDateString();
+                    }
                     $toko->Pendapatan_Toko += $pesanan->total_harga;
                     $toko->Total_Pembelian += 1;
                     $toko->save();

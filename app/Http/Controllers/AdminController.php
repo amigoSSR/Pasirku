@@ -21,6 +21,10 @@ class AdminController extends Controller
             'total_pendapatan' => \App\Models\Toko::sum('Pendapatan_Toko'),
             'total_komisi'     => \App\Models\Toko::sum('Komisi_Admin'),
             'total_pembelian'  => \App\Models\Toko::sum('Total_Pembelian'),
+            'komisi_bulan_ini' => \App\Models\Pesanan::whereMonth('created_at', now()->month)
+                                     ->whereYear('created_at', now()->year)
+                                     ->sum('komisi_admin'),
+            'total_komisi_historis' => \App\Models\PembayaranKomisi::where('status', 'confirmed')->sum('jumlah_komisi'),
         ];
 
         $recentToko = \App\Models\Toko::latest()->take(5)->get();
@@ -64,10 +68,12 @@ class AdminController extends Controller
             $newStatus = $toko->Status === 'approved' ? 'rejected' : 'approved';
         }
 
-        if (!in_array($newStatus, ['pending', 'approved', 'rejected'])) {
+        if (!in_array($newStatus, ['pending', 'approved', 'rejected', 'expired'])) {
             return back()->with('error', 'Status pendaftaran toko tidak valid.');
         }
 
+        // Jika diapprove kembali (misal dari expired/rejected), kita bisa reset aktif_sampai jika masih null atau expired
+        // Tapi kita percayakan pada logika First Revenue. Jadi biarkan saja.
         $toko->update(['Status' => $newStatus]);
 
         // Dispatch event to update user role (listener protects admin accounts)
@@ -129,5 +135,119 @@ class AdminController extends Controller
         }
 
         return back()->with('success', 'Lokasi toko ' . $toko->Nama_Toko . ' berhasil diperbarui!');
+    }
+
+    /**
+     * Upload QRIS Admin untuk pembayaran komisi.
+     */
+    public function uploadAdminQris(Request $request)
+    {
+        $request->validate([
+            'qris_admin' => 'required|image|mimes:jpeg,png,jpg,webp|max:5120',
+        ]);
+
+        $admin = Auth::user();
+
+        if ($admin->qris_admin && \Illuminate\Support\Facades\Storage::disk('public')->exists($admin->qris_admin)) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($admin->qris_admin);
+        }
+
+        // Konversi ke WebP
+        $file    = $request->file('qris_admin');
+        $tmpPath = $file->getRealPath();
+        $mime    = $file->getMimeType();
+
+        $source = match (true) {
+            str_contains($mime, 'jpeg') => imagecreatefromjpeg($tmpPath),
+            str_contains($mime, 'png')  => imagecreatefrompng($tmpPath),
+            str_contains($mime, 'webp') => imagecreatefromwebp($tmpPath),
+            default                     => imagecreatefromjpeg($tmpPath),
+        };
+
+        $namaFile = 'admin_qris_' . time() . '.webp';
+        $diskPath = storage_path('app/public/admin_settings');
+        if (!is_dir($diskPath)) {
+            mkdir($diskPath, 0755, true);
+        }
+
+        $fullPath = "{$diskPath}/{$namaFile}";
+        imagewebp($source, $fullPath, 80);
+        imagedestroy($source);
+
+        $admin->update([
+            'qris_admin' => "admin_settings/{$namaFile}"
+        ]);
+
+        return back()->with('success', 'QRIS Admin berhasil diperbarui.');
+    }
+
+    /**
+     * Halaman manajemen komisi.
+     */
+    public function komisiPayments()
+    {
+        $payments = \App\Models\PembayaranKomisi::with('toko')->latest()->paginate(10);
+        return view('tampilanUntukAdmin.konfirmasiKomisi', compact('payments'));
+    }
+
+    /**
+     * Konfirmasi pembayaran komisi toko.
+     */
+    public function confirmKomisi($id)
+    {
+        $payment = \App\Models\PembayaranKomisi::findOrFail($id);
+        
+        if ($payment->status !== 'pending') {
+            return back()->with('error', 'Pembayaran sudah diproses.');
+        }
+
+        DB::transaction(function() use ($payment) {
+            $payment->update([
+                'status' => 'confirmed',
+                'confirmed_at' => now(),
+            ]);
+
+            $toko = $payment->toko;
+            
+            // Reset komisi toko
+            $toko->Komisi_Admin = 0;
+            
+            // Perpanjang masa aktif 1 bulan (ditambah dari masa aktif saat ini)
+            if ($toko->aktif_sampai) {
+                // Jika sudah expired, tambah dari hari ini. Jika belum, tambah dari masa aktif sebelumnya.
+                $baseDate = \Carbon\Carbon::parse($toko->aktif_sampai)->isPast() ? now() : \Carbon\Carbon::parse($toko->aktif_sampai);
+                $toko->aktif_sampai = $baseDate->addMonth()->toDateString();
+            } else {
+                $toko->aktif_sampai = now()->addMonth()->toDateString();
+            }
+            
+            // Jika status toko expired, aktifkan kembali
+            if ($toko->Status === 'expired') {
+                $toko->Status = 'approved';
+                event(new StoreStatusChanged($toko->ID_Toko, 'approved', $toko->ID_Akun));
+            }
+            
+            $toko->save();
+        });
+
+        return back()->with('success', 'Pembayaran komisi berhasil dikonfirmasi. Komisi toko direset dan masa aktif diperpanjang 1 bulan.');
+    }
+
+    /**
+     * Tolak pembayaran komisi.
+     */
+    public function rejectKomisi($id)
+    {
+        $payment = \App\Models\PembayaranKomisi::findOrFail($id);
+        
+        if ($payment->status !== 'pending') {
+            return back()->with('error', 'Pembayaran sudah diproses.');
+        }
+
+        $payment->update([
+            'status' => 'rejected',
+        ]);
+
+        return back()->with('success', 'Pembayaran komisi ditolak.');
     }
 }

@@ -59,6 +59,45 @@
       </div>
     </div>
 
+    {{-- QRIS Admin Card --}}
+    <div class="bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant/20 p-6 space-y-4">
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-11 bg-primary/10 text-primary rounded-xl flex items-center justify-center">
+          <span class="material-symbols-outlined text-2xl" style="font-variation-settings:'FILL' 1">qr_code_scanner</span>
+        </div>
+        <div>
+          <h2 class="font-headline font-bold text-on-surface text-lg">QRIS Pembayaran Komisi</h2>
+          <p class="text-on-surface-variant text-xs mt-0.5">Gambar QRIS ini akan ditampilkan ke semua toko untuk pembayaran komisi.</p>
+        </div>
+      </div>
+      
+      <div class="flex flex-col md:flex-row gap-6">
+        @if(Auth::user()->qris_admin)
+        <div class="shrink-0 space-y-2">
+          <p class="text-xs font-bold text-on-surface-variant uppercase tracking-wide">QRIS Saat Ini:</p>
+          <div class="w-32 h-32 rounded-xl border border-outline-variant/30 overflow-hidden bg-surface-container-low flex items-center justify-center">
+            <img src="{{ Storage::url(Auth::user()->qris_admin) }}" alt="QRIS Admin" class="w-full h-full object-cover">
+          </div>
+        </div>
+        @endif
+        
+        <form action="{{ route('admin.uploadQris') }}" method="POST" enctype="multipart/form-data" class="flex-1 space-y-4">
+          @csrf
+          <div>
+            <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-wide mb-2">Upload/Ganti Gambar QRIS (Max 5MB)</label>
+            <input type="file" name="qris_admin" accept="image/png, image/jpeg, image/jpg, image/webp" required
+                   class="block w-full text-sm text-on-surface-variant file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-primary file:text-on-primary hover:file:bg-primary-container transition-all cursor-pointer border border-outline-variant/30 rounded-xl bg-surface-container-low">
+            @error('qris_admin')
+              <p class="text-error text-xs mt-1">{{ $message }}</p>
+            @enderror
+          </div>
+          <button type="submit" class="bg-primary text-on-primary hover:bg-primary-container px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-sm active:scale-95 duration-200">
+            Simpan QRIS
+          </button>
+        </form>
+      </div>
+    </div>
+
     {{-- Admin's Store Card if registered --}}
     @php
       $tokoAdmin = \App\Models\Toko::where('ID_Akun', Auth::id())->first();

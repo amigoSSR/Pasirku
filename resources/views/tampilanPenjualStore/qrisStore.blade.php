@@ -44,7 +44,7 @@
           @method('PUT')
           <div>
             <h2 class="font-headline text-lg font-bold text-on-surface mb-1">Unggah QRIS</h2>
-            <p class="text-xs text-on-surface-variant mb-6">Pilih gambar kode QRIS dari komputer Anda. (Max: 2MB, Format: JPG, PNG, WEBP)</p>
+            <p class="text-xs text-on-surface-variant mb-6">Pilih gambar kode QRIS dari komputer Anda. (Max: 5MB, Format: JPG, PNG, WEBP)</p>
 
             <div class="relative w-full aspect-square md:aspect-[4/3] rounded-xl border-2 border-dashed border-outline-variant/50 flex flex-col items-center justify-center bg-surface-container-low hover:bg-surface-container hover:border-primary/50 transition-all group overflow-hidden cursor-pointer" onclick="document.getElementById('qris_input').click()">
               
@@ -106,6 +106,11 @@
     function previewImage(event) {
       const input = event.target;
       if (input.files && input.files[0]) {
+        if (input.files[0].size > 5 * 1024 * 1024) {
+          alert('Ukuran gambar melebihi batas maksimal 5 MB.');
+          input.value = '';
+          return;
+        }
         const reader = new FileReader();
         reader.onload = function(e) {
           const preview = document.getElementById('image_preview');

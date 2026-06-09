@@ -43,7 +43,7 @@ class PesananController extends Controller
             'cart_items.required'        => 'Data produk dalam keranjang wajib disertakan.',
         ]);
 
-        // ── 2. Konversi gambar → PNG ──────────────────────────────────
+        // ── 2. Konversi gambar → WebP ──────────────────────────────────
         $file    = $request->file('bukti_pembayaran');
         $tmpPath = $file->getRealPath();
         $mime    = $file->getMimeType();
@@ -59,13 +59,13 @@ class PesananController extends Controller
         };
 
         // ── 3. Buat nama file terformat ───────────────────────────────
-        // Format: (dd-mm-yyyy)_(BP+6char)_(8char).png
+        // Format: (dd-mm-yyyy)_(BP+6char)_(8char).webp
         $tanggal     = now()->format('d-m-Y');
         $kodeBukti   = 'BP' . strtoupper(Str::random(6));   // mis. BPAB3C4D
         $kodeUnik    = strtoupper(Str::random(8));           // mis. E5F6G7H8
-        $namaFile    = "{$tanggal}_{$kodeBukti}_{$kodeUnik}.png";
+        $namaFile    = "{$tanggal}_{$kodeBukti}_{$kodeUnik}.webp";
 
-        // ── 4. Simpan PNG ke storage ──────────────────────────────────
+        // ── 4. Simpan WebP ke storage ──────────────────────────────────
         $folder  = 'bukti_pembayaran';
         $diskPath = storage_path("app/public/{$folder}");
         if (! is_dir($diskPath)) {
@@ -73,7 +73,7 @@ class PesananController extends Controller
         }
 
         $fullPath = "{$diskPath}/{$namaFile}";
-        imagepng($source, $fullPath, 6);   // kualitas kompresi 6/9
+        imagewebp($source, $fullPath, 80);   // kualitas WebP 80
         imagedestroy($source);
 
         // Path relatif untuk DB dan URL
@@ -248,8 +248,11 @@ class PesananController extends Controller
             return response('', 304);
         }
 
+        // Deteksi content-type berdasarkan ekstensi file (support legacy PNG + WebP baru)
+        $contentType = str_ends_with($filename, '.webp') ? 'image/webp' : 'image/png';
+
         return response()->file($path, [
-            'Content-Type'  => 'image/png',
+            'Content-Type'  => $contentType,
             'Cache-Control' => 'public, max-age=31536000, immutable',
             'ETag'          => $etag,
             'Last-Modified' => $lastMod,

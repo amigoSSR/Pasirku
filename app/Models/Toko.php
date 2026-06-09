@@ -31,6 +31,11 @@ class Toko extends Model
         'kode_pos',
         'latitude',
         'longitude',
+        'aktif_sampai',
+    ];
+
+    protected $casts = [
+        'aktif_sampai' => 'date',
     ];
 
     /**
@@ -39,7 +44,11 @@ class Toko extends Model
      */
     public function scopeActive(Builder $query): Builder
     {
-        return $query->where('Status', 'approved');
+        return $query->where('Status', 'approved')
+                     ->where(function ($q) {
+                         $q->whereNull('aktif_sampai')
+                           ->orWhere('aktif_sampai', '>=', now()->toDateString());
+                     });
     }
 
     /**
@@ -47,8 +56,34 @@ class Toko extends Model
      */
     public function isActive(): bool
     {
-        return $this->Status === 'approved';
+        return $this->Status === 'approved' && !$this->isExpired();
     }
+
+    /* ── Masa Aktif Helpers ────────────────────────────────────────── */
+
+    public function isExpired()
+    {
+        if (is_null($this->aktif_sampai)) {
+            return false;
+        }
+        return now()->startOfDay()->gt($this->aktif_sampai);
+    }
+
+    public function sisaHariAktif()
+    {
+        if (is_null($this->aktif_sampai)) {
+            return null; // Masa aktif belum berjalan
+        }
+        return max(0, now()->startOfDay()->diffInDays($this->aktif_sampai, false));
+    }
+
+    public function isExpiringSoon()
+    {
+        $sisa = $this->sisaHariAktif();
+        return $sisa !== null && $sisa <= 7 && $sisa >= 0;
+    }
+
+    /* ── Relationships ─────────────────────────────────────────────── */
 
     /**
      * Relasi ke pemilik akun (informasi_akun).
@@ -64,5 +99,15 @@ class Toko extends Model
     public function produk()
     {
         return $this->hasMany(IsiToko::class, 'ID_Toko', 'ID_Toko');
+    }
+
+    public function pesanan()
+    {
+        return $this->hasMany(Pesanan::class, 'ID_Toko', 'ID_Toko');
+    }
+
+    public function pembayaranKomisi()
+    {
+        return $this->hasMany(PembayaranKomisi::class, 'ID_Toko', 'ID_Toko');
     }
 }

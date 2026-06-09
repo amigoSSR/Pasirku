@@ -87,6 +87,10 @@
               <span class="shrink-0 inline-flex items-center gap-1 bg-red-100 text-red-700 text-[10px] font-black uppercase px-2.5 py-1 rounded-full">
                 <span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span> Rejected
               </span>
+            @elseif($toko->Status === 'expired')
+              <span class="shrink-0 inline-flex items-center gap-1 bg-orange-100 text-orange-700 text-[10px] font-black uppercase px-2.5 py-1 rounded-full">
+                <span class="w-1.5 h-1.5 bg-orange-500 rounded-full"></span> Expired
+              </span>
             @endif
           </div>
           <div class="grid grid-cols-2 gap-2 text-xs text-on-surface-variant">
@@ -126,6 +130,14 @@
               @csrf @method('PUT')
               <button type="submit" class="w-full text-sm bg-green-50 text-green-600 border border-green-200 px-4 py-2 rounded-xl hover:bg-green-100 transition-colors font-bold">
                 Aktifkan Toko
+              </button>
+            </form>
+          @elseif($toko->Status === 'expired')
+            <form action="{{ route('admin.shope.toggleStatus', $toko->ID_Toko) }}?status=approved" method="POST"
+              onsubmit="return confirm('Aktifkan kembali toko {{ $toko->Nama_Toko }} yang sudah expired?')">
+              @csrf @method('PUT')
+              <button type="submit" class="w-full text-sm bg-green-50 text-green-600 border border-green-200 px-4 py-2 rounded-xl hover:bg-green-100 transition-colors font-bold">
+                Aktifkan Kembali (Expired)
               </button>
             </form>
           @endif
@@ -219,6 +231,17 @@
                       onsubmit="return confirm('Aktifkan kembali toko {{ $toko->Nama_Toko }}?')">
                       @csrf @method('PUT')
                       <button type="submit" class="text-[11px] bg-green-50 text-green-600 border border-green-200 px-3 py-1.5 rounded-lg hover:bg-green-100 transition-colors font-bold">
+                        Aktifkan
+                      </button>
+                    </form>
+                  @elseif($toko->Status === 'expired')
+                    <span class="inline-flex items-center gap-1 bg-orange-100 text-orange-700 text-[10px] font-black uppercase px-2.5 py-1 rounded-full">
+                      <span class="w-1.5 h-1.5 bg-orange-500 rounded-full"></span> Expired
+                    </span>
+                    <form action="{{ route('admin.shope.toggleStatus', $toko->ID_Toko) }}?status=approved" method="POST"
+                      onsubmit="return confirm('Aktifkan kembali toko {{ $toko->Nama_Toko }} yang sudah expired?')">
+                      @csrf @method('PUT')
+                      <button type="submit" class="text-[11px] bg-green-50 text-green-600 border border-green-200 px-3 py-1.5 rounded-lg hover:bg-green-100 transition-colors font-bold mt-1">
                         Aktifkan
                       </button>
                     </form>

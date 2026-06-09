@@ -70,21 +70,53 @@
         <p class="text-xs text-on-surface-variant mt-1.5">Dari semua toko</p>
       </div>
 
-      {{-- Komisi Admin --}}
-      <div class="stat-card bg-primary rounded-2xl p-5 shadow-sm relative overflow-hidden">
-        <div class="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 rounded-full bg-on-primary/10 blur-3xl pointer-events-none"></div>
+    </div>
+
+    {{-- Commission Cards Row --}}
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {{-- Komisi Belum Dibayar --}}
+      <div class="stat-card bg-surface-container-lowest rounded-2xl p-5 shadow-sm border border-outline-variant/20 relative overflow-hidden group">
+        <div class="flex items-center justify-between mb-3">
+          <div class="w-10 h-10 rounded-xl bg-error-container text-on-error-container flex items-center justify-center group-hover:scale-110 transition-transform">
+            <span class="material-symbols-outlined text-[20px]" style="font-variation-settings:'FILL' 1">warning</span>
+          </div>
+          <a href="{{ route('admin.komisi') }}" class="text-xs font-bold text-primary hover:underline">Konfirmasi Pembayaran</a>
+        </div>
+        <p class="text-xs font-semibold text-on-surface-variant uppercase tracking-wide">Komisi Belum Dibayar</p>
+        <h3 class="font-headline text-2xl font-extrabold text-error mt-1">
+          Rp {{ number_format($stats['total_komisi'], 0, ',', '.') }}
+        </h3>
+        <p class="text-[10px] text-on-surface-variant mt-1.5">Total komisi yang belum dilunasi oleh semua toko</p>
+      </div>
+
+      {{-- Komisi Bulan Ini --}}
+      <div class="stat-card bg-surface-container-lowest rounded-2xl p-5 shadow-sm border border-outline-variant/20 relative overflow-hidden group">
+        <div class="flex items-center justify-between mb-3">
+          <div class="w-10 h-10 rounded-xl bg-tertiary-container text-on-tertiary-container flex items-center justify-center group-hover:scale-110 transition-transform">
+            <span class="material-symbols-outlined text-[20px]" style="font-variation-settings:'FILL' 1">today</span>
+          </div>
+        </div>
+        <p class="text-xs font-semibold text-on-surface-variant uppercase tracking-wide">Komisi Bulan Ini</p>
+        <h3 class="font-headline text-2xl font-extrabold text-tertiary mt-1">
+          Rp {{ number_format($stats['komisi_bulan_ini'], 0, ',', '.') }}
+        </h3>
+        <p class="text-[10px] text-on-surface-variant mt-1.5">Komisi dari pesanan selesai bulan ini</p>
+      </div>
+
+      {{-- Total Komisi Historis --}}
+      <div class="stat-card bg-primary rounded-2xl p-5 shadow-sm relative overflow-hidden group">
+        <div class="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 rounded-full bg-on-primary/10 blur-3xl pointer-events-none transition-transform group-hover:scale-150 duration-500"></div>
         <div class="flex items-center justify-between mb-3 relative z-10">
-          <div class="w-10 h-10 rounded-xl bg-on-primary/20 flex items-center justify-center">
+          <div class="w-10 h-10 rounded-xl bg-on-primary/20 flex items-center justify-center group-hover:scale-110 transition-transform">
             <span class="material-symbols-outlined text-on-primary text-[20px]" style="font-variation-settings:'FILL' 1">account_balance</span>
           </div>
         </div>
-        <p class="text-xs font-semibold text-on-primary/70 uppercase tracking-wide relative z-10">Komisi Admin</p>
+        <p class="text-xs font-semibold text-on-primary/70 uppercase tracking-wide relative z-10">Total Komisi Diterima</p>
         <h3 class="font-headline text-2xl font-extrabold text-on-primary mt-1 relative z-10">
-          Rp {{ number_format($stats['total_komisi'], 0, ',', '.') }}
+          Rp {{ number_format($stats['total_komisi_historis'], 0, ',', '.') }}
         </h3>
-        <p class="text-xs text-on-primary/60 mt-1.5 relative z-10">{{ $stats['total_pembelian'] }} total pembelian</p>
+        <p class="text-[10px] text-on-primary/60 mt-1.5 relative z-10">Total komisi yang sudah lunas dibayar</p>
       </div>
-
     </div>
 
     {{-- Content Grid --}}

@@ -30,6 +30,20 @@
 
     $qrisRoute = $isStore ? route('qrisStore') : '#';
     $isQris = request()->routeIs('qrisStore');
+
+    // Cek apakah toko sudah punya QRIS aktif
+    $hasQris = false;
+    $hasKomisiWarning = false;
+    if ($isStore) {
+        $tokoForQris = \App\Models\Toko::where('ID_Akun', \Illuminate\Support\Facades\Auth::id())->first();
+        if ($tokoForQris) {
+            $hasQris = !empty($tokoForQris->Gambar_QRIS);
+            $hasKomisiWarning = $tokoForQris->Komisi_Admin > 0 || $tokoForQris->isExpired() || $tokoForQris->isExpiringSoon();
+        }
+    }
+
+    $bayarKomisiRoute = $isStore ? route('bayarKomisi') : '#';
+    $isBayarKomisi = request()->routeIs('bayarKomisi');
   @endphp
 
   <div class="px-6 mb-8">
@@ -142,7 +156,27 @@
           ? 'border-primary bg-primary-fixed/20 text-primary font-bold'
           : 'border-transparent text-on-surface-variant hover:text-primary hover:bg-surface-container-low' }}">
       <span class="material-symbols-outlined text-[20px]" @if($isQris) style="font-variation-settings: 'FILL' 1" @endif>qr_code_scanner</span>
-      <span class="font-label-md text-sm">Pembayaran QRIS</span>
+      <span class="font-label-md text-sm flex-1">Pembayaran QRIS</span>
+      @if(!$hasQris)
+        <span class="ml-auto bg-error text-on-error text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center shrink-0 animate-pulse" title="QRIS belum diunggah">
+          <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1, 'wght' 700">priority_high</span>
+        </span>
+      @endif
+    </a>
+
+    {{-- Bayar Komisi --}}
+    <a href="{{ $bayarKomisiRoute }}"
+      class="flex items-center gap-4 px-6 py-3 transition-all duration-200 ease-in-out border-l-4
+        {{ $isBayarKomisi
+          ? 'border-primary bg-primary-fixed/20 text-primary font-bold'
+          : 'border-transparent text-on-surface-variant hover:text-primary hover:bg-surface-container-low' }}">
+      <span class="material-symbols-outlined text-[20px]" @if($isBayarKomisi) style="font-variation-settings: 'FILL' 1" @endif>payments</span>
+      <span class="font-label-md text-sm flex-1">Bayar Komisi</span>
+      @if($hasKomisiWarning)
+        <span class="ml-auto bg-error text-on-error text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center shrink-0 animate-pulse" title="Ada tagihan atau masa aktif hampir habis">
+          <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1, 'wght' 700">priority_high</span>
+        </span>
+      @endif
     </a>
     @endif
 
