@@ -180,6 +180,19 @@
     </a>
     @endif
 
+    {{-- Pengaturan Ongkir --}}
+    @if($isStore)
+    @php $isOngkir = request()->routeIs('shipping-rates.*'); @endphp
+    <a href="{{ route('shipping-rates.index') }}"
+      class="flex items-center gap-4 px-6 py-3 transition-all duration-200 ease-in-out border-l-4
+        {{ $isOngkir
+          ? 'border-primary bg-primary-fixed/20 text-primary font-bold'
+          : 'border-transparent text-on-surface-variant hover:text-primary hover:bg-surface-container-low' }}">
+      <span class="material-symbols-outlined text-[20px]" @if($isOngkir) style="font-variation-settings: 'FILL' 1" @endif>local_shipping</span>
+      <span class="font-label-md text-sm">Pengaturan Ongkir</span>
+    </a>
+    @endif
+
     {{-- Profile --}}
     <a href="{{ $profilRoute }}"
       class="flex items-center gap-4 px-6 py-3 transition-all duration-200 ease-in-out border-l-4

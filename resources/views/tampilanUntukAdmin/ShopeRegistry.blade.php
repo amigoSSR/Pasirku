@@ -68,8 +68,12 @@
         @forelse($tokoList as $toko)
         <div class="p-5 space-y-3">
           <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-primary/10 text-primary font-bold flex items-center justify-center text-sm uppercase shrink-0">
-              {{ strtoupper(substr($toko->Nama_Toko, 0, 2)) }}
+            <div class="w-10 h-10 rounded-xl bg-primary/10 text-primary font-bold flex items-center justify-center text-sm uppercase shrink-0 overflow-hidden">
+              @if($toko->Foto_Toko)
+                <img src="{{ asset('storage/' . $toko->Foto_Toko) }}" class="w-full h-full object-cover" alt="{{ $toko->Nama_Toko }}">
+              @else
+                {{ strtoupper(substr($toko->Nama_Toko, 0, 2)) }}
+              @endif
             </div>
             <div class="flex-1 min-w-0">
               <p class="font-bold text-on-surface truncate">{{ $toko->Nama_Toko }}</p>
@@ -173,8 +177,12 @@
             <tr class="hover:bg-surface-container-low/40 transition-colors">
               <td class="px-6 py-4">
                 <div class="flex items-center gap-3">
-                  <div class="w-9 h-9 rounded-xl bg-primary/10 text-primary font-bold text-xs flex items-center justify-center uppercase shrink-0">
-                    {{ strtoupper(substr($toko->Nama_Toko, 0, 2)) }}
+                  <div class="w-9 h-9 rounded-xl bg-primary/10 text-primary font-bold text-xs flex items-center justify-center uppercase shrink-0 overflow-hidden">
+                    @if($toko->Foto_Toko)
+                      <img src="{{ asset('storage/' . $toko->Foto_Toko) }}" class="w-full h-full object-cover" alt="{{ $toko->Nama_Toko }}">
+                    @else
+                      {{ strtoupper(substr($toko->Nama_Toko, 0, 2)) }}
+                    @endif
                   </div>
                   <div>
                     <p class="font-semibold text-on-surface">{{ $toko->Nama_Toko }}</p>

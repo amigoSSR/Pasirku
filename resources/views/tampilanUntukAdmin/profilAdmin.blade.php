@@ -21,12 +21,8 @@
         {{-- Stats --}}
         <div class="flex gap-4 shrink-0">
           <div class="text-center bg-on-primary/15 backdrop-blur-sm rounded-xl px-5 py-3">
-            <p class="font-headline text-2xl font-extrabold">{{ \App\Models\Toko::count() }}</p>
-            <p class="text-xs text-on-primary/70 uppercase tracking-wide font-semibold">Toko</p>
-          </div>
-          <div class="text-center bg-on-primary/15 backdrop-blur-sm rounded-xl px-5 py-3">
-            <p class="font-headline text-2xl font-extrabold">{{ \App\Models\User::where('Role', 'user')->count() }}</p>
-            <p class="text-xs text-on-primary/70 uppercase tracking-wide font-semibold">User</p>
+            <p class="font-headline text-2xl font-extrabold">{{ \App\Models\Pesanan::count() }}</p>
+            <p class="text-xs text-on-primary/70 uppercase tracking-wide font-semibold">Orders</p>
           </div>
         </div>
       </div>

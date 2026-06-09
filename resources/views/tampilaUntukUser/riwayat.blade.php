@@ -215,6 +215,26 @@
                       @if($order->updated_at)
                         <p class="text-green-400 text-[10px] mt-2 font-semibold">Selesai pada {{ $order->updated_at->format('d M Y, H:i') }}</p>
                       @endif
+
+                      {{-- Review Section --}}
+                      <div class="mt-4 pt-4 border-t border-green-200/50">
+                        @if($order->review)
+                          <div class="flex flex-wrap items-center gap-2">
+                             <div class="flex text-amber-500">
+                               @for($i=1; $i<=5; $i++)
+                                 <span class="material-symbols-outlined text-[16px] {{ $i <= $order->review->Rating ? '' : 'opacity-30' }}" style="font-variation-settings: 'FILL' 1">star</span>
+                               @endfor
+                             </div>
+                             <span class="text-[10px] font-bold text-green-700">Sudah Dinilai</span>
+                             <button onclick="openReviewModal({{ $order->ID_Pesanan }}, {{ json_encode($order->review) }})" class="text-[10px] font-bold text-primary hover:underline ml-auto">Edit Ulasan</button>
+                          </div>
+                        @else
+                          <button onclick="openReviewModal({{ $order->ID_Pesanan }})" class="inline-flex items-center gap-1.5 bg-green-600 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-green-700 transition-all shadow-sm">
+                            <span class="material-symbols-outlined text-sm">rate_review</span>
+                            Beri Rating
+                          </button>
+                        @endif
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -363,10 +383,168 @@
       </div>
     @endif
 
+    {{-- ===== REVIEW MODAL ===== --}}
+    <div id="reviewModal" class="fixed inset-0 z-[100] hidden overflow-y-auto">
+      <div class="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity" onclick="closeReviewModal()"></div>
+      <div class="flex min-h-full items-center justify-center p-4">
+        <div class="relative w-full max-w-lg bg-surface-container-lowest rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
+          
+          {{-- Header --}}
+          <div class="px-6 py-5 border-b border-outline-variant/20 flex items-center justify-between">
+            <h3 class="text-xl font-black text-on-surface" id="modalTitle">Beri Rating & Ulasan</h3>
+            <button onclick="closeReviewModal()" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-colors">
+              <span class="material-symbols-outlined text-on-surface-variant">close</span>
+            </button>
+          </div>
+
+          {{-- Form --}}
+          <form id="reviewForm" method="POST" action="{{ route('reviews.store') }}" enctype="multipart/form-data" class="p-6 space-y-6">
+            @csrf
+            <input type="hidden" name="_method" id="formMethod" value="POST">
+            <input type="hidden" name="ID_Pesanan" id="modalOrderID">
+
+            {{-- Star Rating --}}
+            <div class="text-center">
+              <p class="text-sm font-bold text-on-surface-variant mb-4">Bagaimana kualitas produk dan layanan kami?</p>
+              <div class="flex justify-center gap-2">
+                @for($i=1; $i<=5; $i++)
+                  <button type="button" onclick="setRating({{ $i }})" class="star-btn transition-transform hover:scale-125" data-value="{{ $i }}">
+                    <span class="material-symbols-outlined text-4xl star-icon text-outline-variant" style="font-variation-settings: 'FILL' 0">star</span>
+                  </button>
+                @endfor
+              </div>
+              <input type="hidden" name="Rating" id="ratingInput" required>
+              <p id="ratingLabel" class="text-xs font-black text-primary mt-3 h-4 uppercase tracking-wider"></p>
+            </div>
+
+            {{-- Text Review --}}
+            <div>
+              <label class="block text-sm font-bold text-on-surface mb-2">Ulasan Anda (Opsional)</label>
+              <textarea name="Ulasan" id="reviewText" rows="4" 
+                class="w-full bg-surface-container border-none rounded-2xl p-4 text-sm focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-on-surface-variant/50"
+                placeholder="Bagikan pengalaman Anda berbelanja di sini..."></textarea>
+            </div>
+
+            {{-- Photo Upload --}}
+            <div>
+              <label class="block text-sm font-bold text-on-surface mb-2">Tambah Foto (Opsional)</label>
+              <div class="flex items-center gap-4">
+                <label class="flex flex-col items-center justify-center w-24 h-24 border-2 border-dashed border-outline-variant/50 rounded-2xl cursor-pointer hover:bg-surface-container-high hover:border-primary/50 transition-all">
+                  <span class="material-symbols-outlined text-on-surface-variant mb-1">add_a_photo</span>
+                  <span class="text-[10px] font-bold text-on-surface-variant">Upload</span>
+                  <input type="file" name="Foto_Review" class="hidden" accept="image/*" onchange="previewImage(this)">
+                </label>
+                <div id="imagePreview" class="hidden relative w-24 h-24">
+                   <img src="" class="w-full h-full object-cover rounded-2xl border border-outline-variant/30">
+                   <button type="button" onclick="removeImage()" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center shadow-lg">
+                     <span class="material-symbols-outlined text-xs">close</span>
+                   </button>
+                </div>
+              </div>
+            </div>
+
+            {{-- Anonymous Checkbox --}}
+            <label class="flex items-center gap-3 cursor-pointer group">
+              <input type="checkbox" name="is_anonymous" id="anonymousCheck" value="1" class="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary/20">
+              <span class="text-sm font-bold text-on-surface-variant group-hover:text-on-surface transition-colors">Kirim sebagai Anonim</span>
+            </label>
+
+            {{-- Submit --}}
+            <div class="pt-4">
+              <button type="submit" class="w-full bg-primary text-on-primary py-4 rounded-2xl font-black tracking-wide hover:opacity-90 transition-all shadow-xl flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined text-lg">send</span>
+                KIRIM ULASAN
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   @push('scripts')
   <script>
+    const modal = document.getElementById('reviewModal');
+    const form = document.getElementById('reviewForm');
+    const stars = document.querySelectorAll('.star-icon');
+    const ratingInput = document.getElementById('ratingInput');
+    const ratingLabel = document.getElementById('ratingLabel');
+    const labels = ['', 'Sangat Buruk', 'Buruk', 'Cukup', 'Baik', 'Sangat Baik'];
+
+    function openReviewModal(orderId, review = null) {
+        document.getElementById('modalOrderID').value = orderId;
+        
+        if (review) {
+            document.getElementById('modalTitle').innerText = 'Edit Ulasan';
+            document.getElementById('formMethod').value = 'PUT';
+            form.action = `/reviews/${review.ID_Review}`;
+            
+            // Fill data
+            setRating(review.Rating);
+            document.getElementById('reviewText').value = review.Ulasan || '';
+            document.getElementById('anonymousCheck').checked = !!review.is_anonymous;
+        } else {
+            document.getElementById('modalTitle').innerText = 'Beri Rating & Ulasan';
+            document.getElementById('formMethod').value = 'POST';
+            form.action = "{{ route('reviews.store') }}";
+            resetForm();
+        }
+
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeReviewModal() {
+        modal.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+
+    function setRating(val) {
+        ratingInput.value = val;
+        ratingLabel.innerText = labels[val];
+        
+        stars.forEach((star, index) => {
+            if (index < val) {
+                star.style.fontVariationSettings = "'FILL' 1";
+                star.classList.replace('text-outline-variant', 'text-amber-500');
+            } else {
+                star.style.fontVariationSettings = "'FILL' 0";
+                star.classList.replace('text-amber-500', 'text-outline-variant');
+            }
+        });
+    }
+
+    function resetForm() {
+        form.reset();
+        ratingInput.value = '';
+        ratingLabel.innerText = '';
+        stars.forEach(star => {
+            star.style.fontVariationSettings = "'FILL' 0";
+            star.classList.replace('text-amber-500', 'text-outline-variant');
+        });
+        removeImage();
+    }
+
+    function previewImage(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const preview = document.getElementById('imagePreview');
+                preview.querySelector('img').src = e.target.result;
+                preview.classList.remove('hidden');
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function removeImage() {
+        const preview = document.getElementById('imagePreview');
+        preview.classList.add('hidden');
+        preview.querySelector('img').src = '';
+        document.querySelector('input[type="file"]').value = '';
+    }
+
     // When clicking status filter buttons, preserve sort & search values
     document.querySelectorAll('#filterForm button[name="status"]').forEach(btn => {
       btn.addEventListener('click', function() {

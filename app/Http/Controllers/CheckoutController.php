@@ -18,7 +18,6 @@ class CheckoutController extends Controller
             'no_telepon' => 'required|string|max:20',
             'detail_lokasi' => 'required|string',
             'jadwal_pengiriman' => 'required|date',
-            // any other necessary fields
         ]);
 
         $toko = Toko::findOrFail($request->id_toko);
@@ -28,11 +27,12 @@ class CheckoutController extends Controller
             return back()->with('error', 'Keranjang belanja kosong.');
         }
 
-        // Aggregate quantities and totals
         $totalVolume = 0;
         $totalHarga = 0;
         $qtyPickUp = 0;
         $qtyTruck = 0;
+        $maxOngPick = 0;
+        $maxOngTruck = 0;
         $namaProdukArray = [];
 
         foreach ($items as $item) {
@@ -43,15 +43,18 @@ class CheckoutController extends Controller
 
             if ($item['type'] === 'pickup') {
                 $qtyPickUp += $item['qty'];
+                $maxOngPick = max($maxOngPick, $item['ongkir'] ?? 0);
             } else {
                 $qtyTruck += $item['qty'];
+                $maxOngTruck = max($maxOngTruck, $item['ongkir'] ?? 0);
             }
         }
 
-        $ongkirPickUpTotal = $qtyPickUp > 0 ? $toko->Ongkir_PickUp : 0;
-        $ongkirTruckTotal = $qtyTruck > 0 ? $toko->Ongkir_Truck : 0;
+        // Shipping Calculation: Use max product ongkir or fallback to store default
+        $ongkirPickUpTotal = $qtyPickUp > 0 ? ($maxOngPick ?: $toko->Ongkir_PickUp) : 0;
+        $ongkirTruckTotal = $qtyTruck > 0 ? ($maxOngTruck ?: $toko->Ongkir_Truck) : 0;
+        
         $totalOngkir = $ongkirPickUpTotal + $ongkirTruckTotal;
-
         $grandTotal = $totalHarga + $totalOngkir;
         
         $tipePengiriman = [];
@@ -65,7 +68,7 @@ class CheckoutController extends Controller
             'Nama_Toko' => $toko->Nama_Toko,
             'Lokasi_Toko' => $toko->Lokasi_Toko,
             'Lokasi_Pengantaran' => $request->detail_lokasi,
-            'Harga_PickUp' => 0, // Simplified, using aggregate total_harga
+            'Harga_PickUp' => 0, 
             'Harga_Truck' => 0,
             'Unit' => $totalVolume,
             'Ongkir_PickUp' => $ongkirPickUpTotal,
@@ -77,6 +80,7 @@ class CheckoutController extends Controller
             'nama_produk' => implode(', ', $namaProdukArray),
             'tipe_pengiriman' => implode(',', $tipePengiriman),
             'total_harga' => $grandTotal,
+            'cart_items' => $request->items,
         ]);
 
         return redirect()->route('ordertracking')->with('success', 'Pesanan berhasil dibuat!');

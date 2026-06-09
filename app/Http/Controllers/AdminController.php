@@ -49,6 +49,37 @@ class AdminController extends Controller
         return view('tampilanUntukAdmin.ShopeRegistry', compact('tokoList', 'stats'));
     }
 
+    /**
+     * Fitur Pantau Toko (Query Toko)
+     * Admin bisa memilih toko dan melihat daftar pembelian di toko tersebut.
+     */
+    public function queryToko(Request $request)
+    {
+        $tokoList = Toko::orderBy('Nama_Toko')->get();
+        $selectedToko = null;
+        $orders = collect();
+        $stats = null;
+
+        if ($request->has('toko_id')) {
+            $selectedToko = Toko::findOrFail($request->toko_id);
+            $orders = \App\Models\Pesanan::where('ID_Toko', $selectedToko->ID_Toko)
+                ->orderBy('created_at', 'desc')
+                ->paginate(15);
+            
+            $stats = [
+                'total_orders' => \App\Models\Pesanan::where('ID_Toko', $selectedToko->ID_Toko)->count(),
+                'total_revenue' => \App\Models\Pesanan::where('ID_Toko', $selectedToko->ID_Toko)
+                    ->where('Status_Pesanan', \App\Models\Pesanan::STATUS_SELESAI)
+                    ->sum('total_harga'),
+                'total_units' => \App\Models\Pesanan::where('ID_Toko', $selectedToko->ID_Toko)
+                    ->where('Status_Pesanan', \App\Models\Pesanan::STATUS_SELESAI)
+                    ->sum('Unit'),
+            ];
+        }
+
+        return view('tampilanUntukAdmin.QueryToko', compact('tokoList', 'selectedToko', 'orders', 'stats'));
+    }
+
     public function profile()
     {
         return view('tampilanUntukAdmin.profilAdmin');

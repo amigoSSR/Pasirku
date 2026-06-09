@@ -15,22 +15,33 @@
       <div class="absolute top-0 right-0 -mr-12 -mt-12 w-56 h-56 rounded-full bg-on-primary/10 blur-3xl pointer-events-none"></div>
       <div class="absolute bottom-0 left-0 -ml-12 -mb-12 w-40 h-40 rounded-full bg-on-primary/10 blur-3xl pointer-events-none"></div>
       <div class="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-5">
-        <div>
-          <span class="text-xs font-bold text-primary-fixed uppercase tracking-widest mb-2 block flex items-center gap-1.5">
-            <span class="material-symbols-outlined text-[15px]" style="font-variation-settings:'FILL' 1">storefront</span>
-            Profil Toko
-          </span>
-          <h1 class="text-3xl md:text-4xl font-headline font-extrabold tracking-tight mb-3 drop-shadow-sm">
-            {{ $toko->Nama_Toko }}
-          </h1>
-          <div class="flex flex-wrap gap-2 text-sm">
-            <div class="flex items-center gap-1.5 bg-on-primary/15 backdrop-blur-md py-1.5 px-3 rounded-full">
-              <span class="material-symbols-outlined text-[16px]">location_on</span>
-              {{ $toko->Lokasi_Toko }}
-            </div>
-            <div class="flex items-center gap-1.5 bg-on-primary/15 backdrop-blur-md py-1.5 px-3 rounded-full">
-              <span class="material-symbols-outlined text-[16px]">call</span>
-              {{ $toko->Nomer_Telepon_Toko }}
+        <div class="flex flex-col md:flex-row gap-6 md:items-center">
+          <div class="w-28 h-28 md:w-36 md:h-36 rounded-3xl bg-white/20 backdrop-blur-md border-4 border-white/30 overflow-hidden shadow-2xl shrink-0">
+            @if($toko->Foto_Toko)
+              <img src="{{ asset('storage/' . $toko->Foto_Toko) }}" class="w-full h-full object-cover" alt="{{ $toko->Nama_Toko }}">
+            @else
+              <div class="w-full h-full flex items-center justify-center">
+                <span class="material-symbols-outlined text-white text-6xl" style="font-variation-settings:'FILL' 1">storefront</span>
+              </div>
+            @endif
+          </div>
+          <div>
+            <span class="text-xs font-bold text-primary-fixed uppercase tracking-widest mb-2 block flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[15px]" style="font-variation-settings:'FILL' 1">storefront</span>
+              Profil Toko
+            </span>
+            <h1 class="text-3xl md:text-4xl font-headline font-extrabold tracking-tight mb-3 drop-shadow-sm">
+              {{ $toko->Nama_Toko }}
+            </h1>
+            <div class="flex flex-wrap gap-2 text-sm">
+              <div class="flex items-center gap-1.5 bg-on-primary/15 backdrop-blur-md py-1.5 px-3 rounded-full">
+                <span class="material-symbols-outlined text-[16px]">location_on</span>
+                {{ $toko->Lokasi_Toko }}
+              </div>
+              <div class="flex items-center gap-1.5 bg-on-primary/15 backdrop-blur-md py-1.5 px-3 rounded-full">
+                <span class="material-symbols-outlined text-[16px]">call</span>
+                {{ $toko->Nomer_Telepon_Toko }}
+              </div>
             </div>
           </div>
         </div>
@@ -124,6 +135,102 @@
       </div>
     </div>
 
+    {{-- Rating & Reviews Section --}}
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      {{-- Rating Summary --}}
+      <div class="lg:col-span-4 bg-surface-container-lowest p-6 rounded-3xl shadow-sm border border-outline-variant/30">
+        <h3 class="font-headline font-bold text-lg text-on-surface mb-6 flex items-center gap-2">
+          <span class="material-symbols-outlined text-amber-500" style="font-variation-settings:'FILL' 1">star</span>
+          Rating & Ulasan Toko
+        </h3>
+
+        <div class="flex items-center gap-6 mb-8">
+          <div class="text-center">
+            <div class="text-5xl font-black text-on-surface tracking-tighter">{{ number_format($averageRating, 1) }}</div>
+            <div class="flex text-amber-500 justify-center mt-1">
+              @for($i=1; $i<=5; $i++)
+                <span class="material-symbols-outlined text-lg {{ $i <= round($averageRating) ? '' : 'opacity-30' }}" style="font-variation-settings:'FILL' 1">star</span>
+              @endfor
+            </div>
+            <p class="text-[10px] font-bold text-on-surface-variant uppercase mt-2 tracking-widest">{{ $totalReviews }} Ulasan</p>
+          </div>
+          <div class="flex-1 space-y-2">
+             @foreach($ratingDistribution as $star => $count)
+               @php
+                 $percentage = $totalReviews > 0 ? ($count / $totalReviews) * 100 : 0;
+               @endphp
+               <div class="flex items-center gap-3">
+                 <span class="text-[10px] font-black text-on-surface-variant w-3">{{ $star }}</span>
+                 <div class="flex-1 h-2 bg-surface-container rounded-full overflow-hidden">
+                   <div class="h-full bg-amber-500 rounded-full" style="width: {{ $percentage }}%"></div>
+                 </div>
+                 <span class="text-[10px] font-bold text-on-surface-variant w-6 text-right">{{ $count }}</span>
+               </div>
+             @endforeach
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div class="bg-surface-container-low p-4 rounded-2xl border border-outline-variant/20">
+            <span class="material-symbols-outlined text-primary mb-1">groups</span>
+            <div class="text-lg font-black text-on-surface leading-none">{{ $totalBuyers }}</div>
+            <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mt-1">Total Pembeli</p>
+          </div>
+          <div class="bg-surface-container-low p-4 rounded-2xl border border-outline-variant/20">
+            <span class="material-symbols-outlined text-green-600 mb-1">verified</span>
+            <div class="text-lg font-black text-on-surface leading-none">{{ $totalReviews }}</div>
+            <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mt-1">Ulasan Valid</p>
+          </div>
+        </div>
+      </div>
+
+      {{-- Reviews List --}}
+      <div class="lg:col-span-8 bg-surface-container-lowest p-6 rounded-3xl shadow-sm border border-outline-variant/30 flex flex-col">
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="font-headline font-bold text-lg text-on-surface">Ulasan Terbaru</h3>
+          @if($totalReviews > 5)
+            <button class="text-sm font-bold text-primary hover:underline">Lihat Semua</button>
+          @endif
+        </div>
+
+        <div class="space-y-6 flex-1">
+          @forelse($recentReviews as $review)
+            <div class="flex gap-4 pb-6 border-b border-outline-variant/10 last:border-0">
+              <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-primary text-xl">person</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between gap-2 mb-1">
+                  <h4 class="font-bold text-sm text-on-surface truncate">
+                    {{ $review->is_anonymous ? 'Anonim' : ($review->akun->Username ?? 'User') }}
+                  </h4>
+                  <span class="text-[10px] font-medium text-on-surface-variant shrink-0">{{ $review->created_at->format('d M Y') }}</span>
+                </div>
+                <div class="flex text-amber-500 mb-2">
+                  @for($i=1; $i<=5; $i++)
+                    <span class="material-symbols-outlined text-sm {{ $i <= $review->Rating ? '' : 'opacity-30' }}" style="font-variation-settings:'FILL' 1">star</span>
+                  @endfor
+                </div>
+                <p class="text-sm text-on-surface-variant leading-relaxed">
+                  {{ $review->Ulasan ?: 'Tidak ada komentar.' }}
+                </p>
+                @if($review->Foto_Review)
+                  <div class="mt-3">
+                    <img src="{{ asset('storage/' . $review->Foto_Review) }}" class="w-24 h-24 object-cover rounded-xl border border-outline-variant/20 cursor-pointer hover:opacity-90 transition-opacity" onclick="window.open(this.src)">
+                  </div>
+                @endif
+              </div>
+            </div>
+          @empty
+            <div class="flex flex-col items-center justify-center h-full py-10 text-center">
+               <span class="material-symbols-outlined text-4xl text-outline-variant mb-2">rate_review</span>
+               <p class="text-sm text-on-surface-variant font-medium">Belum ada ulasan untuk toko ini.</p>
+            </div>
+          @endforelse
+        </div>
+      </div>
+    </div>
+
     {{-- Product Count Header --}}
     <div class="flex items-center justify-between">
       <div>
@@ -157,8 +264,8 @@
             </div>
           </div>
 
-          {{-- Pricing --}}
-          <div class="p-4 flex flex-col flex-1 gap-3">
+          {{-- Pricing Grid --}}
+          <div class="p-4 grid grid-cols-1 sm:grid-cols-2 gap-4 flex-1">
 
             {{-- Pick Up --}}
             <div class="bg-surface-container-low border border-outline-variant/30 rounded-xl p-3 flex flex-col gap-2">
@@ -166,53 +273,43 @@
                 <div class="w-7 h-7 bg-tertiary/10 rounded-lg flex items-center justify-center">
                   <span class="material-symbols-outlined text-[16px] text-tertiary">directions_car</span>
                 </div>
-                <span class="text-xs font-bold text-tertiary uppercase tracking-wider">Mobil Pick Up</span>
+                <span class="text-[10px] font-bold text-tertiary uppercase tracking-wider">Pick Up</span>
               </div>
-              <div class="flex items-end justify-between">
-                <div>
-                  <div class="text-[10px] text-on-surface-variant uppercase font-semibold">Harga / unit</div>
-                  <div class="text-lg font-headline font-extrabold text-on-surface tracking-tight">
-                    Rp {{ number_format($produk->Harga_PickUp, 0, ',', '.') }}
-                  </div>
+              <div class="flex flex-col gap-0.5">
+                <div class="text-[9px] text-on-surface-variant uppercase font-semibold">Harga</div>
+                <div class="text-base font-headline font-extrabold text-on-surface tracking-tight">
+                  Rp {{ number_format($produk->Harga_PickUp, 0, ',', '.') }}
                 </div>
+              </div>
+              
+              <div class="flex items-center justify-between mt-auto pt-1">
                 @if($produk->Stock_PickUp === 0)
-                  <div class="flex items-center gap-1 bg-rose-50 text-rose-700 border border-rose-200 py-1 px-2.5 rounded-full font-bold text-xs">
-                    <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
-                    <span>Habis</span>
-                  </div>
-                @elseif($produk->Stock_PickUp <= 10)
-                  <div class="flex items-center gap-1 bg-amber-50 text-amber-700 border border-amber-200 py-1 px-2.5 rounded-full font-bold text-xs">
-                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
-                    <span>Sisa {{ $produk->Stock_PickUp }}</span>
-                  </div>
+                  <span class="text-[9px] font-bold text-rose-600 uppercase">Habis</span>
                 @else
-                  <div class="flex items-center gap-1 bg-emerald-50 text-emerald-700 border border-emerald-200 py-1 px-2.5 rounded-full font-bold text-xs">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                    <span>Sisa {{ $produk->Stock_PickUp }}</span>
-                  </div>
+                  <span class="text-[9px] font-bold text-emerald-600 uppercase">Stok {{ $produk->Stock_PickUp }}</span>
                 @endif
               </div>
-              <div class="relative mt-1 min-h-[38px]">
+
+              <div class="relative mt-1 min-h-[34px]">
                 @if($produk->Stock_PickUp > 0)
                 <button
                   id="btn-add-pickup-{{ $produk->ID_Isi_Toko }}"
-                  onclick="addToCart('{{ $produk->ID_Isi_Toko }}', 'pickup', {{ $produk->Harga_PickUp }}, {{ $produk->Stock_PickUp }}, '{{ $produk->Nama_Pasir }}')"
-                  class="qty-control w-full bg-tertiary text-on-tertiary py-2 rounded-xl text-sm font-semibold hover:bg-tertiary-container transition-colors flex items-center justify-center gap-1.5 active:scale-95 duration-200">
-                  <span class="material-symbols-outlined text-[16px]">add_shopping_cart</span>
-                  Pesan Pick Up
+                  onclick="addToCart('{{ $produk->ID_Isi_Toko }}', 'pickup', {{ $produk->Harga_PickUp }}, {{ $produk->Stock_PickUp }}, '{{ $produk->Nama_Pasir }}', {{ $produk->Ongkir_PickUp ?? 0 }})"
+                  class="qty-control w-full bg-tertiary text-on-tertiary py-1.5 rounded-lg text-xs font-semibold hover:bg-tertiary-container transition-colors flex items-center justify-center gap-1 active:scale-95 duration-200">
+                  <span class="material-symbols-outlined text-[14px]">add_shopping_cart</span>
+                  Pesan
                 </button>
                 <div id="qty-pickup-{{ $produk->ID_Isi_Toko }}"
-                     class="qty-control hidden w-full flex items-center justify-between bg-tertiary text-on-tertiary rounded-xl overflow-hidden">
-                  <button onclick="changeQty('{{ $produk->ID_Isi_Toko }}', 'pickup', -1, {{ $produk->Stock_PickUp }}, '{{ $produk->Nama_Pasir }}', {{ $produk->Harga_PickUp }})"
-                          class="px-4 py-2 text-lg font-black hover:bg-on-tertiary/10 transition-colors active:bg-on-tertiary/20 select-none">−</button>
-                  <span id="qty-num-pickup-{{ $produk->ID_Isi_Toko }}" class="font-bold text-base">1</span>
-                  <button onclick="changeQty('{{ $produk->ID_Isi_Toko }}', 'pickup', +1, {{ $produk->Stock_PickUp }}, '{{ $produk->Nama_Pasir }}', {{ $produk->Harga_PickUp }})"
-                          class="px-4 py-2 text-lg font-black hover:bg-on-tertiary/10 transition-colors active:bg-on-tertiary/20 select-none">+</button>
+                     class="qty-control hidden w-full flex items-center justify-between bg-tertiary text-on-tertiary rounded-lg overflow-hidden">
+                  <button onclick="changeQty('{{ $produk->ID_Isi_Toko }}', 'pickup', -1, {{ $produk->Stock_PickUp }}, '{{ $produk->Nama_Pasir }}', {{ $produk->Harga_PickUp }}, {{ $produk->Ongkir_PickUp ?? 0 }})"
+                          class="px-2.5 py-1.5 text-base font-black hover:bg-on-tertiary/10 transition-colors active:bg-on-tertiary/20 select-none">−</button>
+                  <span id="qty-num-pickup-{{ $produk->ID_Isi_Toko }}" class="font-bold text-xs">1</span>
+                  <button onclick="changeQty('{{ $produk->ID_Isi_Toko }}', 'pickup', +1, {{ $produk->Stock_PickUp }}, '{{ $produk->Nama_Pasir }}', {{ $produk->Harga_PickUp }}, {{ $produk->Ongkir_PickUp ?? 0 }})"
+                          class="px-2.5 py-1.5 text-base font-black hover:bg-on-tertiary/10 transition-colors active:bg-on-tertiary/20 select-none">+</button>
                 </div>
                 @else
-                <button disabled class="w-full bg-surface-container text-on-surface-variant py-2 rounded-xl text-sm font-semibold flex items-center justify-center gap-1.5 opacity-60 cursor-not-allowed">
-                  <span class="material-symbols-outlined text-[16px]">remove_shopping_cart</span>
-                  Stok Habis
+                <button disabled class="w-full bg-surface-container text-on-surface-variant py-1.5 rounded-lg text-xs font-semibold flex items-center justify-center opacity-60 cursor-not-allowed">
+                  Habis
                 </button>
                 @endif
               </div>
@@ -224,53 +321,43 @@
                 <div class="w-7 h-7 bg-primary/10 rounded-lg flex items-center justify-center">
                   <span class="material-symbols-outlined text-[16px] text-primary">local_shipping</span>
                 </div>
-                <span class="text-xs font-bold text-primary uppercase tracking-wider">Truk</span>
+                <span class="text-[10px] font-bold text-primary uppercase tracking-wider">Truk</span>
               </div>
-              <div class="flex items-end justify-between">
-                <div>
-                  <div class="text-[10px] text-on-surface-variant uppercase font-semibold">Harga / unit</div>
-                  <div class="text-lg font-headline font-extrabold text-on-surface tracking-tight">
-                    Rp {{ number_format($produk->Harga_Truck, 0, ',', '.') }}
-                  </div>
+              <div class="flex flex-col gap-0.5">
+                <div class="text-[9px] text-on-surface-variant uppercase font-semibold">Harga</div>
+                <div class="text-base font-headline font-extrabold text-on-surface tracking-tight">
+                  Rp {{ number_format($produk->Harga_Truck, 0, ',', '.') }}
                 </div>
+              </div>
+
+              <div class="flex items-center justify-between mt-auto pt-1">
                 @if($produk->Stock_Truck === 0)
-                  <div class="flex items-center gap-1 bg-rose-50 text-rose-700 border border-rose-200 py-1 px-2.5 rounded-full font-bold text-xs">
-                    <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
-                    <span>Habis</span>
-                  </div>
-                @elseif($produk->Stock_Truck <= 10)
-                  <div class="flex items-center gap-1 bg-amber-50 text-amber-700 border border-amber-200 py-1 px-2.5 rounded-full font-bold text-xs">
-                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
-                    <span>Sisa {{ $produk->Stock_Truck }}</span>
-                  </div>
+                  <span class="text-[9px] font-bold text-rose-600 uppercase">Habis</span>
                 @else
-                  <div class="flex items-center gap-1 bg-emerald-50 text-emerald-700 border border-emerald-200 py-1 px-2.5 rounded-full font-bold text-xs">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                    <span>Sisa {{ $produk->Stock_Truck }}</span>
-                  </div>
+                  <span class="text-[9px] font-bold text-emerald-600 uppercase">Stok {{ $produk->Stock_Truck }}</span>
                 @endif
               </div>
-              <div class="relative mt-1 min-h-[38px]">
+
+              <div class="relative mt-1 min-h-[34px]">
                 @if($produk->Stock_Truck > 0)
                 <button
                   id="btn-add-truck-{{ $produk->ID_Isi_Toko }}"
-                  onclick="addToCart('{{ $produk->ID_Isi_Toko }}', 'truck', {{ $produk->Harga_Truck }}, {{ $produk->Stock_Truck }}, '{{ $produk->Nama_Pasir }}')"
-                  class="qty-control w-full bg-primary text-on-primary py-2 rounded-xl text-sm font-semibold hover:bg-primary-container transition-colors flex items-center justify-center gap-1.5 active:scale-95 duration-200">
-                  <span class="material-symbols-outlined text-[16px]">add_shopping_cart</span>
-                  Pesan Truk
+                  onclick="addToCart('{{ $produk->ID_Isi_Toko }}', 'truck', {{ $produk->Harga_Truck }}, {{ $produk->Stock_Truck }}, '{{ $produk->Nama_Pasir }}', {{ $produk->Ongkir_Truck ?? 0 }})"
+                  class="qty-control w-full bg-primary text-on-primary py-1.5 rounded-lg text-xs font-semibold hover:bg-primary-container transition-colors flex items-center justify-center gap-1 active:scale-95 duration-200">
+                  <span class="material-symbols-outlined text-[14px]">add_shopping_cart</span>
+                  Pesan
                 </button>
                 <div id="qty-truck-{{ $produk->ID_Isi_Toko }}"
-                     class="qty-control hidden w-full flex items-center justify-between bg-primary text-on-primary rounded-xl overflow-hidden">
-                  <button onclick="changeQty('{{ $produk->ID_Isi_Toko }}', 'truck', -1, {{ $produk->Stock_Truck }}, '{{ $produk->Nama_Pasir }}', {{ $produk->Harga_Truck }})"
-                          class="px-4 py-2 text-lg font-black hover:bg-on-primary/10 transition-colors active:bg-on-primary/20 select-none">−</button>
-                  <span id="qty-num-truck-{{ $produk->ID_Isi_Toko }}" class="font-bold text-base">1</span>
-                  <button onclick="changeQty('{{ $produk->ID_Isi_Toko }}', 'truck', +1, {{ $produk->Stock_Truck }}, '{{ $produk->Nama_Pasir }}', {{ $produk->Harga_Truck }})"
-                          class="px-4 py-2 text-lg font-black hover:bg-on-primary/10 transition-colors active:bg-on-primary/20 select-none">+</button>
+                     class="qty-control hidden w-full flex items-center justify-between bg-primary text-on-primary rounded-lg overflow-hidden">
+                  <button onclick="changeQty('{{ $produk->ID_Isi_Toko }}', 'truck', -1, {{ $produk->Stock_Truck }}, '{{ $produk->Nama_Pasir }}', {{ $produk->Harga_Truck }}, {{ $produk->Ongkir_Truck ?? 0 }})"
+                          class="px-2.5 py-1.5 text-base font-black hover:bg-on-primary/10 transition-colors active:bg-on-primary/20 select-none">−</button>
+                  <span id="qty-num-truck-{{ $produk->ID_Isi_Toko }}" class="font-bold text-xs">1</span>
+                  <button onclick="changeQty('{{ $produk->ID_Isi_Toko }}', 'truck', +1, {{ $produk->Stock_Truck }}, '{{ $produk->Nama_Pasir }}', {{ $produk->Harga_Truck }}, {{ $produk->Ongkir_Truck ?? 0 }})"
+                          class="px-2.5 py-1.5 text-base font-black hover:bg-on-primary/10 transition-colors active:bg-on-primary/20 select-none">+</button>
                 </div>
                 @else
-                <button disabled class="w-full bg-surface-container text-on-surface-variant py-2 rounded-xl text-sm font-semibold flex items-center justify-center gap-1.5 opacity-60 cursor-not-allowed">
-                  <span class="material-symbols-outlined text-[16px]">remove_shopping_cart</span>
-                  Stok Habis
+                <button disabled class="w-full bg-surface-container text-on-surface-variant py-1.5 rounded-lg text-xs font-semibold flex items-center justify-center opacity-60 cursor-not-allowed">
+                  Habis
                 </button>
                 @endif
               </div>
@@ -369,9 +456,9 @@
       if(total>0){if(fab && (fab.style.display==='none'||fab.style.display==='')){fab.style.display='flex';if(ring)ring.style.display='block';fab.classList.remove('pop-in');void fab.offsetWidth;fab.classList.add('pop-in');}}else{if(fab)fab.style.display='none';if(ring)ring.style.display='none';}
     }
 
-    function addToCart(produkId,type,harga,stock,namaPasir){
+    function addToCart(produkId,type,harga,stock,namaPasir,ongkir){
       const key=produkId+'_'+type;
-      cartItems[key]={qty:1,harga,stock,namaPasir,type};
+      cartItems[key]={qty:1,harga,stock,namaPasir,type,ongkir};
       const btn = document.getElementById('btn-add-'+type+'-'+produkId);
       const qtyDiv = document.getElementById('qty-'+type+'-'+produkId);
       if (btn) btn.classList.add('hidden');
@@ -382,9 +469,9 @@
       updateCartUI();
     }
 
-    function changeQty(produkId,type,delta,stock,namaPasir,harga){
+    function changeQty(produkId,type,delta,stock,namaPasir,harga,ongkir){
       const key=produkId+'_'+type;
-      if(!cartItems[key])cartItems[key]={qty:0,harga,stock,namaPasir,type};
+      if(!cartItems[key])cartItems[key]={qty:0,harga,stock,namaPasir,type,ongkir};
       let newQty=cartItems[key].qty+delta;
       if(newQty>stock)newQty=stock;
       if(newQty<=0){
@@ -412,6 +499,7 @@
         type:v.type,
         qty:v.qty,
         harga:v.harga,
+        ongkir:v.ongkir,
         tokoId: TOKO_DATA.id,
         tokoNama: TOKO_DATA.nama,
         tokoLokasi: TOKO_DATA.lokasi,

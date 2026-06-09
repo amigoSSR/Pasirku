@@ -17,11 +17,28 @@ class MarketPlaceController extends Controller
     {
         // scopeActive() memastikan hanya toko dengan Status='active' yang ditemukan.
         // Jika inactive atau tidak ada → 404.
-        $toko = Toko::active()->where('ID_Toko', $id)->firstOrFail();
+        $toko = Toko::active()->with(['reviews.akun'])->where('ID_Toko', $id)->firstOrFail();
 
         $isiToko = DB::table('isi_toko')->where('ID_Toko', $id)->get();
 
-        return view('tampilaUntukUser.MarketPlace', compact('toko', 'isiToko'));
+        // Statistics
+        $averageRating = $toko->averageRating();
+        $totalReviews = $toko->reviews()->count();
+        $ratingDistribution = $toko->ratingDistribution();
+        $totalBuyers = DB::table('pesanan')->where('ID_Toko', $id)->where('Status_Pesanan', 'Selesai')->distinct('ID_Akun')->count();
+        
+        // Recent reviews
+        $recentReviews = $toko->reviews()->with('akun')->latest()->take(5)->get();
+
+        return view('tampilaUntukUser.MarketPlace', compact(
+            'toko', 
+            'isiToko', 
+            'averageRating', 
+            'totalReviews', 
+            'ratingDistribution', 
+            'totalBuyers',
+            'recentReviews'
+        ));
     }
 
     /**

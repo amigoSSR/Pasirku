@@ -23,11 +23,6 @@
         popupAnchor: [0, -40]
     });
 
-    // Marker tetap (kampus/lokasi referensi)
-    var kampus = L.marker([-5.166912, 119.412656], { icon: icon2 })
-        .bindPopup('This is kampus, CO.');
-    L.layerGroup([kampus]).addTo(map);
-
     // Render dynamic store pins from window.MAP_CONFIG.stores
     if (window.MAP_CONFIG && window.MAP_CONFIG.stores) {
         window.MAP_CONFIG.stores.forEach(function (store) {
@@ -54,35 +49,61 @@
 
     // Marker posisi user
     var marker = null;
+    var userLat = null;
+    var userLon = null;
     var hasSetView = false;
 
     // Geolocation tracking
     if (!navigator.geolocation) {
         console.log('Geolocation is not supported by this browser.');
     } else {
-        setInterval(function () {
-            navigator.geolocation.getCurrentPosition(getPosition);
-        }, 1000);
+        navigator.geolocation.getCurrentPosition(getPosition, function(err) {
+            console.warn(`ERROR(${err.code}): ${err.message}`);
+        }, {
+            enableHighAccuracy: true
+        });
+
+        // Track position continuously
+        navigator.geolocation.watchPosition(getPosition);
     }
 
     function getPosition(position) {
-        var lat = position.coords.latitude;
-        var lon = position.coords.longitude;
+        userLat = position.coords.latitude;
+        userLon = position.coords.longitude;
         var accuracy = position.coords.accuracy;
-        console.log(lat, lon, accuracy);
 
         if (marker) {
-            // Pindahkan marker yang sudah ada, jangan buat baru
-            marker.setLatLng([lat, lon]);
+            marker.setLatLng([userLat, userLon]);
         } else {
-            // Buat marker hanya sekali
-            marker = L.marker([lat, lon]).addTo(map);
+            marker = L.marker([userLat, userLon]).addTo(map);
+            marker.bindPopup("<b style='color:#944a00'>Anda di sini</b>").openPopup();
         }
 
-        // Hanya sekali pindahkan view ke posisi user
+        // Only auto-center once on load
         if (!hasSetView) {
-            map.setView([lat, lon], 16);
+            map.setView([userLat, userLon], 15);
             hasSetView = true;
         }
+    }
+
+    // Button Locate Me
+    var btnLocate = document.getElementById('btn-locate-me');
+    if (btnLocate) {
+        btnLocate.addEventListener('click', function () {
+            if (userLat && userLon) {
+                map.flyTo([userLat, userLon], 16, {
+                    animate: true,
+                    duration: 1.5
+                });
+                if (marker) marker.openPopup();
+            } else {
+                // If position not yet acquired, try again
+                navigator.geolocation.getCurrentPosition(function(pos) {
+                    userLat = pos.coords.latitude;
+                    userLon = pos.coords.longitude;
+                    map.flyTo([userLat, userLon], 16);
+                });
+            }
+        });
     }
 })();

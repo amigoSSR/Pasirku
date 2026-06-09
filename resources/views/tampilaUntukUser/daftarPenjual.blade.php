@@ -95,8 +95,24 @@
         @endif
 
         {{-- Form --}}
-        <form action="{{ route('daftarPenjual.store') }}" method="POST" class="space-y-5">
+        <form action="{{ route('daftarPenjual.store') }}" method="POST" enctype="multipart/form-data" class="space-y-5">
           @csrf
+
+          <div class="space-y-1.5">
+            <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Foto Toko</label>
+            <div class="flex items-center gap-4 p-4 bg-surface-container-low rounded-xl border border-outline-variant/20">
+              <div id="foto-preview-container" class="w-16 h-16 rounded-lg bg-surface-container flex items-center justify-center overflow-hidden border border-outline-variant/30">
+                <span class="material-symbols-outlined text-outline">add_a_photo</span>
+              </div>
+              <div class="flex-1">
+                <input type="file" name="foto_toko" id="foto_toko" class="hidden" accept="image/*" onchange="previewFoto(this)" />
+                <label for="foto_toko" class="bg-primary/10 text-primary px-4 py-2 rounded-lg text-xs font-bold cursor-pointer hover:bg-primary/20 transition-colors inline-block">
+                  Pilih Foto
+                </label>
+                <p class="text-[10px] text-on-surface-variant mt-1.5">Maksimal 2MB (JPG, PNG)</p>
+              </div>
+            </div>
+          </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div class="space-y-1.5">
@@ -182,6 +198,17 @@
 
 @push('scripts')
 <script>
+  function previewFoto(input) {
+    const container = document.getElementById('foto-preview-container');
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        container.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover" />`;
+      }
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     // Koordinat default (Makassar)
     let defaultLat = -5.147665;

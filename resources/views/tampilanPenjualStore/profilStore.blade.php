@@ -11,6 +11,30 @@
     </nav>
   </x-slot>
 
+  <div class="max-w-5xl mx-auto px-6 md:px-8 mt-4 space-y-4">
+    @if(session('success'))
+      <div class="flex items-center gap-3 p-4 bg-green-50 text-green-800 rounded-xl border border-green-200 text-sm font-semibold animate-fade-in">
+        <span class="material-symbols-outlined text-green-600" style="font-variation-settings:'FILL' 1">check_circle</span>
+        {{ session('success') }}
+      </div>
+    @endif
+    @if(session('error'))
+      <div class="flex items-center gap-3 p-4 bg-red-50 text-red-800 rounded-xl border border-red-200 text-sm font-semibold animate-fade-in">
+        <span class="material-symbols-outlined text-red-600" style="font-variation-settings:'FILL' 1">error</span>
+        {{ session('error') }}
+      </div>
+    @endif
+    @if($errors->any())
+      <div class="p-4 bg-red-50 text-red-800 rounded-xl border border-red-200 text-sm font-semibold animate-fade-in">
+        <ul class="list-disc pl-5">
+          @foreach($errors->all() as $error)
+            <li>{{ $error }}</li>
+          @endforeach
+        </ul>
+      </div>
+    @endif
+  </div>
+
   <div class="h-40 md:h-52 w-full relative overflow-hidden" style="background: linear-gradient(135deg, #944a00 0%, #e67e22 100%);">
     <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
     <div class="absolute bottom-0 left-10 w-48 h-48 bg-black/10 rounded-full blur-2xl translate-y-1/3"></div>
@@ -18,9 +42,23 @@
 
   <div class="max-w-5xl mx-auto px-6 md:px-8 -mt-16 relative z-10 pb-24 md:pb-10">
     <div class="bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant/30 p-6 md:p-8 mb-8 flex flex-col md:flex-row gap-6 md:items-end">
-      <div class="relative shrink-0 -mt-16 md:-mt-20">
-        <div class="w-28 h-28 md:h-36 md:w-36 rounded-2xl border-4 border-surface-container-lowest overflow-hidden shadow-md bg-white">
-          <img alt="Store Avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA5PQtLotEWu5Gayn3BYAklIw_RIGZZ9W4Va4b6CgPo1Vc63rl0AsarywWh0O9JeqvGNBy29ZhR37zpxw7Q0D0wegVj9ndr7ki257XmzjvsTQy7_qy8VSbS_MHwpnPd9RerrDoWwWtRWGEmvoYFpJ01SL9PYZ2WPsMMI4oMTZ00pq-oQqnM6jidyCFcHRED5qU1xDteSLy8EbgbL9ZKOPqKvdE0WJ7tcwp7m8eEKUnZVhCh7I8yJyvHQBnB1Qi_SRypz1rveyUHZQ" />
+      <div class="relative shrink-0 -mt-16 md:-mt-20 group">
+        <div class="w-28 h-28 md:h-36 md:w-36 rounded-2xl border-4 border-surface-container-lowest overflow-hidden shadow-md bg-white relative">
+          @if($toko->Foto_Toko)
+            <img alt="Store Avatar" class="w-full h-full object-cover" src="{{ asset('storage/' . $toko->Foto_Toko) }}" id="preview-foto" />
+          @else
+            <img alt="Store Avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA5PQtLotEWu5Gayn3BYAklIw_RIGZZ9W4Va4b6CgPo1Vc63rl0AsarywWh0O9JeqvGNBy29ZhR37zpxw7Q0D0wegVj9ndr7ki257XmzjvsTQy7_qy8VSbS_MHwpnPd9RerrDoWwWtRWGEmvoYFpJ01SL9PYZ2WPsMMI4oMTZ00pq-oQqnM6jidyCFcHRED5qU1xDteSLy8EbgbL9ZKOPqKvdE0WJ7tcwp7m8eEKUnZVhCh7I8yJyvHQBnB1Qi_SRypz1rveyUHZQ" id="preview-foto" />
+          @endif
+          
+          {{-- Overlay Upload --}}
+          <form action="{{ route('ProfilStore.updatePhoto') }}" method="POST" enctype="multipart/form-data" id="form-foto" class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+            @csrf
+            <label for="foto_toko" class="cursor-pointer flex flex-col items-center">
+              <span class="material-symbols-outlined text-white text-3xl">add_a_photo</span>
+              <span class="text-white text-[10px] font-bold uppercase mt-1">Ganti Foto</span>
+            </label>
+            <input type="file" name="foto_toko" id="foto_toko" class="hidden" onchange="document.getElementById('form-foto').submit()" accept="image/*" />
+          </form>
         </div>
         <div class="absolute -bottom-2 -right-2 bg-green-500 text-white w-8 h-8 rounded-full border-4 border-surface-container-lowest flex items-center justify-center shadow-sm">
           <span class="material-symbols-outlined text-[16px]">check</span>
@@ -89,6 +127,75 @@
           Lihat Pelanggan <span class="material-symbols-outlined text-sm ml-1 group-hover:translate-x-1 transition-transform">arrow_forward</span>
         </div>
       </a>
+
+      {{-- Form Informasi Dasar Toko --}}
+      <div class="md:col-span-2 lg:col-span-3 bg-surface-container-lowest p-6 md:p-8 rounded-2xl shadow-sm border border-outline-variant/30">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-11 h-11 bg-secondary/10 text-secondary rounded-xl flex items-center justify-center">
+            <span class="material-symbols-outlined text-2xl" style="font-variation-settings:'FILL' 1">info</span>
+          </div>
+          <div>
+            <h3 class="font-headline text-xl font-bold text-on-surface">Informasi Dasar Toko</h3>
+            <p class="text-on-surface-variant text-sm mt-0.5">Kelola identitas utama toko Anda seperti nama, kontak, dan foto profil toko.</p>
+          </div>
+        </div>
+
+        <form action="{{ route('ProfilStore.updateGeneralInfo') }}" method="POST" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          @csrf
+          <div class="lg:col-span-2 space-y-4">
+            <div class="flex flex-col gap-1.5">
+              <label for="Nama_Toko" class="text-xs font-bold text-outline uppercase tracking-wider">Nama Toko</label>
+              <input type="text" id="Nama_Toko" name="Nama_Toko" value="{{ old('Nama_Toko', $toko->Nama_Toko) }}" required
+                class="bg-surface-container-low border-0 border-b-2 border-transparent focus:border-primary focus:ring-0 rounded-xl px-4 py-3 text-sm text-on-surface transition-all placeholder-on-surface-variant/40"
+                placeholder="Masukkan nama toko Anda" />
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="flex flex-col gap-1.5">
+                <label for="Nomer_Telepon_Toko" class="text-xs font-bold text-outline uppercase tracking-wider">No. WhatsApp / Telepon</label>
+                <input type="tel" id="Nomer_Telepon_Toko" name="Nomer_Telepon_Toko" value="{{ old('Nomer_Telepon_Toko', $toko->Nomer_Telepon_Toko) }}" required
+                  class="bg-surface-container-low border-0 border-b-2 border-transparent focus:border-primary focus:ring-0 rounded-xl px-4 py-3 text-sm text-on-surface transition-all placeholder-on-surface-variant/40"
+                  placeholder="Contoh: 08123456789" />
+              </div>
+              <div class="flex flex-col gap-1.5">
+                <label for="Email_Toko" class="text-xs font-bold text-outline uppercase tracking-wider">Email Toko</label>
+                <input type="email" id="Email_Toko" name="Email_Toko" value="{{ old('Email_Toko', $toko->Email_Toko) }}" required
+                  class="bg-surface-container-low border-0 border-b-2 border-transparent focus:border-primary focus:ring-0 rounded-xl px-4 py-3 text-sm text-on-surface transition-all placeholder-on-surface-variant/40"
+                  placeholder="Contoh: toko@email.com" />
+              </div>
+            </div>
+
+            <button type="submit"
+              class="w-full md:w-auto bg-primary text-on-primary hover:bg-primary-container py-3.5 px-8 rounded-xl text-sm font-black transition-all shadow-md flex items-center justify-center gap-1.5 active:scale-95 duration-200">
+              <span class="material-symbols-outlined text-[18px]">save</span>
+              Simpan Perubahan
+            </button>
+          </div>
+
+          {{-- Sidebar Edit Foto --}}
+          <div class="flex flex-col items-center gap-4 p-6 bg-surface-container-low/40 rounded-2xl border border-outline-variant/20">
+            <span class="text-xs font-bold text-outline uppercase tracking-wider self-start">Foto Profil Toko</span>
+            <div class="w-32 h-32 rounded-2xl overflow-hidden border-2 border-primary/20 bg-white relative group">
+              @if($toko->Foto_Toko)
+                <img src="{{ asset('storage/' . $toko->Foto_Toko) }}" class="w-full h-full object-cover" alt="Preview Foto">
+              @else
+                <div class="w-full h-full flex items-center justify-center bg-primary/5">
+                  <span class="material-symbols-outlined text-4xl text-primary/30">storefront</span>
+                </div>
+              @endif
+              <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                 <span class="material-symbols-outlined text-white">photo_camera</span>
+              </div>
+            </div>
+            <p class="text-[10px] text-center text-on-surface-variant leading-relaxed">Gunakan foto berkualitas tinggi agar toko Anda terlihat lebih profesional di mata pelanggan.</p>
+            <button type="button" onclick="document.getElementById('foto_toko').click()"
+              class="w-full bg-surface-container-high text-on-surface hover:bg-surface-container-highest py-2.5 rounded-xl text-xs font-bold transition-all border border-outline-variant/30 flex items-center justify-center gap-2">
+              <span class="material-symbols-outlined text-sm">upload</span>
+              Ganti Foto Toko
+            </button>
+          </div>
+        </form>
+      </div>
 
       {{-- Form Alamat & Lokasi Map Toko --}}
       <div class="md:col-span-2 lg:col-span-3 bg-surface-container-lowest p-6 md:p-8 rounded-2xl shadow-sm border border-outline-variant/30">

@@ -167,42 +167,64 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
 
-          {{-- Harga Pick Up --}}
-          <div>
-            <label class="block text-sm font-semibold text-on-surface mb-1.5" for="Harga_PickUp">
-              Harga Pick Up (Rp) <span class="text-error">*</span>
+          {{-- Harga Pasir --}}
+          <div class="sm:col-span-2">
+            <label class="block text-sm font-semibold text-on-surface mb-1.5" for="Harga">
+              Harga Pasir (Rp) <span class="text-error">*</span>
             </label>
             <div class="relative">
               <span class="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant font-semibold text-sm">Rp</span>
-              <input id="Harga_PickUp" name="Harga_PickUp" type="number" min="0"
-                     value="{{ old('Harga_PickUp') }}"
+              <input id="Harga" name="Harga" type="number" min="0"
+                     value="{{ old('Harga') }}"
                      placeholder="0"
                      class="w-full pl-10 pr-4 py-3 rounded-xl border text-sm
-                            {{ $errors->has('Harga_PickUp') ? 'border-error bg-error-container/20' : 'border-outline-variant bg-surface-container-low' }}
+                            {{ $errors->has('Harga') ? 'border-error bg-error-container/20' : 'border-outline-variant bg-surface-container-low' }}
                             text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
             </div>
-            @error('Harga_PickUp')
+            <p class="mt-1 text-xs text-on-surface-variant">Harga satuan pasir sebelum ongkir.</p>
+            @error('Harga')
               <p class="mt-1.5 text-xs text-error flex items-center gap-1">
                 <span class="material-symbols-outlined text-xs">error</span>{{ $message }}
               </p>
             @enderror
           </div>
 
-          {{-- Harga Truck --}}
+          {{-- Ongkir Pick Up --}}
           <div>
-            <label class="block text-sm font-semibold text-on-surface mb-1.5" for="Harga_Truck">
-              Harga Truck (Rp) <span class="text-error">*</span>
+            <label class="block text-sm font-semibold text-on-surface mb-1.5" for="Ongkir_PickUp">
+              Ongkir Pick Up (Rp) <span class="text-error">*</span>
             </label>
             <div class="relative">
               <span class="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant font-semibold text-sm">Rp</span>
-              <input id="Harga_Truck" name="Harga_Truck" type="number" min="0"
-                     value="{{ old('Harga_Truck') }}"
+              <input id="Ongkir_PickUp" name="Ongkir_PickUp" type="number" min="0"
+                     value="{{ old('Ongkir_PickUp', 0) }}"
                      placeholder="0"
                      class="w-full pl-10 pr-4 py-3 rounded-xl border text-sm
-                            {{ $errors->has('Harga_Truck') ? 'border-error bg-error-container/20' : 'border-outline-variant bg-surface-container-low' }}
+                            {{ $errors->has('Ongkir_PickUp') ? 'border-error bg-error-container/20' : 'border-outline-variant bg-surface-container-low' }}
                             text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
             </div>
-            @error('Harga_Truck')
+            @error('Ongkir_PickUp')
+              <p class="mt-1.5 text-xs text-error flex items-center gap-1">
+                <span class="material-symbols-outlined text-xs">error</span>{{ $message }}
+              </p>
+            @enderror
+          </div>
+
+          {{-- Ongkir Truck --}}
+          <div>
+            <label class="block text-sm font-semibold text-on-surface mb-1.5" for="Ongkir_Truck">
+              Ongkir Truck (Rp) <span class="text-error">*</span>
+            </label>
+            <div class="relative">
+              <span class="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant font-semibold text-sm">Rp</span>
+              <input id="Ongkir_Truck" name="Ongkir_Truck" type="number" min="0"
+                     value="{{ old('Ongkir_Truck', 0) }}"
+                     placeholder="0"
+                     class="w-full pl-10 pr-4 py-3 rounded-xl border text-sm
+                            {{ $errors->has('Ongkir_Truck') ? 'border-error bg-error-container/20' : 'border-outline-variant bg-surface-container-low' }}
+                            text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
+            </div>
+            @error('Ongkir_Truck')
               <p class="mt-1.5 text-xs text-error flex items-center gap-1">
                 <span class="material-symbols-outlined text-xs">error</span>{{ $message }}
               </p>

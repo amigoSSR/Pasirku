@@ -59,6 +59,11 @@ class Pesanan extends Model
         return $this->belongsTo(Toko::class, 'ID_Toko', 'ID_Toko');
     }
 
+    public function review()
+    {
+        return $this->hasOne(Review::class, 'ID_Pesanan', 'ID_Pesanan');
+    }
+
     /* ── Helpers ─────────────────────────────────── */
 
     /**

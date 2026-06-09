@@ -150,8 +150,12 @@
               <tr class="hover:bg-surface-container-low/50 transition-colors">
                 <td class="px-6 py-4">
                   <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-xl bg-primary/10 text-primary font-bold text-xs flex items-center justify-center uppercase shrink-0">
-                      {{ strtoupper(substr($toko->Nama_Toko, 0, 2)) }}
+                    <div class="w-9 h-9 rounded-xl bg-primary/10 text-primary font-bold text-xs flex items-center justify-center uppercase shrink-0 overflow-hidden">
+                      @if($toko->Foto_Toko)
+                        <img src="{{ asset('storage/' . $toko->Foto_Toko) }}" class="w-full h-full object-cover" alt="{{ $toko->Nama_Toko }}">
+                      @else
+                        {{ strtoupper(substr($toko->Nama_Toko, 0, 2)) }}
+                      @endif
                     </div>
                     <div>
                       <p class="font-semibold text-on-surface text-sm">{{ $toko->Nama_Toko }}</p>
@@ -222,6 +226,18 @@
         {{-- Quick Nav Cards --}}
         <div class="bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant/20 p-6 space-y-3">
           <h3 class="font-headline font-bold text-on-surface mb-4">Aksi Cepat</h3>
+
+          <a href="{{ route('admin.queryToko') }}"
+            class="flex items-center gap-3 p-3 rounded-xl hover:bg-surface-container-low transition-colors group">
+            <div class="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
+              <span class="material-symbols-outlined text-primary text-[18px]" style="font-variation-settings:'FILL' 1">monitoring</span>
+            </div>
+            <div class="flex-1">
+              <p class="text-sm font-semibold text-on-surface">Query Toko</p>
+              <p class="text-xs text-on-surface-variant">Pantau riwayat pembelian toko</p>
+            </div>
+            <span class="material-symbols-outlined text-on-surface-variant text-[16px] group-hover:text-primary transition-colors">arrow_forward_ios</span>
+          </a>
 
           <a href="{{ route('ShopeRegistry') }}"
             class="flex items-center gap-3 p-3 rounded-xl hover:bg-surface-container-low transition-colors group">

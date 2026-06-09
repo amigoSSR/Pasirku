@@ -107,6 +107,12 @@ class MenuUtamaController extends Controller
         // Total Komisi Admin
         $totalKomisiAdmin = $toko->Komisi_Admin;
 
+        // 6. Rating Stats
+        $averageRating = $toko->averageRating();
+        $totalReviews = $toko->reviews()->count();
+        $ratingDistribution = $toko->ratingDistribution();
+        $recentReviews = $toko->reviews()->with('akun')->latest()->take(5)->get();
+
         return view('tampilanPenjualStore.MenuUtamaStore', compact(
             'toko',
             'totalPendapatan',
@@ -120,7 +126,11 @@ class MenuUtamaController extends Controller
             'completionRate',
             'complaintsCount',
             'unreadChatCount',
-            'totalKomisiAdmin'
+            'totalKomisiAdmin',
+            'averageRating',
+            'totalReviews',
+            'ratingDistribution',
+            'recentReviews'
         ));
     }
 

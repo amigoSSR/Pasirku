@@ -15,17 +15,6 @@
     });
     googleStreets.addTo(map);
 
-    // Icon custom (URL didapat dari window.MAP_CONFIG yang di-set via Blade)
-    var icon2 = L.icon({
-        iconUrl: window.MAP_CONFIG ? window.MAP_CONFIG.iconUrl : '/img/rumah1.png',
-        iconSize: [40, 40],
-    });
-
-    // Marker tetap (kampus/lokasi referensi)
-    var kampus = L.marker([-5.166912, 119.412656], { icon: icon2 })
-        .bindPopup('This is kampus, CO.');
-    L.layerGroup([kampus]).addTo(map);
-
     // Marker posisi user
     var marker = null;
     var hasSetView = false;

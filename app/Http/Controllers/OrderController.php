@@ -17,8 +17,16 @@ class OrderController extends Controller
      */
     public function userOrders()
     {
+        // Include completed orders from today so user can rate them immediately after confirming
         $orders = Pesanan::where('ID_Akun', Auth::id())
-            ->whereNotIn('Status_Pesanan', [Pesanan::STATUS_SELESAI, Pesanan::STATUS_DIBATALKAN])
+            ->where(function($query) {
+                $query->whereNotIn('Status_Pesanan', [Pesanan::STATUS_SELESAI, Pesanan::STATUS_DIBATALKAN])
+                      ->orWhere(function($q) {
+                          $q->where('Status_Pesanan', Pesanan::STATUS_SELESAI)
+                            ->where('updated_at', '>=', now()->subMinutes(60)); // Show for 60 mins after completion
+                      });
+            })
+            ->with('review')
             ->orderBy('created_at', 'desc')
             ->get();
 

@@ -31,7 +31,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Store & Admin Profile management
     Route::middleware(['role:store,admin'])->group(function () {
         Route::get('/ProfilStore', [\App\Http\Controllers\StoreProfileController::class, 'showProfile'])->name('ProfilStore');
+        Route::post('/ProfilStore/info', [\App\Http\Controllers\StoreProfileController::class, 'updateGeneralInfo'])->name('ProfilStore.updateGeneralInfo');
         Route::post('/ProfilStore/alamat', [\App\Http\Controllers\StoreProfileController::class, 'updateAddress'])->name('ProfilStore.updateAddress');
+        Route::post('/ProfilStore/foto', [\App\Http\Controllers\StoreProfileController::class, 'updatePhoto'])->name('ProfilStore.updatePhoto');
     });
 
     // Store Routes
@@ -56,18 +58,24 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/stokPasir/data', [StokController::class, 'data'])->name('stokPasir.data');
         Route::post('/stokPasir/tambah', [StokController::class, 'tambahStok'])->name('stokPasir.tambah');
         Route::post('/stokPasir/kurangi', [StokController::class, 'kurangiStok'])->name('stokPasir.kurangi');
+<<<<<<< HEAD
 
         // Bayar Komisi
         Route::get('/bayarKomisi', [\App\Http\Controllers\KomisiController::class, 'index'])->name('bayarKomisi');
         Route::post('/bayarKomisi', [\App\Http\Controllers\KomisiController::class, 'store'])->name('bayarKomisi.store');
     });
 
+=======
+        Route::post('/stokPasir/ongkir', [StokController::class, 'updateOngkir'])->name('stokPasir.updateOngkir');
+        });
+>>>>>>> 578b9dbd19c4399728d84d6d8c84ffbf2bab52d1
     // Admin Routes
     Route::middleware(['role:admin'])->group(function () {
         Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
         Route::get('/admin/menuutama', [AdminController::class, 'index'])->name('MenuUtamaAdmin');
         Route::get('/admin/shop-registration', [AdminController::class, 'shopeRegistry'])->name('ShopeRegistry');
         Route::get('/admin/user-registry', [ShoopeRegistryController::class, 'index'])->name('UserRegistry');
+        Route::get('/admin/query-toko', [AdminController::class, 'queryToko'])->name('admin.queryToko');
         Route::get('/admin/profil', [AdminController::class, 'profile'])->name('ProfilAdmin');
         Route::get('/admin/pesan', fn() => view('tampilanUntukAdmin.PesanAdmin'))->name('PesanAdmin');
         Route::put('/admin/shope-registry/{id}/toggle-status', [AdminController::class, 'toggleStatus'])
@@ -104,9 +112,28 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/daftarPenjual', [\App\Http\Controllers\StoreRegistrationController::class, 'store'])
             ->name('daftarPenjual.store')
             ->middleware('check.store.registration');
+
+        // Shipping Rate Routes
+        Route::get('/shipping-rates', [\App\Http\Controllers\ShippingRateController::class, 'index'])->name('shipping-rates.index');
+        Route::post('/shipping-rates', [\App\Http\Controllers\ShippingRateController::class, 'store'])->name('shipping-rates.store');
+        Route::put('/shipping-rates/{id}', [\App\Http\Controllers\ShippingRateController::class, 'update'])->name('shipping-rates.update');
+        Route::patch('/shipping-rates/{id}/toggle', [\App\Http\Controllers\ShippingRateController::class, 'toggleStatus'])->name('shipping-rates.toggle');
+        Route::delete('/shipping-rates/{id}', [\App\Http\Controllers\ShippingRateController::class, 'destroy'])->name('shipping-rates.destroy');
+
+        // Review Routes
+        Route::post('/reviews', [\App\Http\Controllers\ReviewController::class, 'store'])->name('reviews.store');
+        Route::put('/reviews/{id}', [\App\Http\Controllers\ReviewController::class, 'update'])->name('reviews.update');
     });
 
-    // Chat API Routes
+    // Store API Routes
+    Route::get('/api/store/{id}/qris', [Toko::class, 'getQrisApi']); // Assuming this is defined somewhere or moved
+    Route::get('/api/store/{id}/shipping-rates', function($id) {
+        $toko = \App\Models\Toko::findOrFail($id);
+        return response()->json([
+            'status' => 'success',
+            'data' => $toko->shippingRates()->where('is_active', true)->get()
+        ]);
+    });
     Route::get('/chat/rooms', [ChatController::class, 'getRooms'])->name('chat.rooms');
     Route::get('/chat/messages', [ChatController::class, 'getMessages'])->name('chat.messages');
     Route::post('/chat/send', [ChatController::class, 'sendMessage'])->name('chat.send');
