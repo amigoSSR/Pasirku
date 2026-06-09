@@ -34,13 +34,21 @@ class MenuUtamaController extends Controller
             abort(403, 'Anda tidak memiliki toko.');
         }
 
-        // 1. Stats Cards
-        $totalPendapatan = $toko->Pendapatan_Toko;
+        $last7Days = now()->subDays(7);
 
-        $totalPesanan = Pesanan::where('ID_Toko', $toko->ID_Toko)->count();
+        // 1. Stats Cards (Last 7 Days)
+        $totalPendapatan = Pesanan::where('ID_Toko', $toko->ID_Toko)
+            ->where('Status_Pesanan', Pesanan::STATUS_SELESAI)
+            ->where('created_at', '>=', $last7Days)
+            ->sum('total_harga');
+
+        $totalPesanan = Pesanan::where('ID_Toko', $toko->ID_Toko)
+            ->where('created_at', '>=', $last7Days)
+            ->count();
 
         $pasirTerjual = Pesanan::where('ID_Toko', $toko->ID_Toko)
             ->where('Status_Pesanan', Pesanan::STATUS_SELESAI)
+            ->where('created_at', '>=', $last7Days)
             ->sum('Unit');
 
         $produkAktif = IsiToko::where('ID_Toko', $toko->ID_Toko)->count();
@@ -80,8 +88,9 @@ class MenuUtamaController extends Controller
             ->take(5)
             ->get();
 
-        // 4. Top Products
+        // 4. Top Products (Last 7 Days)
         $topProducts = Pesanan::where('ID_Toko', $toko->ID_Toko)
+            ->where('created_at', '>=', $last7Days)
             ->whereIn('Status_Pesanan', [Pesanan::STATUS_SELESAI, Pesanan::STATUS_DIKIRIM, Pesanan::STATUS_DIPROSES])
             ->select('nama_produk', DB::raw('SUM(Unit) as total_sold'))
             ->groupBy('nama_produk')
@@ -89,11 +98,12 @@ class MenuUtamaController extends Controller
             ->take(4)
             ->get();
 
-        // 5. Store Health
+        // 5. Store Health (Lifetime for health)
+        $totalLifetimeOrders = Pesanan::where('ID_Toko', $toko->ID_Toko)->count();
         $completedOrdersCount = Pesanan::where('ID_Toko', $toko->ID_Toko)
             ->where('Status_Pesanan', Pesanan::STATUS_SELESAI)
             ->count();
-        $completionRate = $totalPesanan > 0 ? round(($completedOrdersCount / $totalPesanan) * 100) : 100;
+        $completionRate = $totalLifetimeOrders > 0 ? round(($completedOrdersCount / $totalLifetimeOrders) * 100) : 100;
         
         $complaintsCount = Pesanan::where('ID_Toko', $toko->ID_Toko)
             ->where('Status_Pesanan', Pesanan::STATUS_DIBATALKAN)
@@ -145,12 +155,21 @@ class MenuUtamaController extends Controller
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
-        $totalPendapatan = $toko->Pendapatan_Toko;
+        $last7Days = now()->subDays(7);
 
-        $totalPesanan = Pesanan::where('ID_Toko', $toko->ID_Toko)->count();
+        // Stats Cards (Last 7 Days)
+        $totalPendapatan = Pesanan::where('ID_Toko', $toko->ID_Toko)
+            ->where('Status_Pesanan', Pesanan::STATUS_SELESAI)
+            ->where('created_at', '>=', $last7Days)
+            ->sum('total_harga');
+
+        $totalPesanan = Pesanan::where('ID_Toko', $toko->ID_Toko)
+            ->where('created_at', '>=', $last7Days)
+            ->count();
 
         $pasirTerjual = Pesanan::where('ID_Toko', $toko->ID_Toko)
             ->where('Status_Pesanan', Pesanan::STATUS_SELESAI)
+            ->where('created_at', '>=', $last7Days)
             ->sum('Unit');
 
         $produkAktif = IsiToko::where('ID_Toko', $toko->ID_Toko)->count();
@@ -160,8 +179,9 @@ class MenuUtamaController extends Controller
             ->where('is_read', false)
             ->count();
 
-        // Top products
+        // Top products (Last 7 Days)
         $topProductsData = Pesanan::where('ID_Toko', $toko->ID_Toko)
+            ->where('created_at', '>=', $last7Days)
             ->whereIn('Status_Pesanan', [Pesanan::STATUS_SELESAI, Pesanan::STATUS_DIKIRIM, Pesanan::STATUS_DIPROSES])
             ->select('nama_produk', DB::raw('SUM(Unit) as total_sold'))
             ->groupBy('nama_produk')

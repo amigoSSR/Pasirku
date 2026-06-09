@@ -22,6 +22,14 @@ class ProfileController extends Controller
     }
 
     /**
+     * Display the user's settings page.
+     */
+    public function settings(Request $request): View
+    {
+        return view('tampilaUntukUser.settings');
+    }
+
+    /**
      * Update the user's profile information.
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse

@@ -60,7 +60,7 @@
           </div>
           <div>
             <h2 class="font-headline font-bold text-base text-on-surface">Informasi Dasar</h2>
-            <p class="text-xs text-on-surface-variant">Nama, kategori, dan deskripsi produk</p>
+            <p class="text-xs text-on-surface-variant">Nama dan deskripsi produk</p>
           </div>
         </div>
 
@@ -78,30 +78,6 @@
                           {{ $errors->has('Nama_Pasir') ? 'border-error bg-error-container/20 text-on-surface' : 'border-outline-variant bg-surface-container-low text-on-surface' }}
                           focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all placeholder:text-on-surface-variant/50">
             @error('Nama_Pasir')
-              <p class="mt-1.5 text-xs text-error flex items-center gap-1">
-                <span class="material-symbols-outlined text-xs">error</span>{{ $message }}
-              </p>
-            @enderror
-          </div>
-
-          {{-- Kategori --}}
-          <div>
-            <label class="block text-sm font-semibold text-on-surface mb-1.5" for="Kategori">
-              Kategori <span class="text-error">*</span>
-            </label>
-            <div class="relative">
-              <select id="Kategori" name="Kategori"
-                      class="w-full appearance-none px-4 py-3 pr-10 rounded-xl border text-sm
-                             {{ $errors->has('Kategori') ? 'border-error bg-error-container/20' : 'border-outline-variant bg-surface-container-low' }}
-                             text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all cursor-pointer">
-                <option value="">— Pilih Kategori —</option>
-                @foreach(['Pasir Cor','Pasir Halus','Pasir Urug','Pasir Bata','Batu Split','Batu Kali','Kerikil','Lainnya'] as $kat)
-                  <option value="{{ $kat }}" {{ old('Kategori') === $kat ? 'selected' : '' }}>{{ $kat }}</option>
-                @endforeach
-              </select>
-              <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none text-[18px]">expand_more</span>
-            </div>
-            @error('Kategori')
               <p class="mt-1.5 text-xs text-error flex items-center gap-1">
                 <span class="material-symbols-outlined text-xs">error</span>{{ $message }}
               </p>

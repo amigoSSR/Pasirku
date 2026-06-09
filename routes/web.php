@@ -63,16 +63,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Bayar Komisi
         Route::get('/bayarKomisi', [\App\Http\Controllers\KomisiController::class, 'index'])->name('bayarKomisi');
         Route::post('/bayarKomisi', [\App\Http\Controllers\KomisiController::class, 'store'])->name('bayarKomisi.store');
+
+        // Store Settings
+        Route::get('/store/settings', [\App\Http\Controllers\StoreProfileController::class, 'showSettings'])->name('store.settings');
     });
     // Admin Routes
     Route::middleware(['role:admin'])->group(function () {
-        Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
-        Route::get('/admin/menuutama', [AdminController::class, 'index'])->name('MenuUtamaAdmin');
-        Route::get('/admin/shop-registration', [AdminController::class, 'shopeRegistry'])->name('ShopeRegistry');
-        Route::get('/admin/user-registry', [ShoopeRegistryController::class, 'index'])->name('UserRegistry');
-        Route::get('/admin/query-toko', [AdminController::class, 'queryToko'])->name('admin.queryToko');
-        Route::get('/admin/profil', [AdminController::class, 'profile'])->name('ProfilAdmin');
-        Route::get('/admin/pesan', fn() => view('tampilanUntukAdmin.PesanAdmin'))->name('PesanAdmin');
+    Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+    Route::get('/admin/menuutama', [AdminController::class, 'index'])->name('MenuUtamaAdmin');
+    Route::get('/admin/shop-registration', [AdminController::class, 'shopeRegistry'])->name('ShopeRegistry');
+    Route::get('/admin/user-registry', [ShoopeRegistryController::class, 'index'])->name('UserRegistry');
+    Route::get('/admin/query-toko', [AdminController::class, 'queryToko'])->name('admin.queryToko');
+    Route::get('/admin/profil', [AdminController::class, 'profile'])->name('ProfilAdmin');
+    Route::get('/admin/settings', [AdminController::class, 'settings'])->name('admin.settings');
+    Route::get('/admin/pesan', fn() => view('tampilanUntukAdmin.PesanAdmin'))->name('PesanAdmin');
         Route::put('/admin/shope-registry/{id}/toggle-status', [AdminController::class, 'toggleStatus'])
             ->name('admin.shope.toggleStatus');
         Route::put('/admin/shope-registry/{id}/update-location', [AdminController::class, 'updateLocation'])
@@ -101,6 +105,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             $toko = \App\Models\Toko::where('ID_Akun', \Illuminate\Support\Facades\Auth::id())->latest('created_at')->first();
             return view('tampilaUntukUser.profil', compact('toko'));
         })->name('Profil');
+        Route::get('/settings', [ProfileController::class, 'settings'])->name('user.settings');
         Route::get('/daftarPenjual', [\App\Http\Controllers\StoreRegistrationController::class, 'showForm'])
             ->name('daftarPenjual')
             ->middleware('check.store.registration');

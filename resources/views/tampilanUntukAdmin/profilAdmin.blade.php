@@ -170,20 +170,17 @@
         <p class="text-sm text-on-surface-variant">Balas pesan dari pengguna platform.</p>
       </a>
 
-      {{-- Logout --}}
-      <form method="POST" action="{{ route('profil.logout') }}" class="contents">
-        @csrf
-        <button type="submit"
-          class="group text-left relative overflow-hidden bg-surface-container-lowest p-6 rounded-2xl shadow-sm border-2 border-error/10 hover:bg-error/5 hover:border-error/20 transition-all duration-300 cursor-pointer">
-          <div class="flex items-center justify-between mb-8">
-            <div class="w-12 h-12 rounded-xl bg-error/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <span class="material-symbols-outlined text-error text-[24px]">logout</span>
-            </div>
+      {{-- Dark Mode Toggle --}}
+      <button @click="darkMode = !darkMode"
+        class="group text-left relative overflow-hidden bg-surface-container-lowest p-6 rounded-2xl shadow-sm border-2 border-primary/10 hover:bg-primary/5 hover:border-primary/20 transition-all duration-300 cursor-pointer">
+        <div class="flex items-center justify-between mb-8">
+          <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <span class="material-symbols-outlined text-primary text-[24px]" x-text="darkMode ? 'light_mode' : 'dark_mode'"></span>
           </div>
-          <h3 class="font-headline font-bold text-on-surface text-lg mb-1">Logout</h3>
-          <p class="text-sm text-on-surface-variant">Akhiri sesi administrator dengan aman.</p>
-        </button>
-      </form>
+        </div>
+        <h3 class="font-headline font-bold text-on-surface text-lg mb-1" x-text="darkMode ? 'Mode Terang' : 'Mode Gelap'"></h3>
+        <p class="text-sm text-on-surface-variant" x-text="darkMode ? 'Ganti ke tampilan terang.' : 'Ganti ke tampilan gelap yang nyaman di mata.'"></p>
+      </button>
 
     </div>
 

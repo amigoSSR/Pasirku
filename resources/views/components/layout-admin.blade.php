@@ -1,6 +1,12 @@
 @props(['title' => 'Admin Panel', 'fullHeight' => false])
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" x-data="{ 
+  darkMode: localStorage.getItem('darkMode') === 'true' 
+}" 
+x-init="
+  $watch('darkMode', val => localStorage.setItem('darkMode', val));
+"
+:class="{ 'dark': darkMode }">
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -22,36 +28,36 @@ tailwind.config = {
   theme: {
     extend: {
       colors: {
-        primary:                    "#944a00",
-        "primary-container":        "#e67e22",
-        "primary-fixed":            "#ffdcc5",
-        "primary-fixed-dim":        "#ffb783",
-        "on-primary":               "#ffffff",
-        "on-primary-container":     "#502600",
-        "on-primary-fixed":         "#301400",
-        secondary:                  "#7a5649",
-        "secondary-container":      "#fdcdbc",
-        "on-secondary":             "#ffffff",
-        "on-secondary-container":   "#795548",
-        tertiary:                   "#00658f",
-        "tertiary-container":       "#00a3e4",
-        "on-tertiary":              "#ffffff",
-        surface:                    "#f8f9fa",
-        "surface-dim":              "#d9dadb",
-        "surface-bright":           "#f8f9fa",
-        "surface-container-lowest": "#ffffff",
-        "surface-container-low":    "#f3f4f5",
-        "surface-container":        "#edeeef",
-        "surface-container-high":   "#e7e8e9",
-        "surface-container-highest":"#e1e3e4",
-        "surface-variant":          "#e1e3e4",
-        "on-surface":               "#191c1d",
-        "on-surface-variant":       "#564337",
-        outline:                    "#897365",
-        "outline-variant":          "#dcc1b1",
-        error:                      "#ba1a1a",
-        "error-container":          "#ffdad6",
-        "on-error":                 "#ffffff",
+        primary:                    "var(--primary)",
+        "primary-container":        "var(--primary-container)",
+        "primary-fixed":            "var(--primary-fixed)",
+        "primary-fixed-dim":        "var(--primary-fixed-dim)",
+        "on-primary":               "var(--on-primary)",
+        "on-primary-container":     "var(--on-primary-container)",
+        "on-primary-fixed":         "var(--on-primary-fixed)",
+        secondary:                  "var(--secondary)",
+        "secondary-container":      "var(--secondary-container)",
+        "on-secondary":             "var(--on-secondary)",
+        "on-secondary-container":   "var(--on-secondary-container)",
+        tertiary:                   "var(--tertiary)",
+        "tertiary-container":       "var(--tertiary-container)",
+        "on-tertiary":              "var(--on-tertiary)",
+        surface:                    "var(--surface)",
+        "surface-dim":              "var(--surface-dim)",
+        "surface-bright":           "var(--surface-bright)",
+        "surface-container-lowest": "var(--surface-container-lowest)",
+        "surface-container-low":    "var(--surface-container-low)",
+        "surface-container":        "var(--surface-container)",
+        "surface-container-high":   "var(--surface-container-high)",
+        "surface-container-highest":"var(--surface-container-highest)",
+        "surface-variant":          "var(--surface-variant)",
+        "on-surface":               "var(--on-surface)",
+        "on-surface-variant":       "var(--on-surface-variant)",
+        outline:                    "var(--outline)",
+        "outline-variant":          "var(--outline-variant)",
+        error:                      "var(--error)",
+        "error-container":          "var(--error-container)",
+        "on-error":                 "var(--on-error)",
       },
       fontFamily: {
         sans:     ["Inter", "sans-serif"],
@@ -70,6 +76,73 @@ tailwind.config = {
 </script>
 
 <style>
+  :root {
+    --primary: #944a00;
+    --primary-container: #e67e22;
+    --primary-fixed: #ffdcc5;
+    --primary-fixed-dim: #ffb783;
+    --on-primary: #ffffff;
+    --on-primary-container: #502600;
+    --on-primary-fixed: #301400;
+    --secondary: #7a5649;
+    --secondary-container: #fdcdbc;
+    --on-secondary: #ffffff;
+    --on-secondary-container: #795548;
+    --tertiary: #00658f;
+    --tertiary-container: #00a3e4;
+    --on-tertiary: #ffffff;
+    --surface: #f8f9fa;
+    --surface-dim: #d9dadb;
+    --surface-bright: #f8f9fa;
+    --surface-container-lowest: #ffffff;
+    --surface-container-low: #f3f4f5;
+    --surface-container: #edeeef;
+    --surface-container-high: #e7e8e9;
+    --surface-container-highest: #e1e3e4;
+    --surface-variant: #e1e3e4;
+    --on-surface: #191c1d;
+    --on-surface-variant: #564337;
+    --outline: #897365;
+    --outline-variant: #dcc1b1;
+    --error: #ba1a1a;
+    --error-container: #ffdad6;
+    --on-error: #ffffff;
+  }
+
+  .dark {
+    --primary: #ffb783;
+    --primary-container: #793800;
+    --primary-fixed: #ffdcc5;
+    --primary-fixed-dim: #ffb783;
+    --on-primary: #502600;
+    --on-primary-container: #ffdcbe;
+    --on-primary-fixed: #301400;
+    --secondary: #e7bdb0;
+    --secondary-container: #5f3f33;
+    --on-secondary: #442a20;
+    --on-secondary-container: #ffdad0;
+    --tertiary: #87ceff;
+    --tertiary-container: #004d6e;
+    --on-tertiary: #00344d;
+    --on-tertiary-container: #cbe6ff;
+    --surface: #0f1416;
+    --surface-dim: #0f1416;
+    --surface-bright: #353a3c;
+    --surface-container-lowest: #0a0f11;
+    --surface-container-low: #171c1e;
+    --surface-container: #1b2022;
+    --surface-container-high: #262b2d;
+    --surface-container-highest: #313638;
+    --surface-variant: #51443a;
+    --on-surface: #e1e3e4;
+    --on-surface-variant: #d5c3b6;
+    --outline: #9d8d82;
+    --outline-variant: #51443a;
+    --error: #ffb4ab;
+    --error-container: #93000a;
+    --on-error: #690005;
+  }
+
   [x-cloak] { display: none !important; }
   *, *::before, *::after { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
@@ -80,7 +153,7 @@ tailwind.config = {
   }
   ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: #dcc1b1; border-radius: 10px; }
+  ::-webkit-scrollbar-thumb { background: var(--outline-variant); border-radius: 10px; }
   ::-webkit-scrollbar-thumb:hover { background: #897365; }
   .stat-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
   .stat-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }

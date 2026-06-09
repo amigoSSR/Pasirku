@@ -85,6 +85,11 @@ class AdminController extends Controller
         return view('tampilanUntukAdmin.profilAdmin');
     }
 
+    public function settings()
+    {
+        return view('tampilanUntukAdmin.settings');
+    }
+
     public function toggleStatus(Request $request, $id)
     {
         if (Auth::user()->Role !== 'admin') {

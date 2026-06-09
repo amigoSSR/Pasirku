@@ -71,7 +71,7 @@
           </div>
         </div>
         <p id="stat-revenue" class="text-2xl font-headline font-bold text-on-surface">Rp {{ number_format($totalPendapatan, 0, ',', '.') }}</p>
-        <p class="text-xs text-on-surface-variant mt-1 font-medium font-sans">Total Pendapatan</p>
+        <p class="text-xs text-on-surface-variant mt-1 font-medium font-sans">Pendapatan (7 Hari Terakhir)</p>
       </div>
 
       {{-- Total Orders Card --}}
@@ -82,7 +82,7 @@
           </div>
         </div>
         <p id="stat-orders" class="text-2xl font-headline font-bold text-on-surface">{{ number_format($totalPesanan, 0, ',', '.') }}</p>
-        <p class="text-xs text-on-surface-variant mt-1 font-medium font-sans">Total Pesanan</p>
+        <p class="text-xs text-on-surface-variant mt-1 font-medium font-sans">Pesanan (7 Hari Terakhir)</p>
       </div>
 
       {{-- Volume Card --}}
@@ -93,7 +93,7 @@
           </div>
         </div>
         <p id="stat-volume" class="text-2xl font-headline font-bold text-on-surface">{{ number_format($pasirTerjual, 0, ',', '.') }} m³</p>
-        <p class="text-xs text-on-surface-variant mt-1 font-medium font-sans">Pasir Terjual</p>
+        <p class="text-xs text-on-surface-variant mt-1 font-medium font-sans">Pasir Terjual (7 Hari Terakhir)</p>
       </div>
 
       {{-- Komisi Admin Card --}}
@@ -267,7 +267,7 @@
 
       {{-- Top Products --}}
       <div class="bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant/30 p-6">
-        <h2 class="font-headline font-bold text-xl text-on-surface mb-5">Produk Terlaris</h2>
+        <h2 class="font-headline font-bold text-xl text-on-surface mb-5">Produk Terlaris (7 Hari Terakhir)</h2>
         <div id="top-products-list" class="space-y-4">
           @php
           $topMax = $topProducts->first()->total_sold ?? 1;
@@ -368,7 +368,6 @@
               if (revenueEl) revenueEl.textContent = data.total_pendapatan;
               if (ordersEl) ordersEl.textContent = data.total_pesanan;
               if (volumeEl) volumeEl.textContent = data.pasir_terjual;
-              if (productsEl) productsEl.textContent = data.produk_aktif;
               if (komisiEl) komisiEl.textContent = data.total_komisi_admin;
 
               // Update recent orders

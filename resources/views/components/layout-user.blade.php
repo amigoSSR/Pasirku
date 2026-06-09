@@ -1,6 +1,14 @@
 @props(['title' => 'Customer Portal', 'fullHeight' => false])
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" x-data="{ 
+  sidebarMinimized: localStorage.getItem('sidebarMinimized') === 'true',
+  darkMode: localStorage.getItem('darkMode') === 'true' 
+}" 
+x-init="
+  $watch('sidebarMinimized', val => localStorage.setItem('sidebarMinimized', val));
+  $watch('darkMode', val => localStorage.setItem('darkMode', val));
+"
+:class="{ 'dark': darkMode }">
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -25,41 +33,41 @@ tailwind.config = {
   theme: {
     extend: {
       colors: {
-        primary:                    "#944a00",
-        "primary-container":        "#e67e22",
-        "primary-fixed":            "#ffdcc5",
-        "primary-fixed-dim":        "#ffb783",
-        "on-primary":               "#ffffff",
-        "on-primary-container":     "#502600",
-        "on-primary-fixed":         "#301400",
-        secondary:                  "#7a5649",
-        "secondary-container":      "#fdcdbc",
-        "on-secondary":             "#ffffff",
-        "on-secondary-container":   "#795548",
-        tertiary:                   "#00658f",
-        "tertiary-container":       "#00a3e4",
-        "tertiary-fixed":           "#c7e7ff",
-        "on-tertiary":              "#ffffff",
-        "on-tertiary-container":    "#00354d",
-        surface:                    "#f8f9fa",
-        "surface-dim":              "#d9dadb",
-        "surface-bright":           "#f8f9fa",
-        "surface-container-lowest": "#ffffff",
-        "surface-container-low":    "#f3f4f5",
-        "surface-container":        "#edeeef",
-        "surface-container-high":   "#e7e8e9",
-        "surface-container-highest":"#e1e3e4",
-        "surface-variant":          "#e1e3e4",
-        "on-surface":               "#191c1d",
-        "on-surface-variant":       "#564337",
-        outline:                    "#897365",
-        "outline-variant":          "#dcc1b1",
-        "inverse-surface":          "#2e3132",
-        "inverse-on-surface":       "#f0f1f2",
-        "inverse-primary":          "#ffb783",
-        error:                      "#ba1a1a",
-        "error-container":          "#ffdad6",
-        "on-error":                 "#ffffff",
+        primary:                    "var(--primary)",
+        "primary-container":        "var(--primary-container)",
+        "primary-fixed":            "var(--primary-fixed)",
+        "primary-fixed-dim":        "var(--primary-fixed-dim)",
+        "on-primary":               "var(--on-primary)",
+        "on-primary-container":     "var(--on-primary-container)",
+        "on-primary-fixed":         "var(--on-primary-fixed)",
+        secondary:                  "var(--secondary)",
+        "secondary-container":      "var(--secondary-container)",
+        "on-secondary":             "var(--on-secondary)",
+        "on-secondary-container":   "var(--on-secondary-container)",
+        tertiary:                   "var(--tertiary)",
+        "tertiary-container":       "var(--tertiary-container)",
+        "tertiary-fixed":           "var(--tertiary-fixed)",
+        "on-tertiary":              "var(--on-tertiary)",
+        "on-tertiary-container":    "var(--on-tertiary-container)",
+        surface:                    "var(--surface)",
+        "surface-dim":              "var(--surface-dim)",
+        "surface-bright":           "var(--surface-bright)",
+        "surface-container-lowest": "var(--surface-container-lowest)",
+        "surface-container-low":    "var(--surface-container-low)",
+        "surface-container":        "var(--surface-container)",
+        "surface-container-high":   "var(--surface-container-high)",
+        "surface-container-highest":"var(--surface-container-highest)",
+        "surface-variant":          "var(--surface-variant)",
+        "on-surface":               "var(--on-surface)",
+        "on-surface-variant":       "var(--on-surface-variant)",
+        outline:                    "var(--outline)",
+        "outline-variant":          "var(--outline-variant)",
+        "inverse-surface":          "var(--inverse-surface)",
+        "inverse-on-surface":       "var(--inverse-on-surface)",
+        "inverse-primary":          "var(--inverse-primary)",
+        error:                      "var(--error)",
+        "error-container":          "var(--error-container)",
+        "on-error":                 "var(--on-error)",
       },
       fontFamily: {
         sans:     ["Inter", "sans-serif"],
@@ -78,6 +86,81 @@ tailwind.config = {
 </script>
 
 <style>
+  :root {
+    --primary: #944a00;
+    --primary-container: #e67e22;
+    --primary-fixed: #ffdcc5;
+    --primary-fixed-dim: #ffb783;
+    --on-primary: #ffffff;
+    --on-primary-container: #502600;
+    --on-primary-fixed: #301400;
+    --secondary: #7a5649;
+    --secondary-container: #fdcdbc;
+    --on-secondary: #ffffff;
+    --on-secondary-container: #795548;
+    --tertiary: #00658f;
+    --tertiary-container: #00a3e4;
+    --tertiary-fixed: #c7e7ff;
+    --on-tertiary: #ffffff;
+    --on-tertiary-container: #00354d;
+    --surface: #f8f9fa;
+    --surface-dim: #d9dadb;
+    --surface-bright: #f8f9fa;
+    --surface-container-lowest: #ffffff;
+    --surface-container-low: #f3f4f5;
+    --surface-container: #edeeef;
+    --surface-container-high: #e7e8e9;
+    --surface-container-highest: #e1e3e4;
+    --surface-variant: #e1e3e4;
+    --on-surface: #191c1d;
+    --on-surface-variant: #564337;
+    --outline: #897365;
+    --outline-variant: #dcc1b1;
+    --inverse-surface: #2e3132;
+    --inverse-on-surface: #f0f1f2;
+    --inverse-primary: #ffb783;
+    --error: #ba1a1a;
+    --error-container: #ffdad6;
+    --on-error: #ffffff;
+  }
+
+  .dark {
+    --primary: #ffb783;
+    --primary-container: #753400;
+    --primary-fixed: #ffdcc5;
+    --primary-fixed-dim: #ffb783;
+    --on-primary: #502400;
+    --on-primary-container: #ffdcc5;
+    --on-primary-fixed: #301400;
+    --secondary: #e7bdb0;
+    --secondary-container: #5d3f33;
+    --on-secondary: #442a22;
+    --on-secondary-container: #fdcdbc;
+    --tertiary: #86cfff;
+    --tertiary-container: #004d6d;
+    --on-tertiary: #00344b;
+    --on-tertiary-container: #c7e7ff;
+    --surface: #09090b;
+    --surface-dim: #121415;
+    --surface-bright: #343a3b;
+    --surface-container-lowest: #18181b;
+    --surface-container-low: #27272a;
+    --surface-container: #3f3f46;
+    --surface-container-high: #52525b;
+    --surface-container-highest: #71717a;
+    --surface-variant: #52433d;
+    --on-surface: #f4f4f5;
+    --on-surface-variant: #a1a1aa;
+    --outline: #9e8d84;
+    --outline-variant: #3f3f46;
+    --inverse-surface: #e1e3e4;
+    --inverse-on-surface: #191c1d;
+    --inverse-primary: #944a00;
+    --error: #ffb4ab;
+    --error-container: #93000a;
+    --on-error: #690005;
+  }
+
   [x-cloak] { display: none !important; }
   *, *::before, *::after { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
@@ -90,7 +173,7 @@ tailwind.config = {
 
   ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: #dcc1b1; border-radius: 10px; }
+  ::-webkit-scrollbar-thumb { background: var(--outline-variant); border-radius: 10px; }
   ::-webkit-scrollbar-thumb:hover { background: #897365; }
 
   .stat-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
@@ -103,7 +186,7 @@ tailwind.config = {
 {{-- Extra head content injected per-page --}}
 @stack('head')
 </head>
-<body class="bg-surface text-on-surface min-h-screen">
+<body class="bg-surface text-on-surface min-h-screen dark:bg-zinc-950 dark:text-zinc-100 transition-colors duration-300">
 
   {{-- ===== TOP BAR ===== --}}
   @include('tampilaUntukUser.topbarUser')
@@ -114,7 +197,8 @@ tailwind.config = {
     <x-sidebar />
 
     {{-- ===== MAIN CONTENT ===== --}}
-    <main class="flex-1 md:ml-64 bg-surface min-h-screen {{ $fullHeight ?? false ? 'overflow-hidden h-[calc(100vh-60px)] flex flex-col' : 'overflow-y-auto' }}">
+    <main class="flex-1 transition-all duration-300 bg-surface min-h-screen {{ $fullHeight ?? false ? 'overflow-hidden h-[calc(100vh-60px)] flex flex-col' : 'overflow-y-auto' }}"
+      :class="sidebarMinimized ? 'md:ml-20' : 'md:ml-64'">
 
       {{-- Breadcrumb + Page Header (optional) --}}
       @isset($header)

@@ -23,6 +23,19 @@ class StoreProfileController extends Controller
     }
 
     /**
+     * Tampilkan halaman pengaturan toko.
+     */
+    public function showSettings()
+    {
+        $toko = Toko::where('ID_Akun', Auth::id())->first();
+        if (!$toko) {
+            abort(403, 'Anda tidak memiliki akses toko.');
+        }
+
+        return view('tampilanPenjualStore.settings', compact('toko'));
+    }
+
+    /**
      * Update data alamat & koordinat peta toko.
      */
     public function updateAddress(Request $request)

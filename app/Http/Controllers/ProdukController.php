@@ -36,7 +36,6 @@ class ProdukController extends Controller
         IsiToko::create([
             'ID_Toko'            => $toko->ID_Toko,
             'Nama_Pasir'         => $request->Nama_Pasir,
-            'Kategori'           => $request->Kategori,
             'Harga'              => $request->Harga,
             'Ongkir_PickUp'      => $request->Ongkir_PickUp,
             'Ongkir_Truck'       => $request->Ongkir_Truck,

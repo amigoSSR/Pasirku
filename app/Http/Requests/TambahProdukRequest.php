@@ -15,7 +15,6 @@ class TambahProdukRequest extends FormRequest
     {
         return [
             'Nama_Pasir'         => ['required', 'string', 'max:100'],
-            'Kategori'           => ['required', 'string', 'max:50'],
             'Harga'              => ['required', 'integer', 'min:0'],
             'Ongkir_PickUp'      => ['required', 'integer', 'min:0'],
             'Ongkir_Truck'       => ['required', 'integer', 'min:0'],
@@ -35,7 +34,6 @@ class TambahProdukRequest extends FormRequest
     {
         return [
             'Nama_Pasir.required'         => 'Nama pasir wajib diisi.',
-            'Kategori.required'           => 'Kategori wajib dipilih.',
             'Harga.required'              => 'Harga pasir wajib diisi.',
             'Harga.integer'               => 'Harga pasir harus berupa angka.',
             'Harga.min'                   => 'Harga pasir tidak boleh negatif.',
@@ -53,7 +51,7 @@ class TambahProdukRequest extends FormRequest
             'Kubikasi_Truck.min'          => 'Kapasitas Truck minimal 0.1 m³.',
             'Stock_PickUp.required'       => 'Stok Pick Up wajib diisi.',
             'Stock_PickUp.integer'        => 'Stok Pick Up harus berupa angka.',
-            'Stock_Truck.required'        => 'Stok Truck wajib diisi.',
+            'Stock_Truck.required'       => 'Stok Truck wajib diisi.',
             'Stock_Truck.integer'         => 'Stok Truck harus berupa angka.',
             'Satuan.required'             => 'Satuan wajib diisi.',
             'Gambar.image'                => 'File harus berupa gambar.',
