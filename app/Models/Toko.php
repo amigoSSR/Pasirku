@@ -102,7 +102,6 @@ class Toko extends Model
         return $this->hasMany(IsiToko::class, 'ID_Toko', 'ID_Toko');
     }
 
-<<<<<<< HEAD
     public function pesanan()
     {
         return $this->hasMany(Pesanan::class, 'ID_Toko', 'ID_Toko');
@@ -111,7 +110,8 @@ class Toko extends Model
     public function pembayaranKomisi()
     {
         return $this->hasMany(PembayaranKomisi::class, 'ID_Toko', 'ID_Toko');
-=======
+    }
+
     /**
      * Relasi ke review (reviews).
      */
@@ -153,6 +153,5 @@ class Toko extends Model
         }
 
         return $distribution;
->>>>>>> 578b9dbd19c4399728d84d6d8c84ffbf2bab52d1
     }
 }

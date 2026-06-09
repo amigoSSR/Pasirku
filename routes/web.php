@@ -58,17 +58,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/stokPasir/data', [StokController::class, 'data'])->name('stokPasir.data');
         Route::post('/stokPasir/tambah', [StokController::class, 'tambahStok'])->name('stokPasir.tambah');
         Route::post('/stokPasir/kurangi', [StokController::class, 'kurangiStok'])->name('stokPasir.kurangi');
-<<<<<<< HEAD
+        Route::post('/stokPasir/ongkir', [StokController::class, 'updateOngkir'])->name('stokPasir.updateOngkir');
 
         // Bayar Komisi
         Route::get('/bayarKomisi', [\App\Http\Controllers\KomisiController::class, 'index'])->name('bayarKomisi');
         Route::post('/bayarKomisi', [\App\Http\Controllers\KomisiController::class, 'store'])->name('bayarKomisi.store');
     });
-
-=======
-        Route::post('/stokPasir/ongkir', [StokController::class, 'updateOngkir'])->name('stokPasir.updateOngkir');
-        });
->>>>>>> 578b9dbd19c4399728d84d6d8c84ffbf2bab52d1
     // Admin Routes
     Route::middleware(['role:admin'])->group(function () {
         Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
