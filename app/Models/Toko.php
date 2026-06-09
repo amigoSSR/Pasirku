@@ -76,6 +76,14 @@ class Toko extends Model
     }
 
     /**
+     * Relasi ke tarif ongkir (shipping_rates).
+     */
+    public function shippingRates()
+    {
+        return $this->hasMany(ShippingRate::class, 'ID_Toko', 'ID_Toko');
+    }
+
+    /**
      * Get average rating.
      */
     public function averageRating()

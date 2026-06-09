@@ -264,8 +264,8 @@
             </div>
           </div>
 
-          {{-- Pricing --}}
-          <div class="p-4 flex flex-col flex-1 gap-3">
+          {{-- Pricing Grid --}}
+          <div class="p-4 grid grid-cols-1 sm:grid-cols-2 gap-4 flex-1">
 
             {{-- Pick Up --}}
             <div class="bg-surface-container-low border border-outline-variant/30 rounded-xl p-3 flex flex-col gap-2">
@@ -273,53 +273,43 @@
                 <div class="w-7 h-7 bg-tertiary/10 rounded-lg flex items-center justify-center">
                   <span class="material-symbols-outlined text-[16px] text-tertiary">directions_car</span>
                 </div>
-                <span class="text-xs font-bold text-tertiary uppercase tracking-wider">Mobil Pick Up</span>
+                <span class="text-[10px] font-bold text-tertiary uppercase tracking-wider">Pick Up</span>
               </div>
-              <div class="flex items-end justify-between">
-                <div>
-                  <div class="text-[10px] text-on-surface-variant uppercase font-semibold">Harga / unit</div>
-                  <div class="text-lg font-headline font-extrabold text-on-surface tracking-tight">
-                    Rp {{ number_format($produk->Harga_PickUp, 0, ',', '.') }}
-                  </div>
+              <div class="flex flex-col gap-0.5">
+                <div class="text-[9px] text-on-surface-variant uppercase font-semibold">Harga</div>
+                <div class="text-base font-headline font-extrabold text-on-surface tracking-tight">
+                  Rp {{ number_format($produk->Harga_PickUp, 0, ',', '.') }}
                 </div>
+              </div>
+              
+              <div class="flex items-center justify-between mt-auto pt-1">
                 @if($produk->Stock_PickUp === 0)
-                  <div class="flex items-center gap-1 bg-rose-50 text-rose-700 border border-rose-200 py-1 px-2.5 rounded-full font-bold text-xs">
-                    <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
-                    <span>Habis</span>
-                  </div>
-                @elseif($produk->Stock_PickUp <= 10)
-                  <div class="flex items-center gap-1 bg-amber-50 text-amber-700 border border-amber-200 py-1 px-2.5 rounded-full font-bold text-xs">
-                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
-                    <span>Sisa {{ $produk->Stock_PickUp }}</span>
-                  </div>
+                  <span class="text-[9px] font-bold text-rose-600 uppercase">Habis</span>
                 @else
-                  <div class="flex items-center gap-1 bg-emerald-50 text-emerald-700 border border-emerald-200 py-1 px-2.5 rounded-full font-bold text-xs">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                    <span>Sisa {{ $produk->Stock_PickUp }}</span>
-                  </div>
+                  <span class="text-[9px] font-bold text-emerald-600 uppercase">Stok {{ $produk->Stock_PickUp }}</span>
                 @endif
               </div>
-              <div class="relative mt-1 min-h-[38px]">
+
+              <div class="relative mt-1 min-h-[34px]">
                 @if($produk->Stock_PickUp > 0)
                 <button
                   id="btn-add-pickup-{{ $produk->ID_Isi_Toko }}"
-                  onclick="addToCart('{{ $produk->ID_Isi_Toko }}', 'pickup', {{ $produk->Harga_PickUp }}, {{ $produk->Stock_PickUp }}, '{{ $produk->Nama_Pasir }}')"
-                  class="qty-control w-full bg-tertiary text-on-tertiary py-2 rounded-xl text-sm font-semibold hover:bg-tertiary-container transition-colors flex items-center justify-center gap-1.5 active:scale-95 duration-200">
-                  <span class="material-symbols-outlined text-[16px]">add_shopping_cart</span>
-                  Pesan Pick Up
+                  onclick="addToCart('{{ $produk->ID_Isi_Toko }}', 'pickup', {{ $produk->Harga_PickUp }}, {{ $produk->Stock_PickUp }}, '{{ $produk->Nama_Pasir }}', {{ $produk->Ongkir_PickUp ?? 0 }})"
+                  class="qty-control w-full bg-tertiary text-on-tertiary py-1.5 rounded-lg text-xs font-semibold hover:bg-tertiary-container transition-colors flex items-center justify-center gap-1 active:scale-95 duration-200">
+                  <span class="material-symbols-outlined text-[14px]">add_shopping_cart</span>
+                  Pesan
                 </button>
                 <div id="qty-pickup-{{ $produk->ID_Isi_Toko }}"
-                     class="qty-control hidden w-full flex items-center justify-between bg-tertiary text-on-tertiary rounded-xl overflow-hidden">
-                  <button onclick="changeQty('{{ $produk->ID_Isi_Toko }}', 'pickup', -1, {{ $produk->Stock_PickUp }}, '{{ $produk->Nama_Pasir }}', {{ $produk->Harga_PickUp }})"
-                          class="px-4 py-2 text-lg font-black hover:bg-on-tertiary/10 transition-colors active:bg-on-tertiary/20 select-none">−</button>
-                  <span id="qty-num-pickup-{{ $produk->ID_Isi_Toko }}" class="font-bold text-base">1</span>
-                  <button onclick="changeQty('{{ $produk->ID_Isi_Toko }}', 'pickup', +1, {{ $produk->Stock_PickUp }}, '{{ $produk->Nama_Pasir }}', {{ $produk->Harga_PickUp }})"
-                          class="px-4 py-2 text-lg font-black hover:bg-on-tertiary/10 transition-colors active:bg-on-tertiary/20 select-none">+</button>
+                     class="qty-control hidden w-full flex items-center justify-between bg-tertiary text-on-tertiary rounded-lg overflow-hidden">
+                  <button onclick="changeQty('{{ $produk->ID_Isi_Toko }}', 'pickup', -1, {{ $produk->Stock_PickUp }}, '{{ $produk->Nama_Pasir }}', {{ $produk->Harga_PickUp }}, {{ $produk->Ongkir_PickUp ?? 0 }})"
+                          class="px-2.5 py-1.5 text-base font-black hover:bg-on-tertiary/10 transition-colors active:bg-on-tertiary/20 select-none">−</button>
+                  <span id="qty-num-pickup-{{ $produk->ID_Isi_Toko }}" class="font-bold text-xs">1</span>
+                  <button onclick="changeQty('{{ $produk->ID_Isi_Toko }}', 'pickup', +1, {{ $produk->Stock_PickUp }}, '{{ $produk->Nama_Pasir }}', {{ $produk->Harga_PickUp }}, {{ $produk->Ongkir_PickUp ?? 0 }})"
+                          class="px-2.5 py-1.5 text-base font-black hover:bg-on-tertiary/10 transition-colors active:bg-on-tertiary/20 select-none">+</button>
                 </div>
                 @else
-                <button disabled class="w-full bg-surface-container text-on-surface-variant py-2 rounded-xl text-sm font-semibold flex items-center justify-center gap-1.5 opacity-60 cursor-not-allowed">
-                  <span class="material-symbols-outlined text-[16px]">remove_shopping_cart</span>
-                  Stok Habis
+                <button disabled class="w-full bg-surface-container text-on-surface-variant py-1.5 rounded-lg text-xs font-semibold flex items-center justify-center opacity-60 cursor-not-allowed">
+                  Habis
                 </button>
                 @endif
               </div>
@@ -331,53 +321,43 @@
                 <div class="w-7 h-7 bg-primary/10 rounded-lg flex items-center justify-center">
                   <span class="material-symbols-outlined text-[16px] text-primary">local_shipping</span>
                 </div>
-                <span class="text-xs font-bold text-primary uppercase tracking-wider">Truk</span>
+                <span class="text-[10px] font-bold text-primary uppercase tracking-wider">Truk</span>
               </div>
-              <div class="flex items-end justify-between">
-                <div>
-                  <div class="text-[10px] text-on-surface-variant uppercase font-semibold">Harga / unit</div>
-                  <div class="text-lg font-headline font-extrabold text-on-surface tracking-tight">
-                    Rp {{ number_format($produk->Harga_Truck, 0, ',', '.') }}
-                  </div>
+              <div class="flex flex-col gap-0.5">
+                <div class="text-[9px] text-on-surface-variant uppercase font-semibold">Harga</div>
+                <div class="text-base font-headline font-extrabold text-on-surface tracking-tight">
+                  Rp {{ number_format($produk->Harga_Truck, 0, ',', '.') }}
                 </div>
+              </div>
+
+              <div class="flex items-center justify-between mt-auto pt-1">
                 @if($produk->Stock_Truck === 0)
-                  <div class="flex items-center gap-1 bg-rose-50 text-rose-700 border border-rose-200 py-1 px-2.5 rounded-full font-bold text-xs">
-                    <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
-                    <span>Habis</span>
-                  </div>
-                @elseif($produk->Stock_Truck <= 10)
-                  <div class="flex items-center gap-1 bg-amber-50 text-amber-700 border border-amber-200 py-1 px-2.5 rounded-full font-bold text-xs">
-                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
-                    <span>Sisa {{ $produk->Stock_Truck }}</span>
-                  </div>
+                  <span class="text-[9px] font-bold text-rose-600 uppercase">Habis</span>
                 @else
-                  <div class="flex items-center gap-1 bg-emerald-50 text-emerald-700 border border-emerald-200 py-1 px-2.5 rounded-full font-bold text-xs">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                    <span>Sisa {{ $produk->Stock_Truck }}</span>
-                  </div>
+                  <span class="text-[9px] font-bold text-emerald-600 uppercase">Stok {{ $produk->Stock_Truck }}</span>
                 @endif
               </div>
-              <div class="relative mt-1 min-h-[38px]">
+
+              <div class="relative mt-1 min-h-[34px]">
                 @if($produk->Stock_Truck > 0)
                 <button
                   id="btn-add-truck-{{ $produk->ID_Isi_Toko }}"
-                  onclick="addToCart('{{ $produk->ID_Isi_Toko }}', 'truck', {{ $produk->Harga_Truck }}, {{ $produk->Stock_Truck }}, '{{ $produk->Nama_Pasir }}')"
-                  class="qty-control w-full bg-primary text-on-primary py-2 rounded-xl text-sm font-semibold hover:bg-primary-container transition-colors flex items-center justify-center gap-1.5 active:scale-95 duration-200">
-                  <span class="material-symbols-outlined text-[16px]">add_shopping_cart</span>
-                  Pesan Truk
+                  onclick="addToCart('{{ $produk->ID_Isi_Toko }}', 'truck', {{ $produk->Harga_Truck }}, {{ $produk->Stock_Truck }}, '{{ $produk->Nama_Pasir }}', {{ $produk->Ongkir_Truck ?? 0 }})"
+                  class="qty-control w-full bg-primary text-on-primary py-1.5 rounded-lg text-xs font-semibold hover:bg-primary-container transition-colors flex items-center justify-center gap-1 active:scale-95 duration-200">
+                  <span class="material-symbols-outlined text-[14px]">add_shopping_cart</span>
+                  Pesan
                 </button>
                 <div id="qty-truck-{{ $produk->ID_Isi_Toko }}"
-                     class="qty-control hidden w-full flex items-center justify-between bg-primary text-on-primary rounded-xl overflow-hidden">
-                  <button onclick="changeQty('{{ $produk->ID_Isi_Toko }}', 'truck', -1, {{ $produk->Stock_Truck }}, '{{ $produk->Nama_Pasir }}', {{ $produk->Harga_Truck }})"
-                          class="px-4 py-2 text-lg font-black hover:bg-on-primary/10 transition-colors active:bg-on-primary/20 select-none">−</button>
-                  <span id="qty-num-truck-{{ $produk->ID_Isi_Toko }}" class="font-bold text-base">1</span>
-                  <button onclick="changeQty('{{ $produk->ID_Isi_Toko }}', 'truck', +1, {{ $produk->Stock_Truck }}, '{{ $produk->Nama_Pasir }}', {{ $produk->Harga_Truck }})"
-                          class="px-4 py-2 text-lg font-black hover:bg-on-primary/10 transition-colors active:bg-on-primary/20 select-none">+</button>
+                     class="qty-control hidden w-full flex items-center justify-between bg-primary text-on-primary rounded-lg overflow-hidden">
+                  <button onclick="changeQty('{{ $produk->ID_Isi_Toko }}', 'truck', -1, {{ $produk->Stock_Truck }}, '{{ $produk->Nama_Pasir }}', {{ $produk->Harga_Truck }}, {{ $produk->Ongkir_Truck ?? 0 }})"
+                          class="px-2.5 py-1.5 text-base font-black hover:bg-on-primary/10 transition-colors active:bg-on-primary/20 select-none">−</button>
+                  <span id="qty-num-truck-{{ $produk->ID_Isi_Toko }}" class="font-bold text-xs">1</span>
+                  <button onclick="changeQty('{{ $produk->ID_Isi_Toko }}', 'truck', +1, {{ $produk->Stock_Truck }}, '{{ $produk->Nama_Pasir }}', {{ $produk->Harga_Truck }}, {{ $produk->Ongkir_Truck ?? 0 }})"
+                          class="px-2.5 py-1.5 text-base font-black hover:bg-on-primary/10 transition-colors active:bg-on-primary/20 select-none">+</button>
                 </div>
                 @else
-                <button disabled class="w-full bg-surface-container text-on-surface-variant py-2 rounded-xl text-sm font-semibold flex items-center justify-center gap-1.5 opacity-60 cursor-not-allowed">
-                  <span class="material-symbols-outlined text-[16px]">remove_shopping_cart</span>
-                  Stok Habis
+                <button disabled class="w-full bg-surface-container text-on-surface-variant py-1.5 rounded-lg text-xs font-semibold flex items-center justify-center opacity-60 cursor-not-allowed">
+                  Habis
                 </button>
                 @endif
               </div>
@@ -476,9 +456,9 @@
       if(total>0){if(fab && (fab.style.display==='none'||fab.style.display==='')){fab.style.display='flex';if(ring)ring.style.display='block';fab.classList.remove('pop-in');void fab.offsetWidth;fab.classList.add('pop-in');}}else{if(fab)fab.style.display='none';if(ring)ring.style.display='none';}
     }
 
-    function addToCart(produkId,type,harga,stock,namaPasir){
+    function addToCart(produkId,type,harga,stock,namaPasir,ongkir){
       const key=produkId+'_'+type;
-      cartItems[key]={qty:1,harga,stock,namaPasir,type};
+      cartItems[key]={qty:1,harga,stock,namaPasir,type,ongkir};
       const btn = document.getElementById('btn-add-'+type+'-'+produkId);
       const qtyDiv = document.getElementById('qty-'+type+'-'+produkId);
       if (btn) btn.classList.add('hidden');
@@ -489,9 +469,9 @@
       updateCartUI();
     }
 
-    function changeQty(produkId,type,delta,stock,namaPasir,harga){
+    function changeQty(produkId,type,delta,stock,namaPasir,harga,ongkir){
       const key=produkId+'_'+type;
-      if(!cartItems[key])cartItems[key]={qty:0,harga,stock,namaPasir,type};
+      if(!cartItems[key])cartItems[key]={qty:0,harga,stock,namaPasir,type,ongkir};
       let newQty=cartItems[key].qty+delta;
       if(newQty>stock)newQty=stock;
       if(newQty<=0){
@@ -519,6 +499,7 @@
         type:v.type,
         qty:v.qty,
         harga:v.harga,
+        ongkir:v.ongkir,
         tokoId: TOKO_DATA.id,
         tokoNama: TOKO_DATA.nama,
         tokoLokasi: TOKO_DATA.lokasi,

@@ -201,6 +201,40 @@ tailwind.config = {
   </div>
   @endif
 
+  {{-- Hapus item yang sudah dipesan dari keranjang (hanya item yang di-order, bukan semua) --}}
+  @if(session('clear_ordered_items'))
+  <script>
+    (function() {
+      try {
+        const orderedKeys = @json(json_decode(session('clear_ordered_items'), true));
+        if (Array.isArray(orderedKeys) && orderedKeys.length > 0) {
+          const cartRaw = sessionStorage.getItem('pasirku_cart');
+          if (cartRaw) {
+            let cart = JSON.parse(cartRaw);
+            const beforeCount = cart.length;
+            cart = cart.filter(item => !orderedKeys.includes(item.key));
+            if (cart.length === 0) {
+              sessionStorage.removeItem('pasirku_cart');
+              sessionStorage.removeItem('pasirku_selected_store');
+            } else {
+              sessionStorage.setItem('pasirku_cart', JSON.stringify(cart));
+              // Jika toko yang dipilih sudah tidak punya item, reset pilihan toko
+              const selectedStore = sessionStorage.getItem('pasirku_selected_store');
+              if (selectedStore) {
+                const hasItemsInStore = cart.some(item => String(item.tokoId) === String(selectedStore));
+                if (!hasItemsInStore) {
+                  sessionStorage.removeItem('pasirku_selected_store');
+                }
+              }
+            }
+            console.log(`[PasirKu] Keranjang dibersihkan: ${beforeCount - cart.length} item dipesan dihapus, ${cart.length} item tersisa.`);
+          }
+        }
+      } catch(e) { console.warn('[PasirKu] Gagal membersihkan keranjang:', e); }
+    })();
+  </script>
+  @endif
+
   {{-- Scripts injected per-page --}}
   @stack('scripts')
   @stack('leaflet-js')

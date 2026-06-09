@@ -74,11 +74,14 @@ class StokController extends Controller
                 'id'                 => $p->ID_Isi_Toko,
                 'nama_pasir'         => $p->Nama_Pasir,
                 'kategori'           => $p->Kategori ?? '-',
-                'stock_pickup'       => $p->Stock_PickUp,
-                'stock_truck'        => $p->Stock_Truck,
-                'total_stok'         => $totalStok,
-                'stok_masuk'         => $stokMasuk,
-                'stok_keluar'        => $stokKeluar,
+                'stock_pickup'       => (int) $p->Stock_PickUp,
+                'stock_truck'        => (int) $p->Stock_Truck,
+                'ongkir_pickup'      => (int) ($p->Ongkir_PickUp ?? 0),
+                'ongkir_truck'       => (int) ($p->Ongkir_Truck ?? 0),
+                'harga'              => (int) ($p->Harga ?? 0),
+                'total_stok'         => (int) $totalStok,
+                'stok_masuk'         => (int) $stokMasuk,
+                'stok_keluar'        => (int) $stokKeluar,
                 'satuan'             => $p->Satuan ?? 'm³',
                 'status_produk'      => $p->Status_Produk ?? 'tersedia',
                 'status_stok'        => $statusStok,
@@ -204,5 +207,41 @@ class StokController extends Controller
         });
 
         return response()->json(['success' => true, 'message' => 'Stok berhasil dikurangi.']);
+    }
+
+    /**
+     * Update ongkir (pickup / truck).
+     */
+    public function updateOngkir(Request $request)
+    {
+        $request->validate([
+            'id_produk'  => ['required', 'integer', 'exists:isi_toko,ID_Isi_Toko'],
+            'jenis'      => ['required', 'in:pickup,truck'],
+            'jumlah'     => ['required', 'integer', 'min:0', 'max:9999999'],
+        ]);
+
+        $toko   = $this->getToko();
+        $produk = IsiToko::where('ID_Isi_Toko', $request->id_produk)
+            ->where('ID_Toko', $toko->ID_Toko)
+            ->firstOrFail();
+
+        $oldOngkir = $request->jenis === 'pickup' ? $produk->Ongkir_PickUp : $produk->Ongkir_Truck;
+
+        DB::transaction(function () use ($produk, $request, $oldOngkir) {
+            if ($request->jenis === 'pickup') {
+                $produk->update(['Ongkir_PickUp' => $request->jumlah]);
+            } else {
+                $produk->update(['Ongkir_Truck' => $request->jumlah]);
+            }
+
+            \App\Models\LogOngkir::create([
+                'ID_Isi_Toko' => $produk->ID_Isi_Toko,
+                'ongkir_lama' => $oldOngkir,
+                'ongkir_baru' => $request->jumlah,
+                'jenis'       => $request->jenis,
+            ]);
+        });
+
+        return response()->json(['success' => true, 'message' => 'Ongkir berhasil diperbarui.']);
     }
 }

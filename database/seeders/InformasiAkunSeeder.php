@@ -51,7 +51,7 @@ class InformasiAkunSeeder extends Seeder
                 'Username'       => 'joko_widodo',
                 'Nomer_Telepon'  => '6285555555555',
                 'Email'          => 'joko@example.com',
-                'Password'       => Hash::make('password789'),
+                'Password'       => Hash::make('h'),
                 'Role'           => 'user',
                 'created_at'     => now(),
                 'updated_at'     => now(),

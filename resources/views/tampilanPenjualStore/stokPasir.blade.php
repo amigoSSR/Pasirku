@@ -114,8 +114,11 @@
           <tr class="bg-surface-container-low text-on-surface-variant text-xs font-semibold uppercase tracking-wide">
             <th class="px-5 py-3 text-left">Produk</th>
             <th class="px-5 py-3 text-left">Kategori</th>
+            <th class="px-5 py-3 text-center">Harga</th>
             <th class="px-5 py-3 text-center">Stok PickUp</th>
+            <th class="px-5 py-3 text-center">Ongkir PickUp</th>
             <th class="px-5 py-3 text-center">Stok Truck</th>
+            <th class="px-5 py-3 text-center">Ongkir Truck</th>
             <th class="px-5 py-3 text-center">Masuk</th>
             <th class="px-5 py-3 text-center">Keluar</th>
             <th class="px-5 py-3 text-center">Status</th>
@@ -206,6 +209,7 @@ const CSRF   = document.querySelector('meta[name="csrf-token"]').content;
 const API    = "{{ route('stokPasir.data') }}";
 const URL_T  = "{{ route('stokPasir.tambah') }}";
 const URL_K  = "{{ route('stokPasir.kurangi') }}";
+const URL_O  = "{{ route('stokPasir.updateOngkir') }}";
 
 let allData  = [];
 let chart    = null;
@@ -289,8 +293,23 @@ function renderTable(data) {
       <td class="px-5 py-4">
         <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary">${p.kategori}</span>
       </td>
+      <td class="px-5 py-4 text-center">
+        <span class="text-xs font-black text-primary">Rp ${Number(p.harga).toLocaleString('id-ID')}</span>
+      </td>
       <td class="px-5 py-4 text-center font-bold text-on-surface">${p.stock_pickup}</td>
+      <td class="px-5 py-4 text-center">
+        <div class="flex flex-col items-center gap-1">
+          <span class="text-xs font-semibold text-on-surface-variant">Rp ${Number(p.ongkir_pickup).toLocaleString('id-ID')}</span>
+          <button onclick="openModal('ongkir', ${p.id}, 'pickup')" class="text-[10px] font-bold text-on-surface-variant hover:text-primary underline uppercase tracking-tighter">Ubah</button>
+        </div>
+      </td>
       <td class="px-5 py-4 text-center font-bold text-on-surface">${p.stock_truck}</td>
+      <td class="px-5 py-4 text-center">
+        <div class="flex flex-col items-center gap-1">
+          <span class="text-xs font-semibold text-on-surface-variant">Rp ${Number(p.ongkir_truck).toLocaleString('id-ID')}</span>
+          <button onclick="openModal('ongkir', ${p.id}, 'truck')" class="text-[10px] font-bold text-on-surface-variant hover:text-primary underline uppercase tracking-tighter">Ubah</button>
+        </div>
+      </td>
       <td class="px-5 py-4 text-center">
         <span class="text-green-600 font-semibold">+${p.stok_masuk}</span>
       </td>
@@ -318,18 +337,32 @@ function renderTable(data) {
 }
 
 /* ===== MODAL ===== */
-function openModal(tipe, id) {
+function openModal(tipe, id, defaultJenis = 'pickup') {
   modalProduk = allData.find(p => p.id === id);
   if (!modalProduk) return;
 
-  document.getElementById('modal-title').textContent = tipe === 'tambah' ? 'Tambah Stok' : 'Kurangi Stok';
+  const titles = { 'tambah': 'Tambah Stok', 'kurangi': 'Kurangi Stok', 'ongkir': 'Update Ongkir' };
+  document.getElementById('modal-title').textContent = titles[tipe] ?? 'Ubah Data';
   document.getElementById('modal-produk-nama').textContent = modalProduk.nama_pasir;
   document.getElementById('modal-id-produk').value = id;
   document.getElementById('modal-tipe').value = tipe;
   document.getElementById('modal-jumlah').value = '';
   document.getElementById('modal-keterangan').value = '';
-  document.getElementById('modal-submit').textContent = tipe === 'tambah' ? 'Tambah Stok' : 'Kurangi Stok';
-  document.getElementById('modal-submit').className = `flex-1 py-3 rounded-xl text-sm font-bold hover:opacity-90 transition-all shadow-md ${tipe === 'tambah' ? 'bg-green-600 text-white shadow-green-600/20' : 'bg-error text-on-error shadow-error/20'}`;
+  
+  // Set default jenis radio
+  document.querySelectorAll('input[name="modal-jenis"]').forEach(r => {
+    if(r.value === defaultJenis) r.checked = true;
+  });
+
+  const submitText = titles[tipe] ?? 'Simpan';
+  document.getElementById('modal-submit').textContent = submitText;
+  
+  let submitClass = 'flex-1 py-3 rounded-xl text-sm font-bold hover:opacity-90 transition-all shadow-md ';
+  if(tipe === 'tambah') submitClass += 'bg-green-600 text-white shadow-green-600/20';
+  else if(tipe === 'kurangi') submitClass += 'bg-error text-on-error shadow-error/20';
+  else submitClass += 'bg-primary text-on-primary shadow-primary/20';
+  
+  document.getElementById('modal-submit').className = submitClass;
   updateModalInfo();
   document.getElementById('modal-stok').classList.remove('hidden');
 }
@@ -340,9 +373,16 @@ function closeModal() {
 
 function updateModalInfo() {
   if (!modalProduk) return;
+  const tipe  = document.getElementById('modal-tipe').value;
   const jenis = document.querySelector('input[name="modal-jenis"]:checked')?.value ?? 'pickup';
-  const stok  = jenis === 'pickup' ? modalProduk.stock_pickup : modalProduk.stock_truck;
-  document.getElementById('modal-stok-info').textContent = `Stok ${jenis} saat ini: ${stok} ${modalProduk.satuan}`;
+  
+  if (tipe === 'ongkir') {
+    const ongkir = jenis === 'pickup' ? modalProduk.ongkir_pickup : modalProduk.ongkir_truck;
+    document.getElementById('modal-stok-info').textContent = `Ongkir ${jenis} saat ini: Rp ${Number(ongkir).toLocaleString('id-ID')}`;
+  } else {
+    const stok  = jenis === 'pickup' ? modalProduk.stock_pickup : modalProduk.stock_truck;
+    document.getElementById('modal-stok-info').textContent = `Stok ${jenis} saat ini: ${stok} ${modalProduk.satuan}`;
+  }
 }
 document.querySelectorAll('input[name="modal-jenis"]').forEach(r => r.addEventListener('change', updateModalInfo));
 
@@ -354,7 +394,10 @@ document.getElementById('modal-form').addEventListener('submit', async function(
   const jenis      = document.querySelector('input[name="modal-jenis"]:checked')?.value ?? 'pickup';
   const jumlah     = document.getElementById('modal-jumlah').value;
   const keterangan = document.getElementById('modal-keterangan').value;
-  const url        = tipe === 'tambah' ? URL_T : URL_K;
+  
+  let url = URL_T;
+  if(tipe === 'kurangi') url = URL_K;
+  else if(tipe === 'ongkir') url = URL_O;
 
   const btn = document.getElementById('modal-submit');
   btn.disabled = true;

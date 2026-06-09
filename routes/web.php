@@ -43,6 +43,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/PesanStore', fn() => view('tampilanPenjualStore.PesanStore'))->name('PesanStore');
         Route::get('/ordertrackingStore', [OrderController::class, 'storeOrders'])->name('ordertrackingStore');
         Route::put('/ordertrackingStore/{id}/status', [OrderController::class, 'updateStatus'])->name('ordertrackingStore.updateStatus');
+        Route::get('/ordertrackingStore/{id}/detail', [OrderController::class, 'storeOrderDetail'])->name('ordertrackingStore.detail');
         Route::get('/MonitoringPelangganStore', [MenuUtamaController::class, 'monitoringPelanggan'])->name('MonitoringPelangganStore');
         Route::get('/tambahProduk', [ProdukController::class, 'create'])->name('tambahProduk');
         Route::post('/tambahProduk', [ProdukController::class, 'store'])->name('tambahProduk.store');
@@ -57,8 +58,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/stokPasir/data', [StokController::class, 'data'])->name('stokPasir.data');
         Route::post('/stokPasir/tambah', [StokController::class, 'tambahStok'])->name('stokPasir.tambah');
         Route::post('/stokPasir/kurangi', [StokController::class, 'kurangiStok'])->name('stokPasir.kurangi');
-    });
-
+        Route::post('/stokPasir/ongkir', [StokController::class, 'updateOngkir'])->name('stokPasir.updateOngkir');
+        });
     // Admin Routes
     Route::middleware(['role:admin'])->group(function () {
         Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
@@ -83,6 +84,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/Pesan', fn() => view('tampilaUntukUser.Pesan'))->name('Pesan');
         Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
         Route::get('/ordertracking', [OrderController::class, 'userOrders'])->name('ordertracking');
+        Route::put('/ordertracking/{id}/selesai', [OrderController::class, 'userCompleteOrder'])->name('ordertracking.selesai');
+        Route::post('/ordertracking/{id}/report', [OrderController::class, 'reportOrder'])->name('ordertracking.report');
         Route::get('/riwayat', [OrderController::class, 'userHistory'])->name('riwayat');
         Route::get('/Profil', function () {
             $toko = \App\Models\Toko::where('ID_Akun', \Illuminate\Support\Facades\Auth::id())->latest('created_at')->first();
@@ -95,12 +98,27 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->name('daftarPenjual.store')
             ->middleware('check.store.registration');
 
+        // Shipping Rate Routes
+        Route::get('/shipping-rates', [\App\Http\Controllers\ShippingRateController::class, 'index'])->name('shipping-rates.index');
+        Route::post('/shipping-rates', [\App\Http\Controllers\ShippingRateController::class, 'store'])->name('shipping-rates.store');
+        Route::put('/shipping-rates/{id}', [\App\Http\Controllers\ShippingRateController::class, 'update'])->name('shipping-rates.update');
+        Route::patch('/shipping-rates/{id}/toggle', [\App\Http\Controllers\ShippingRateController::class, 'toggleStatus'])->name('shipping-rates.toggle');
+        Route::delete('/shipping-rates/{id}', [\App\Http\Controllers\ShippingRateController::class, 'destroy'])->name('shipping-rates.destroy');
+
         // Review Routes
         Route::post('/reviews', [\App\Http\Controllers\ReviewController::class, 'store'])->name('reviews.store');
         Route::put('/reviews/{id}', [\App\Http\Controllers\ReviewController::class, 'update'])->name('reviews.update');
     });
 
-    // Chat API Routes
+    // Store API Routes
+    Route::get('/api/store/{id}/qris', [Toko::class, 'getQrisApi']); // Assuming this is defined somewhere or moved
+    Route::get('/api/store/{id}/shipping-rates', function($id) {
+        $toko = \App\Models\Toko::findOrFail($id);
+        return response()->json([
+            'status' => 'success',
+            'data' => $toko->shippingRates()->where('is_active', true)->get()
+        ]);
+    });
     Route::get('/chat/rooms', [ChatController::class, 'getRooms'])->name('chat.rooms');
     Route::get('/chat/messages', [ChatController::class, 'getMessages'])->name('chat.messages');
     Route::post('/chat/send', [ChatController::class, 'sendMessage'])->name('chat.send');

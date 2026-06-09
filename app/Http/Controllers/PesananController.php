@@ -194,8 +194,11 @@ class PesananController extends Controller
 
             DB::commit();
 
-            // ── 8. Bersihkan sessionStorage keranjang via flash ───────────
-            session()->flash('clear_cart', true);
+            // ── 8. Hapus item yang sudah dipesan dari keranjang (sessionStorage) ──
+            // Hanya hapus item yang dipesan, bukan seluruh keranjang
+            $orderedKeys = array_map(fn($item) => $item['key'] ?? null, $cartItems);
+            $orderedKeys = array_values(array_filter($orderedKeys));
+            session()->flash('clear_ordered_items', json_encode($orderedKeys));
 
             return redirect()->route('ordertracking')
                              ->with('success', 'Pesanan kamu akan di cek oleh Toko');

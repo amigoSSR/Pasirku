@@ -104,6 +104,9 @@ class MenuUtamaController extends Controller
             ->where('is_read', false)
             ->count();
 
+        // Total Komisi Admin
+        $totalKomisiAdmin = $toko->Komisi_Admin;
+
         // 6. Rating Stats
         $averageRating = $toko->averageRating();
         $totalReviews = $toko->reviews()->count();
@@ -123,6 +126,7 @@ class MenuUtamaController extends Controller
             'completionRate',
             'complaintsCount',
             'unreadChatCount',
+            'totalKomisiAdmin',
             'averageRating',
             'totalReviews',
             'ratingDistribution',
@@ -188,7 +192,8 @@ class MenuUtamaController extends Controller
             'produk_aktif' => number_format($produkAktif, 0, ',', '.'),
             'unread_chat' => $unreadChatCount,
             'recent_orders' => $recentOrders,
-            'top_products' => $topProductsData
+            'top_products' => $topProductsData,
+            'total_komisi_admin' => 'Rp ' . number_format($toko->Komisi_Admin, 0, ',', '.'),
         ]);
     }
 

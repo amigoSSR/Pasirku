@@ -586,25 +586,45 @@
         });
       }
 
-      let subtotalPickUp = 0, subtotalTruck = 0, qtyPickUp = 0, qtyTruck = 0, subTotal = 0;
+      let subTotal = 0, qtyPickUp = 0, qtyTruck = 0;
+      let maxOngPick = 0, maxOngTruck = 0;
+
       selectedStore.items.forEach(item => {
-        const lineTotal = item.harga * item.qty; subTotal += lineTotal;
-        if (item.type === 'pickup') { subtotalPickUp += lineTotal; qtyPickUp += item.qty; } else { subtotalTruck += lineTotal; qtyTruck += item.qty; }
+        const lineTotal = item.harga * item.qty;
+        subTotal += lineTotal;
+        if (item.type === 'pickup') {
+          qtyPickUp += item.qty;
+          maxOngPick = Math.max(maxOngPick, item.ongkir || 0);
+        } else {
+          qtyTruck += item.qty;
+          maxOngTruck = Math.max(maxOngTruck, item.ongkir || 0);
+        }
       });
 
-      const ongPick = qtyPickUp > 0 ? (selectedStore.ongkirPickUp || 0) : 0;
-      const ongTruck = qtyTruck > 0 ? (selectedStore.ongkirTruck || 0) : 0;
+      const ongPick = qtyPickUp > 0 ? (maxOngPick || selectedStore.ongkirPickUp || 0) : 0;
+      const ongTruck = qtyTruck > 0 ? (maxOngTruck || selectedStore.ongkirTruck || 0) : 0;
       const totalOngkir = ongPick + ongTruck;
       const grandTotal = subTotal + totalOngkir;
 
       paymentLines.innerHTML = '';
-      if (qtyPickUp > 0) { const r = document.createElement('div'); r.className = 'flex justify-between text-xs font-bold items-center'; r.innerHTML = `<span class="flex items-center gap-2 text-primary-fixed-dim/80"><span class="material-symbols-outlined text-[16px]">directions_car</span>Pick Up (${qtyPickUp} unit)</span><span class="text-surface">${formatRupiah(subtotalPickUp)}</span>`; paymentLines.appendChild(r); }
-      if (qtyTruck > 0) { const r = document.createElement('div'); r.className = 'flex justify-between text-xs font-bold items-center'; r.innerHTML = `<span class="flex items-center gap-2 text-primary-fixed-dim/80"><span class="material-symbols-outlined text-[16px]">local_shipping</span>Truk (${qtyTruck} unit)</span><span class="text-surface">${formatRupiah(subtotalTruck)}</span>`; paymentLines.appendChild(r); }
-      const subRow = document.createElement('div'); subRow.className = 'flex justify-between text-[11px] font-black text-primary-fixed uppercase tracking-widest pt-4 mt-2 border-t border-surface-variant/5'; subRow.innerHTML = `<span>Subtotal Produk</span><span>${formatRupiah(subTotal)}</span>`; paymentLines.appendChild(subRow);
+      const subRow = document.createElement('div');
+      subRow.className = 'flex justify-between text-[11px] font-black text-primary-fixed uppercase tracking-widest pt-2';
+      subRow.innerHTML = `<span>Subtotal Produk</span><span>${formatRupiah(subTotal)}</span>`;
+      paymentLines.appendChild(subRow);
 
       ongkirSection.innerHTML = '';
-      if (ongPick > 0) { const r = document.createElement('div'); r.className = 'flex justify-between text-xs font-bold items-center'; r.innerHTML = `<span class="flex items-center gap-2 text-primary-fixed-dim/70 font-medium"><span class="material-symbols-outlined text-[16px]">directions_car</span>Ongkir Pick Up</span><span class="text-surface-variant">${formatRupiah(ongPick)}</span>`; ongkirSection.appendChild(r); }
-      if (ongTruck > 0) { const r = document.createElement('div'); r.className = 'flex justify-between text-xs font-bold items-center'; r.innerHTML = `<span class="flex items-center gap-2 text-primary-fixed-dim/70 font-medium"><span class="material-symbols-outlined text-[16px]">local_shipping</span>Ongkir Truk</span><span class="text-surface-variant">${formatRupiah(ongTruck)}</span>`; ongkirSection.appendChild(r); }
+      if (ongPick > 0) {
+        const r = document.createElement('div');
+        r.className = 'flex justify-between text-xs font-bold items-center';
+        r.innerHTML = `<span class="flex items-center gap-2 text-primary-fixed-dim/70 font-medium"><span class="material-symbols-outlined text-[16px]">directions_car</span>Ongkir Pick Up</span><span class="text-surface-variant">${formatRupiah(ongPick)}</span>`;
+        ongkirSection.appendChild(r);
+      }
+      if (ongTruck > 0) {
+        const r = document.createElement('div');
+        r.className = 'flex justify-between text-xs font-bold items-center';
+        r.innerHTML = `<span class="flex items-center gap-2 text-primary-fixed-dim/70 font-medium"><span class="material-symbols-outlined text-[16px]">local_shipping</span>Ongkir Truk</span><span class="text-surface-variant">${formatRupiah(ongTruck)}</span>`;
+        ongkirSection.appendChild(r);
+      }
       if (totalOngkir === 0) { const r = document.createElement('div'); r.className = 'flex justify-between text-[10px] font-bold items-center text-primary-fixed-dim/50 uppercase tracking-widest'; r.innerHTML = `<span>Ongkos Kirim</span><span>- GRATIS -</span>`; ongkirSection.appendChild(r); }
 
       grandTotalEl.textContent = formatRupiah(grandTotal);
