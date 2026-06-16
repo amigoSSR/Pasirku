@@ -44,6 +44,27 @@ class ProfileController extends Controller
     }
 
     /**
+     * Update the user's location information.
+     */
+    public function updateLocation(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'latitude' => 'nullable|numeric',
+            'longitude' => 'nullable|numeric',
+            'detail_alamat' => 'nullable|string|max:500',
+        ]);
+
+        $user = Auth::user();
+        $user->update([
+            'latitude' => $request->latitude,
+            'longitude' => $request->longitude,
+            'detail_alamat' => $request->detail_alamat,
+        ]);
+
+        return redirect()->back()->with('success', 'Lokasi default berhasil diperbarui!');
+    }
+
+    /**
      * Log the user out of the application.
      */
     public function logout(Request $request): RedirectResponse

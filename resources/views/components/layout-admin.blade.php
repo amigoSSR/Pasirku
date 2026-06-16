@@ -8,6 +8,7 @@ x-init="
 "
 :class="{ 'dark': darkMode }">
 <head>
+    <link rel="icon" type="image/png" href="{{ asset('img/LogoWebsite.png') }}"/>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <meta name="csrf-token" content="{{ csrf_token() }}"/>
@@ -315,6 +316,162 @@ tailwind.config = {
       {{ $slot }}
     </div>
   </main>
+
+  {{-- Global Store Edit Modal (Alpine.js) --}}
+  <div x-data="globalStoreEditModal()" 
+       @open-store-edit-modal.window="openModal($event.detail.toko)"
+       x-show="open" 
+       class="fixed inset-0 z-[100] flex items-center justify-center p-4 overflow-y-auto bg-black/60 backdrop-blur-md"
+       x-transition:enter="ease-out duration-300"
+       x-transition:enter-start="opacity-0"
+       x-transition:enter-end="opacity-100"
+       x-transition:leave="ease-in duration-200"
+       x-transition:leave-start="opacity-100"
+       x-transition:leave-end="opacity-0"
+       x-cloak>
+    
+    <div class="relative w-full max-w-4xl bg-surface-container-lowest rounded-3xl border border-outline-variant/30 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+         @click.away="open = false"
+         x-transition:enter="ease-out duration-300"
+         x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+         x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+         x-transition:leave="ease-in duration-200"
+         x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+         x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+      
+      <!-- Modal Header -->
+      <div class="px-6 py-4 border-b border-outline-variant/20 flex items-center justify-between bg-surface-container-low/50">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+            <span class="material-symbols-outlined text-[22px]">edit_location</span>
+          </div>
+          <div>
+            <h3 class="font-headline font-bold text-on-surface text-lg">Edit Alamat & Koordinat Toko</h3>
+            <p class="text-xs text-on-surface-variant">Toko: <span class="font-bold text-primary" x-text="store.Nama_Toko"></span></p>
+          </div>
+        </div>
+        <button @click="open = false" class="w-9 h-9 rounded-xl hover:bg-surface-container-high text-on-surface-variant flex items-center justify-center transition-colors">
+          <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+      </div>
+
+      <!-- Modal Body (Scrollable) -->
+      <div class="flex-1 overflow-y-auto p-6 space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div class="space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+              <div class="space-y-1">
+                <label class="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">Provinsi</label>
+                <input type="text" x-model="form.provinsi" class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-3 py-2 text-sm" />
+              </div>
+              <div class="space-y-1">
+                <label class="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">Kota</label>
+                <input type="text" x-model="form.kota" class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-3 py-2 text-sm" />
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div class="space-y-1">
+                <label class="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">Kecamatan</label>
+                <input type="text" x-model="form.kecamatan" class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-3 py-2 text-sm" />
+              </div>
+              <div class="space-y-1">
+                <label class="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">Kode Pos</label>
+                <input type="text" x-model="form.kode_pos" class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-3 py-2 text-sm" />
+              </div>
+            </div>
+            <div class="space-y-1">
+              <label class="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">Alamat Lengkap</label>
+              <textarea x-model="form.detail_alamat" rows="2" class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-3 py-2 text-sm resize-none"></textarea>
+            </div>
+            <div class="grid grid-cols-2 gap-4 bg-surface-container-low/70 p-4 rounded-xl">
+              <div>
+                <span class="text-[9px] font-black uppercase block">Lat</span>
+                <span class="font-mono text-xs font-bold" x-text="form.latitude"></span>
+              </div>
+              <div>
+                <span class="text-[9px] font-black uppercase block">Lng</span>
+                <span class="font-mono text-xs font-bold" x-text="form.longitude"></span>
+              </div>
+            </div>
+            <button type="button" @click="searchAddress()" class="w-full bg-secondary/10 text-secondary border border-secondary/20 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5">
+              <span class="material-symbols-outlined text-[18px]">search</span> Cari di Peta
+            </button>
+          </div>
+          <div class="flex flex-col h-full min-h-[300px]">
+            <div class="flex-1 w-full rounded-2xl border border-outline-variant/30 overflow-hidden relative">
+              <div id="global-admin-edit-map" class="absolute inset-0 z-0"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="px-6 py-4 border-t border-outline-variant/20 flex items-center justify-end gap-3 bg-surface-container-low/50">
+        <button type="button" @click="open = false" class="px-5 py-2.5 rounded-xl border text-xs font-bold">Batal</button>
+        <button type="button" @click="submitForm()" :disabled="submitting" class="px-5 py-2.5 rounded-xl bg-primary text-on-primary text-xs font-bold shadow-sm">
+          <span x-text="submitting ? 'Menyimpan...' : 'Simpan Perubahan'"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    function globalStoreEditModal() {
+      return {
+        open: false, store: {}, submitting: false, map: null, marker: null,
+        form: { provinsi:'', kota:'', kecamatan:'', detail_alamat:'', kode_pos:'', latitude:'', longitude:'' },
+        openModal(toko) {
+          this.store = toko;
+          this.form = {
+            provinsi: toko.provinsi || '', kota: toko.kota || '', kecamatan: toko.kecamatan || '',
+            detail_alamat: toko.detail_alamat || '', kode_pos: toko.kode_pos || '',
+            latitude: toko.latitude || -5.147665, longitude: toko.longitude || 119.432731
+          };
+          this.open = true;
+          this.$nextTick(() => this.initMap());
+        },
+        initMap() {
+          if (this.map) { this.map.remove(); this.map = null; }
+          const lat = parseFloat(this.form.latitude), lng = parseFloat(this.form.longitude);
+          this.map = L.map('global-admin-edit-map').setView([lat, lng], 13);
+          L.tileLayer('https://{s}.google.com/vt?lyrs=m&x={x}&y={y}&z={z}', { maxZoom: 20, subdomains: ['mt0','mt1','mt2','mt3'] }).addTo(this.map);
+          this.marker = L.marker([lat, lng], { draggable: true }).addTo(this.map);
+          this.marker.on('dragend', (e) => {
+            const pos = e.target.getLatLng();
+            this.form.latitude = pos.lat.toFixed(8); this.form.longitude = pos.lng.toFixed(8);
+          });
+          this.map.on('click', (e) => {
+            this.marker.setLatLng(e.latlng);
+            this.form.latitude = e.latlng.lat.toFixed(8); this.form.longitude = e.latlng.lng.toFixed(8);
+          });
+        },
+        searchAddress() {
+          const q = [this.form.detail_alamat, this.form.kecamatan, this.form.kota, this.form.provinsi].filter(Boolean).join(', ');
+          if (!q) return alert('Isi alamat!');
+          fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=1`)
+            .then(res => res.json()).then(data => {
+              if (data.length) {
+                const lat = parseFloat(data[0].lat), lng = parseFloat(data[0].lon);
+                this.map.setView([lat, lng], 15); this.marker.setLatLng([lat, lng]);
+                this.form.latitude = lat.toFixed(8); this.form.longitude = lng.toFixed(8);
+              }
+            });
+        },
+        submitForm() {
+          this.submitting = true;
+          fetch(`/admin/shope-registry/${this.store.ID_Toko}/update-location`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'X-Requested-With': 'XMLHttpRequest' },
+            body: JSON.stringify(this.form)
+          }).then(res => res.json()).then(data => {
+            this.submitting = false;
+            if (data.success) { alert(data.message); this.open = false; window.location.reload(); }
+          }).catch(() => { this.submitting = false; alert('Kesalahan koneksi'); });
+        }
+      }
+    }
+  </script>
 
   {{-- Mobile Bottom Nav --}}
   <nav class="md:hidden fixed bottom-0 left-0 w-full z-50 bg-surface-container-lowest/90 backdrop-blur-xl border-t border-outline-variant/30 flex justify-around items-center px-2 pb-safe pt-2">

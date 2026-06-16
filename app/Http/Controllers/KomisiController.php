@@ -17,7 +17,8 @@ class KomisiController extends Controller
     {
         $toko = Toko::where('ID_Akun', Auth::id())->firstOrFail();
         
-        $admin = User::where('Role', 'admin')->first();
+        // Ambil QRIS dari admin mana saja yang sudah mengaturnya
+        $admin = User::where('Role', 'admin')->whereNotNull('qris_admin')->first();
         $qrisAdmin = $admin ? $admin->qris_admin : null;
 
         $riwayat = PembayaranKomisi::where('ID_Toko', $toko->ID_Toko)->latest()->get();

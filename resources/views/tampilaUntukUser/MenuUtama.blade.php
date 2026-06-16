@@ -13,85 +13,61 @@
     <section class="w-full md:w-[500px] lg:w-[600px] xl:w-[700px] bg-surface-container-low overflow-y-auto p-6 scrollbar-hide flex flex-col gap-2 shrink-0">
 
       {{-- Header --}}
-      <header class="mb-2">
-        <span class="text-xs font-bold text-primary uppercase tracking-[0.2em] mb-1 block flex items-center gap-1.5">
-          <span class="material-symbols-outlined text-[14px]" style="font-variation-settings:'FILL' 1">location_on</span>
-          Toko Terdekat
-        </span>
-        <h1 class="text-2xl font-headline font-extrabold text-on-surface tracking-tight leading-tight">
-          Temukan toko pasir di sekitarmu
-        </h1>
-        <p class="text-sm text-on-surface-variant mt-1">{{ count($tokoList) }} toko tersedia</p>
+      <header class="mb-4">
+        <div class="flex justify-between items-start mb-2">
+            <div>
+                <span class="text-xs font-bold text-primary uppercase tracking-[0.2em] mb-1 block flex items-center gap-1.5">
+                  <span class="material-symbols-outlined text-[14px]" style="font-variation-settings:'FILL' 1">location_on</span>
+                  Toko Terdekat
+                </span>
+                <h1 class="text-2xl font-headline font-extrabold text-on-surface tracking-tight leading-tight">
+                  Temukan toko pasir di sekitarmu
+                </h1>
+            </div>
+            <div class="flex gap-2">
+                {{-- Dark Mode Toggle --}}
+                <button 
+                    @click="darkMode = !darkMode"
+                    class="bg-surface-container-highest text-on-surface p-2 rounded-xl hover:bg-surface-container-high transition-all" 
+                    title="Toggle Dark Mode">
+                    <span class="material-symbols-outlined text-[20px]" x-show="!darkMode">light_mode</span>
+                    <span class="material-symbols-outlined text-[20px]" x-show="darkMode" x-cloak>dark_mode</span>
+                </button>
+                <button id="btn-update-location" class="bg-primary/10 text-primary p-2 rounded-xl hover:bg-primary/20 transition-all active:scale-95 group" title="Gunakan Lokasi Saat Ini">
+                    <span class="material-symbols-outlined text-[20px] group-hover:rotate-12 transition-transform">my_location</span>
+                </button>
+            </div>
+        </div>
+        
+        {{-- Radius Filter --}}
+        <div class="flex flex-wrap gap-2 mt-4">
+            <button class="radius-filter bg-primary text-on-primary px-4 py-2 rounded-full text-xs font-bold shadow-sm transition-all" data-radius="">Semua</button>
+            <button class="radius-filter bg-surface-container-highest text-on-surface-variant px-4 py-2 rounded-full text-xs font-bold hover:bg-outline-variant/30 transition-all" data-radius="1">1 km</button>
+            <button class="radius-filter bg-surface-container-highest text-on-surface-variant px-4 py-2 rounded-full text-xs font-bold hover:bg-outline-variant/30 transition-all" data-radius="5">5 km</button>
+            <button class="radius-filter bg-surface-container-highest text-on-surface-variant px-4 py-2 rounded-full text-xs font-bold hover:bg-outline-variant/30 transition-all" data-radius="10">10 km</button>
+            <button class="radius-filter bg-surface-container-highest text-on-surface-variant px-4 py-2 rounded-full text-xs font-bold hover:bg-outline-variant/30 transition-all" data-radius="25">25 km</button>
+        </div>
       </header>
 
-      {{-- No results --}}
-      <div id="no-result-msg" class="hidden text-center py-12">
-        <span class="material-symbols-outlined text-4xl text-outline mb-3 block">search_off</span>
-        <p class="text-on-surface-variant font-semibold">Toko tidak ditemukan</p>
-        <p class="text-outline text-sm mt-1">Coba kata kunci lain</p>
+      {{-- Search --}}
+      <div class="relative mb-4">
+          <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
+          <input type="text" id="search-input" placeholder="Cari nama toko..." 
+            class="w-full bg-surface-container-lowest border border-outline-variant/30 rounded-2xl py-3.5 pl-12 pr-4 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary/30 outline-none transition-all">
       </div>
 
-      {{-- Shop Cards --}}
+      {{-- Shop Cards Container --}}
       <div id="shop-card-list" class="grid grid-cols-1 md:grid-cols-1 xl:grid-cols-2 gap-4">
-        @forelse ($tokoList as $toko)
-        <div
-          class="shop-card stat-card bg-surface-container-lowest p-5 rounded-2xl shadow-sm border border-outline-variant/30 cursor-pointer group hover:border-primary/30"
-          data-shop-name="{{ strtolower($toko->Nama_Toko) }}">
-          <div class="flex justify-between items-start mb-4">
-            <div class="w-20 h-20 rounded-2xl bg-primary/10 flex items-center justify-center overflow-hidden shadow-sm border border-outline-variant/20">
-              @if($toko->Foto_Toko)
-                <img src="{{ asset('storage/' . $toko->Foto_Toko) }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt="{{ $toko->Nama_Toko }}">
-              @else
-                <span class="material-symbols-outlined text-4xl text-primary" style="font-variation-settings:'FILL' 1">storefront</span>
-              @endif
-            </div>
-            <span class="text-xs font-bold bg-green-50 text-green-600 px-3 py-1 rounded-full flex items-center gap-1">
-              <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse inline-block"></span>
-              Buka
-            </span>
-          </div>
-          <h3 class="text-base font-headline font-bold text-on-surface mb-2 group-hover:text-primary transition-colors">
-            {{ $toko->Nama_Toko }}
-          </h3>
-          <div class="flex flex-col gap-1.5 text-sm text-on-surface-variant mb-4">
-            <div class="flex items-center gap-1.5">
-              <span class="material-symbols-outlined text-[16px] text-outline">location_on</span>
-              <span class="truncate">{{ $toko->Lokasi_Toko }}</span>
-            </div>
-            <div class="flex items-center gap-1.5">
-              <span class="material-symbols-outlined text-[16px] text-outline">call</span>
-              <span>{{ $toko->Nomer_Telepon_Toko }}</span>
-            </div>
-            <div class="flex items-center gap-1.5">
-              <span class="material-symbols-outlined text-[16px] text-outline">mail</span>
-              <span class="truncate">{{ $toko->Email_Toko }}</span>
-            </div>
-          </div>
-          <div class="flex justify-between items-center border-t border-outline-variant/30 pt-3 mt-1">
-            <div>
-              <p class="text-[10px] uppercase font-bold text-outline tracking-wider">Total Transaksi</p>
-              <p class="text-lg font-headline font-bold text-on-surface">
-                {{ number_format($toko->Total_Pembelian) }}<span class="text-xs font-normal text-outline"> order</span>
-              </p>
-            </div>
-            <a href="{{ route('MarketPlace', $toko->ID_Toko) }}"
-              class="bg-primary text-on-primary p-2.5 rounded-xl hover:bg-primary-container transition-all inline-flex items-center justify-center shadow-sm hover:shadow-md">
-              <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
-            </a>
-          </div>
-        </div>
-        @empty
-        <div class="text-center py-16">
-          <span class="material-symbols-outlined text-5xl text-outline mb-3 block">store</span>
-          <p class="text-on-surface-variant font-semibold">Belum ada toko terdaftar</p>
-          <p class="text-outline text-sm mt-1">Daftar sebagai penjual pertama!</p>
-        </div>
-        @endforelse
+        @include('tampilaUntukUser.partials.store-list', ['tokoList' => $tokoList])
       </div>
     </section>
 
     {{-- Right: Map --}}
     <div id="map" class="flex-1 h-full relative">
+      <div id="map-loader" class="absolute inset-0 bg-surface/50 backdrop-blur-[2px] z-[600] flex flex-col items-center justify-center hidden">
+          <div class="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin mb-4"></div>
+          <p class="text-sm font-bold text-on-surface">Mencari toko terdekat...</p>
+      </div>
       <button id="btn-locate-me" class="absolute top-4 right-4 z-[500] bg-surface-container-lowest p-3 rounded-2xl shadow-xl border border-outline-variant/30 hover:bg-surface-container-low transition-all active:scale-95 group" title="Cari Lokasi Saya">
         <span class="material-symbols-outlined text-[20px] text-primary group-hover:rotate-12 transition-transform">my_location</span>
       </button>
@@ -100,6 +76,10 @@
     <script>
       window.MAP_CONFIG = {
         iconUrl: '{{ asset("img/rumah1.png") }}',
+        userLat: {{ $lat ?? 'null' }},
+        userLng: {{ $lng ?? 'null' }},
+        radius: {{ $radius ?? 'null' }},
+        nearbyUrl: '{{ route("nearby-stores") }}',
         stores: [
           @foreach($tokoList as $toko)
             @if($toko->latitude && $toko->longitude)
@@ -108,8 +88,9 @@
                 name: "{!! addslashes($toko->Nama_Toko) !!}",
                 lat: {{ $toko->latitude }},
                 lng: {{ $toko->longitude }},
-                address: "{!! addslashes($toko->Lokasi_Toko) !!}",
-                url: "{{ route('MarketPlace', $toko->ID_Toko) }}"
+                address: "{!! addslashes($toko->detail_alamat ?: $toko->Lokasi_Toko) !!}",
+                url: "{{ route('MarketPlace', $toko->ID_Toko) }}",
+                distance: {{ isset($toko->distance) ? $toko->distance : 'null' }}
               },
             @endif
           @endforeach

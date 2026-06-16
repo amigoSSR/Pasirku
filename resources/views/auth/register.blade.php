@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html class="light" lang="id">
 <head>
+    <link rel="icon" type="image/png" href="{{ asset('img/LogoWebsite.png') }}"/>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Daftar Akun Baru - Pasirku Marketplace</title>
@@ -125,13 +126,15 @@
 
     <!-- Auth Layout Wrapper -->
     <main class="flex-grow flex flex-col md:flex-row min-h-screen">
+        <!-- Back Button -->
+        <a href="/" class="fixed top-4 left-4 md:top-6 md:left-6 z-50 flex items-center justify-center w-10 h-10 rounded-full bg-surface md:bg-white/20 backdrop-blur-md border border-outline-variant md:border-white/30 text-on-surface md:text-white hover:bg-surface-container-high md:hover:bg-white/30 transition-all shadow-sm md:shadow-lg hover:scale-105 group" title="Kembali ke Beranda">
+            <span class="material-symbols-outlined">arrow_back</span>
+        </a>
         
         <!-- Left Side: Visual/Branding (Hidden on mobile) -->
         <section class="hidden md:flex w-1/2 relative overflow-hidden bg-surface-container-highest">
-            <div class="absolute inset-0 z-0 flex items-center justify-center">
-                <div class="w-full h-full flex items-center justify-center p-xl">
-                    <img alt="Pasirku Logo Large" class="max-w-[60%] h-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfIfXNVBhP0rVPe-_T3m8ZKs1hTsaqR4uCb0hU55aZw4ctKB8Q3HtN0q6fmcidU8Ei82upieOL3jJTqq0LA9zvkkCUdOTYmz40yoxJuoFGJbD8zsBFdonlCzCJSi8zHOfFVSsRPMbR3g1uc1tA26DAjBCNSHNTFnI8nv9D02R6q5bGKcFpMFxzZE0dGjsvfV6BEQPF00cE6z3WZQF5izlwns5BtzvOlZVYk_OxtUsheq7qNSx3hRp0wa6zTk_8zTdD0RZ1Y8vcLUY"/>
-                </div>
+            <div class="absolute inset-0 z-0">
+                <img alt="Tambang Pasir" class="w-full h-full object-cover" src="{{ asset('img/TambangPasir.png') }}"/>
             </div>
             <div class="relative z-10 p-margin-desktop flex flex-col justify-end h-full text-white">
             </div>

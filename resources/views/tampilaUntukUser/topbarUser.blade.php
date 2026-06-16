@@ -5,7 +5,9 @@
 
     <!-- Brand / Logo -->
     <div class="flex items-center w-64 shrink-0">
-      <a href="{{ route('MenuUtama') }}" class="font-headline text-xl font-bold text-primary uppercase tracking-tighter">Pasir Ku</a>
+      <a href="{{ route('MenuUtama') }}" class="flex items-center gap-2">
+        <img src="{{ asset('img/LogoWebsite.png') }}" alt="Pasirku" class="h-8 w-auto" />
+      </a>
     </div>
 
     <!-- Center & Right Side: Search and Profile -->

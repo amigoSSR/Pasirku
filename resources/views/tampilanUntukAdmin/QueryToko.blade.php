@@ -96,8 +96,9 @@
         </div>
 
         @if($selectedToko)
-          <div class="w-full md:w-auto flex items-center gap-4 bg-primary/5 p-2 pr-6 rounded-2xl border border-primary/10 animate-fadeUp">
-            <div class="w-14 h-14 rounded-xl overflow-hidden bg-primary/10 flex items-center justify-center shrink-0">
+          <div onclick='window.dispatchEvent(new CustomEvent("open-store-edit-modal", { detail: { toko: @json($selectedToko) } }))'
+            class="w-full md:w-auto flex items-center gap-4 bg-primary/5 p-2 pr-6 rounded-2xl border border-primary/10 animate-fadeUp cursor-pointer hover:bg-primary/10 transition-all group/card">
+            <div class="w-14 h-14 rounded-xl overflow-hidden bg-primary/10 flex items-center justify-center shrink-0 group-hover/card:scale-105 transition-transform">
               @if($selectedToko->Foto_Toko)
                 <img src="{{ asset('storage/' . $selectedToko->Foto_Toko) }}" class="w-full h-full object-cover" alt="Foto Toko">
               @else
@@ -105,8 +106,11 @@
               @endif
             </div>
             <div>
-              <p class="text-[10px] font-black text-primary uppercase tracking-widest">Toko Terpilih</p>
-              <p class="text-base font-bold text-on-surface leading-tight">{{ $selectedToko->Nama_Toko }}</p>
+              <p class="text-[10px] font-black text-primary uppercase tracking-widest flex items-center gap-1">
+                Toko Terpilih 
+                <span class="material-symbols-outlined text-[12px] opacity-0 group-hover/card:opacity-100 transition-opacity">edit_location</span>
+              </p>
+              <p class="text-base font-bold text-on-surface leading-tight group-hover/card:text-primary transition-colors">{{ $selectedToko->Nama_Toko }}</p>
               <p class="text-[10px] text-on-surface-variant font-medium mt-0.5">{{ $selectedToko->Email_Toko }} • {{ $selectedToko->Nomer_Telepon_Toko }}</p>
             </div>
           </div>

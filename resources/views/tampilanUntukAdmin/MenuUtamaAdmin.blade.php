@@ -149,8 +149,8 @@
               @forelse($recentToko as $toko)
               <tr class="hover:bg-surface-container-low/50 transition-colors">
                 <td class="px-6 py-4">
-                  <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-xl bg-primary/10 text-primary font-bold text-xs flex items-center justify-center uppercase shrink-0 overflow-hidden">
+                  <div class="flex items-center gap-3 cursor-pointer group/store" @click='openModal(@json($toko))'>
+                    <div class="w-9 h-9 rounded-xl bg-primary/10 text-primary font-bold text-xs flex items-center justify-center uppercase shrink-0 overflow-hidden group-hover/store:ring-2 group-hover/store:ring-primary/30 transition-all">
                       @if($toko->Foto_Toko)
                         <img src="{{ asset('storage/' . $toko->Foto_Toko) }}" class="w-full h-full object-cover" alt="{{ $toko->Nama_Toko }}">
                       @else
@@ -158,12 +158,17 @@
                       @endif
                     </div>
                     <div>
-                      <p class="font-semibold text-on-surface text-sm">{{ $toko->Nama_Toko }}</p>
+                      <p class="font-semibold text-on-surface text-sm group-hover/store:text-primary transition-colors">{{ $toko->Nama_Toko }}</p>
                       <p class="text-xs text-on-surface-variant">{{ $toko->Username }}</p>
                     </div>
                   </div>
                 </td>
-                <td class="px-6 py-4 text-on-surface-variant text-xs">{{ Str::limit($toko->Lokasi_Toko, 25) }}</td>
+                <td class="px-6 py-4">
+                  <div @click='openModal(@json($toko))' class="cursor-pointer hover:text-primary transition-colors group/loc flex items-center gap-1.5" title="Klik untuk edit lokasi">
+                    <span class="text-on-surface-variant text-xs truncate max-w-[150px]">{{ $toko->Lokasi_Toko }}</span>
+                    <span class="material-symbols-outlined text-[14px] opacity-0 group-hover/loc:opacity-100 transition-opacity">edit_location</span>
+                  </div>
+                </td>
                 <td class="px-6 py-4 font-semibold text-on-surface text-sm">
                   Rp {{ number_format($toko->Pendapatan_Toko ?? 0, 0, ',', '.') }}
                 </td>

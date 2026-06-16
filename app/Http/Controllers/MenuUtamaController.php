@@ -12,15 +12,78 @@ use Illuminate\Support\Facades\DB;
 
 class MenuUtamaController extends Controller
 {
+    protected $geoService;
+
+    public function __construct(\App\Services\GeolocationService $geoService)
+    {
+        $this->geoService = $geoService;
+    }
+
     /**
      * Tampilkan halaman utama dengan daftar toko yang AKTIF saja.
      * Toko inactive tidak akan muncul di homepage maupun pencarian.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $tokoList = Toko::active()->get();
+        $lat = $request->lat;
+        $lng = $request->lng;
+        $radius = $request->radius;
 
-        return view('tampilaUntukUser.MenuUtama', compact('tokoList'));
+        // Fallback to user profile if not provided and logged in
+        if (!$lat && !$lng && Auth::check()) {
+            $user = Auth::user();
+            if ($user->latitude && $user->longitude) {
+                $lat = $user->latitude;
+                $lng = $user->longitude;
+            }
+        }
+
+        if ($lat && $lng) {
+            $tokoList = $this->geoService->getNearbyStores($lat, $lng, $radius);
+        } else {
+            $tokoList = Toko::active()->paginate(20);
+        }
+
+        // If it's an AJAX request, return partial view or JSON
+        if ($request->ajax()) {
+            return view('tampilaUntukUser.partials.store-list', compact('tokoList'))->render();
+        }
+
+        return view('tampilaUntukUser.MenuUtama', compact('tokoList', 'lat', 'lng', 'radius'));
+    }
+
+    /**
+     * Endpoint API untuk mendapatkan toko terdekat.
+     */
+    public function nearbyStores(Request $request)
+    {
+        $request->validate([
+            'lat' => 'required|numeric',
+            'lng' => 'required|numeric',
+            'radius' => 'nullable|numeric',
+        ]);
+
+        $tokoList = $this->geoService->getNearbyStores(
+            $request->lat,
+            $request->lng,
+            $request->radius
+        );
+
+        return response()->json([
+            'status' => 'success',
+            'html' => view('tampilaUntukUser.partials.store-list', compact('tokoList'))->render(),
+            'stores' => $tokoList->map(function($toko) {
+                return [
+                    'id' => $toko->ID_Toko,
+                    'name' => $toko->Nama_Toko,
+                    'lat' => $toko->latitude,
+                    'lng' => $toko->longitude,
+                    'address' => $toko->Lokasi_Toko,
+                    'distance' => round($toko->distance, 1),
+                    'url' => route('MarketPlace', $toko->ID_Toko)
+                ];
+            })
+        ]);
     }
 
     /**

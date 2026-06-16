@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html class="light" lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
+    <link rel="icon" type="image/png" href="{{ asset('img/LogoWebsite.png') }}"/>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Pasirku - Marketplace Material & Pasir Berkualitas</title>
@@ -76,9 +77,7 @@
         <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
             <!-- Brand Logo -->
             <a href="/" class="flex items-center gap-2 group">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary to-primary-container flex items-center justify-center text-white font-headline font-bold text-xl shadow-md group-hover:scale-105 transition-transform">
-                    P
-                </div>
+                <img src="{{ asset('img/LogoWebsite.png') }}" alt="Pasirku" class="h-10 w-auto group-hover:scale-105 transition-transform" />
                 <span class="font-headline font-extrabold text-2xl tracking-tight text-primary">Pasir<span class="text-primary-container">ku</span></span>
             </a>
 
@@ -113,6 +112,12 @@
 
     <!-- ===== HERO SECTION ===== -->
     <section class="pt-36 pb-24 md:pt-48 md:pb-32 overflow-hidden relative flex items-center justify-center min-h-[85vh]">
+        <!-- Blurred Background Image -->
+        <div class="absolute inset-0 -z-20 overflow-hidden">
+            <img src="{{ asset('img/TambangPasir.png') }}" alt="Background" class="w-full h-full object-cover blur-md scale-110" />
+            <div class="absolute inset-0 bg-surface/80 backdrop-blur-[2px]"></div>
+        </div>
+
         <!-- Decorative Ambient Blurs -->
         <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-tr from-primary-container/20 to-primary/10 rounded-full blur-[100px] pointer-events-none -z-10 animate-pulse" style="animation-duration: 8s;"></div>
         <div class="absolute top-20 left-10 w-72 h-72 bg-primary-container/15 rounded-full blur-3xl pointer-events-none -z-10"></div>
@@ -121,10 +126,10 @@
         <div class="max-w-4xl mx-auto px-6 flex flex-col items-center text-center gap-8 relative z-10">
             
             <!-- Badge Promo/Intro -->
-            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary font-semibold text-xs sm:text-sm tracking-wide uppercase shadow-sm border border-primary/20 animate-fade-in">
+            <!-- <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary font-semibold text-xs sm:text-sm tracking-wide uppercase shadow-sm border border-primary/20 animate-fade-in">
                 <span class="material-symbols-outlined text-[16px] sm:text-[18px]">verified</span>
                 Marketplace Pasir Terlengkap & Terpercaya
-            </div>
+            </div> -->
             
             <!-- Headline -->
             <h1 class="font-headline font-black text-4xl sm:text-6xl lg:text-7xl tracking-tight leading-[1.1] text-on-surface max-w-3xl drop-shadow-sm">
@@ -165,10 +170,10 @@
                     <span class="material-symbols-outlined text-primary text-xl">local_shipping</span>
                     <span class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Pengiriman Cepat</span>
                 </div>
-                <div class="flex items-center gap-2 bg-surface-container/60 px-4 py-2 rounded-2xl border border-outline-variant/10 shadow-sm backdrop-blur-sm">
+                <!-- <div class="flex items-center gap-2 bg-surface-container/60 px-4 py-2 rounded-2xl border border-outline-variant/10 shadow-sm backdrop-blur-sm">
                     <span class="material-symbols-outlined text-primary text-xl">map</span>
                     <span class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Lacak Real-Time</span>
-                </div>
+                </div> -->
             </div>
             
         </div>
@@ -270,9 +275,9 @@
                     <div class="w-12 h-12 rounded-full bg-primary text-white font-bold flex items-center justify-center font-headline text-lg shadow-md">
                         3
                     </div>
-                    <h4 class="font-headline font-bold text-lg text-on-surface">Hubungi Penjual</h4>
+                    <h4 class="font-headline font-bold text-lg text-on-surface">Memesan Pasir</h4>
                     <p class="text-xs text-on-surface-variant leading-relaxed max-w-[200px]">
-                        Gunakan fitur pesan atau hubungi langsung untuk menyepakati harga, jarak, dan metode bayar.
+                        Pilih jenis pasir yang dibutuhkan dan pesan secara online.
                     </p>
                 </div>
 
@@ -319,9 +324,7 @@
     <footer class="bg-on-surface text-surface-container py-12 border-t border-outline/30">
         <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
             <div class="flex items-center gap-2">
-                <div class="w-8 h-8 rounded-lg bg-primary-container flex items-center justify-center text-on-surface font-headline font-extrabold text-sm">
-                    P
-                </div>
+                <img src="{{ asset('img/LogoWebsite.png') }}" alt="Pasirku" class="h-8 w-auto" />
                 <span class="font-headline font-bold text-lg tracking-tight text-white">Pasir<span class="text-primary-container">ku</span></span>
             </div>
             <p class="text-xs text-outline-variant">© 2026 Pasirku Industrial Marketplace. All rights reserved.</p>

@@ -10,6 +10,7 @@ x-init="
 "
 :class="{ 'dark': darkMode }">
 <head>
+    <link rel="icon" type="image/png" href="{{ asset('img/LogoWebsite.png') }}"/>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <meta name="csrf-token" content="{{ csrf_token() }}"/>
@@ -141,18 +142,18 @@ tailwind.config = {
     --on-tertiary: #00344b;
     --on-tertiary-container: #c7e7ff;
     --surface: #09090b;
-    --surface-dim: #121415;
-    --surface-bright: #343a3b;
-    --surface-container-lowest: #18181b;
-    --surface-container-low: #27272a;
-    --surface-container: #3f3f46;
-    --surface-container-high: #52525b;
-    --surface-container-highest: #71717a;
-    --surface-variant: #52433d;
+    --surface-dim: #09090b;
+    --surface-bright: #09090b;
+    --surface-container-lowest: #09090b;
+    --surface-container-low: #18181b;
+    --surface-container: #27272a;
+    --surface-container-high: #3f3f46;
+    --surface-container-highest: #52525b;
+    --surface-variant: #27272a;
     --on-surface: #f4f4f5;
     --on-surface-variant: #a1a1aa;
-    --outline: #9e8d84;
-    --outline-variant: #3f3f46;
+    --outline: #52525b;
+    --outline-variant: #27272a;
     --inverse-surface: #e1e3e4;
     --inverse-on-surface: #191c1d;
     --inverse-primary: #944a00;
@@ -318,6 +319,8 @@ tailwind.config = {
     })();
   </script>
   @endif
+
+  @stack('modals')
 
   {{-- Scripts injected per-page --}}
   @stack('scripts')

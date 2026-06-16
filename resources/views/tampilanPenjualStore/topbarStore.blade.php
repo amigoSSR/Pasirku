@@ -5,7 +5,7 @@
     
     <!-- Brand / Logo -->
     <div class="flex items-center w-64 shrink-0">
-      <span class="font-headline-md text-xl font-bold text-primary dark:text-primary-fixed-dim uppercase tracking-tighter">Pasir Ku</span>
+      <img src="{{ asset('img/LogoWebsite.png') }}" alt="Pasirku" class="h-8 w-auto" />
     </div>
 
     <!-- Center & Right Side: Search and Profile -->

@@ -3,6 +3,7 @@
 <html class="light" lang="en">
 
 <head>
+    <link rel="icon" type="image/png" href="{{ asset('img/LogoWebsite.png') }}"/>
   <meta charset="utf-8" />
   <meta content="width=device-width, initial-scale=1.0" name="viewport" />
   <title>@yield('title', 'Dashboard') | Industrial Hub</title>
@@ -124,7 +125,7 @@
   class="bg-slate-50/80 backdrop-blur-lg fixed top-0 w-full z-[100] transition-transform duration-150 docked full-width flex justify-center">
   <div class="flex justify-between items-center w-full px-4 py-3 max-w-7xl mx-auto">
     <div class="flex items-center gap-8">
-      <span class="text-xl font-black tracking-tighter text-blue-900 uppercase">Pasir Ku</span>
+      <img src="{{ asset('img/LogoWebsite.png') }}" alt="Pasirku" class="h-8 w-auto" />
       <!-- Desktop Nav Cluster -->
       <nav class="hidden md:flex items-center gap-6">
         <a class="text-blue-800 font-bold text-sm tracking-wide" href="{{ route('MenuUtama') }}">Menu Utama</a>

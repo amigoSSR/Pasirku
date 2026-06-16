@@ -55,8 +55,11 @@
             @endphp
             <tr class="hover:bg-surface-container-low/40 transition-colors">
               <td class="px-6 py-4">
-                <p class="font-bold text-on-surface">{{ $store->Nama_Toko }}</p>
-                <p class="text-[10px] text-on-surface-variant line-clamp-1 max-w-xs">{{ $store->Lokasi_Toko }}</p>
+                <div onclick='window.dispatchEvent(new CustomEvent("open-store-edit-modal", { detail: { toko: @json($store) } }))'
+                     class="cursor-pointer group/store">
+                  <p class="font-bold text-on-surface group-hover/store:text-primary transition-colors">{{ $store->Nama_Toko }}</p>
+                  <p class="text-[10px] text-on-surface-variant line-clamp-1 max-w-xs group-hover/store:text-primary transition-colors">{{ $store->Lokasi_Toko }}</p>
+                </div>
               </td>
               <td class="px-6 py-4 text-xs font-medium">{{ $store->nama_pemilik ?? '-' }}</td>
               <td class="px-6 py-4 text-xs font-bold text-error">{{ \Carbon\Carbon::parse($store->aktif_sampai)->format('d M Y') }}</td>
@@ -111,8 +114,11 @@
             <tr class="hover:bg-surface-container-low/40 transition-colors">
               <td class="px-6 py-4 text-xs">{{ $payment->created_at->format('d M Y, H:i') }}</td>
               <td class="px-6 py-4">
-                <p class="font-bold text-on-surface">{{ $payment->toko->Nama_Toko ?? '-' }}</p>
-                <p class="text-[10px] text-on-surface-variant">Masa Aktif: {{ $payment->toko->aktif_sampai ? \Carbon\Carbon::parse($payment->toko->aktif_sampai)->format('d M Y') : 'Belum aktif' }}</p>
+                <div onclick='window.dispatchEvent(new CustomEvent("open-store-edit-modal", { detail: { toko: @json($payment->toko) } }))'
+                     class="cursor-pointer group/store">
+                  <p class="font-bold text-on-surface group-hover/store:text-primary transition-colors">{{ $payment->toko->Nama_Toko ?? '-' }}</p>
+                  <p class="text-[10px] text-on-surface-variant">Masa Aktif: {{ $payment->toko->aktif_sampai ? \Carbon\Carbon::parse($payment->toko->aktif_sampai)->format('d M Y') : 'Belum aktif' }}</p>
+                </div>
               </td>
               <td class="px-6 py-4 font-bold text-primary">Rp {{ number_format($payment->jumlah_komisi, 0, ',', '.') }}</td>
               <td class="px-6 py-4">

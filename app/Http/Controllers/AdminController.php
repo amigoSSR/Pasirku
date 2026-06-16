@@ -182,11 +182,8 @@ class AdminController extends Controller
             'qris_admin' => 'required|image|mimes:jpeg,png,jpg,webp|max:5120',
         ]);
 
-        $admin = Auth::user();
-
-        if ($admin->qris_admin && \Illuminate\Support\Facades\Storage::disk('public')->exists($admin->qris_admin)) {
-            \Illuminate\Support\Facades\Storage::disk('public')->delete($admin->qris_admin);
-        }
+        $currentAdmin = Auth::user();
+        $oldQris = $currentAdmin->qris_admin;
 
         // Konversi ke WebP
         $file    = $request->file('qris_admin');
@@ -210,11 +207,19 @@ class AdminController extends Controller
         imagewebp($source, $fullPath, 80);
         imagedestroy($source);
 
-        $admin->update([
-            'qris_admin' => "admin_settings/{$namaFile}"
+        $newPath = "admin_settings/{$namaFile}";
+
+        // Update SEMUA admin agar QRIS seragam sebagai settingan platform
+        \App\Models\User::where('Role', 'admin')->update([
+            'qris_admin' => $newPath
         ]);
 
-        return back()->with('success', 'QRIS Admin berhasil diperbarui.');
+        // Hapus file lama jika ada
+        if ($oldQris && \Illuminate\Support\Facades\Storage::disk('public')->exists($oldQris)) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($oldQris);
+        }
+
+        return back()->with('success', 'QRIS Admin berhasil diperbarui untuk seluruh sistem.');
     }
 
     /**

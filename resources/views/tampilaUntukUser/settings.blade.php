@@ -1,3 +1,65 @@
+@push('head')
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+@endpush
+
+@push('scripts')
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const latInput = document.getElementById('lat');
+        const lngInput = document.getElementById('lng');
+        const btnGetCurrent = document.getElementById('btn-get-current');
+        
+        const initialLat = parseFloat(latInput.value) || -5.147665;
+        const initialLng = parseFloat(lngInput.value) || 119.432731;
+
+        const map = L.map('location-picker-map').setView([initialLat, initialLng], 13);
+        
+        L.tileLayer('https://{s}.google.com/vt?lyrs=m&x={x}&y={y}&z={z}', {
+            maxZoom: 20,
+            subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+        }).addTo(map);
+
+        let marker = L.marker([initialLat, initialLng], { draggable: true }).addTo(map);
+
+        function updateInputs(lat, lng) {
+            latInput.value = lat.toFixed(8);
+            lngInput.value = lng.toFixed(8);
+        }
+
+        marker.on('dragend', function(e) {
+            const pos = e.target.getLatLng();
+            updateInputs(pos.lat, pos.lng);
+        });
+
+        map.on('click', function(e) {
+            marker.setLatLng(e.latlng);
+            updateInputs(e.latlng.lat, e.latlng.lng);
+        });
+
+        btnGetCurrent.addEventListener('click', function() {
+            if (navigator.geolocation) {
+                const icon = this.querySelector('.material-symbols-outlined');
+                icon.classList.add('animate-spin');
+                
+                navigator.geolocation.getCurrentPosition(function(pos) {
+                    const lat = pos.coords.latitude;
+                    const lng = pos.coords.longitude;
+                    
+                    marker.setLatLng([lat, lng]);
+                    map.setView([lat, lng], 15);
+                    updateInputs(lat, lng);
+                    icon.classList.remove('animate-spin');
+                }, function() {
+                    icon.classList.remove('animate-spin');
+                    alert('Gagal mengambil lokasi saat ini.');
+                });
+            }
+        });
+    });
+</script>
+@endpush
+
 <x-layout-user title="Pengaturan">
     <div class="px-6 md:px-8">
         {{-- Breadcrumb --}}
@@ -52,6 +114,61 @@
                         </button>
                     </div>
                 </div>
+            </section>
+
+            {{-- Location Section --}}
+            <section class="bg-surface-container-lowest dark:bg-zinc-900 rounded-2xl p-6 border border-outline-variant/30 dark:border-zinc-800 shadow-sm">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-10 h-10 bg-primary/10 dark:bg-primary/20 rounded-xl flex items-center justify-center text-primary dark:text-primary-fixed">
+                        <span class="material-symbols-outlined text-[22px]" style="font-variation-settings:'FILL' 1">location_on</span>
+                    </div>
+                    <div>
+                        <h2 class="font-headline font-bold text-on-surface dark:text-zinc-100">Lokasi Default</h2>
+                        <p class="text-on-surface-variant dark:text-zinc-400 text-xs">Simpan lokasi Anda untuk pencarian toko terdekat saat GPS tidak aktif.</p>
+                    </div>
+                </div>
+
+                <form action="{{ route('profile.update-location') }}" method="POST" class="space-y-4">
+                    @csrf
+                    @method('PATCH')
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-1.5">
+                            <label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest px-1">Latitude</label>
+                            <input type="text" name="latitude" id="lat" value="{{ Auth::user()->latitude }}" readonly
+                                class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all">
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest px-1">Longitude</label>
+                            <input type="text" name="longitude" id="lng" value="{{ Auth::user()->longitude }}" readonly
+                                class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all">
+                        </div>
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest px-1">Detail Alamat</label>
+                        <textarea name="detail_alamat" id="address" rows="2" 
+                            class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all resize-none"
+                            placeholder="Contoh: Perumahan Gading, Blok A1 No. 5">{{ Auth::user()->detail_alamat }}</textarea>
+                    </div>
+
+                    {{-- Map for selection --}}
+                    <div class="h-64 w-full rounded-2xl border border-outline-variant/20 overflow-hidden relative" id="location-picker-map"></div>
+                    <p class="text-[10px] text-on-surface-variant italic leading-relaxed">
+                        * Klik pada peta untuk menentukan lokasi default Anda, atau gunakan tombol "Ambil Lokasi Saat Ini" di bawah.
+                    </p>
+
+                    <div class="flex flex-col sm:flex-row gap-3 pt-2">
+                        <button type="button" id="btn-get-current" class="flex-1 bg-surface-container-high text-on-surface font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-2 hover:bg-surface-container-highest transition-all">
+                            <span class="material-symbols-outlined text-[18px]">my_location</span>
+                            Ambil Lokasi Saat Ini
+                        </button>
+                        <button type="submit" class="flex-1 bg-primary text-on-primary font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-2 hover:opacity-90 transition-all shadow-sm">
+                            <span class="material-symbols-outlined text-[18px]">save</span>
+                            Simpan Lokasi
+                        </button>
+                    </div>
+                </form>
             </section>
 
             {{-- Logout Section --}}

@@ -113,7 +113,7 @@
           {{-- Sort --}}
           <div class="flex-shrink-0">
             <select name="sort" onchange="document.getElementById('filterForm').submit()"
-              class="bg-surface-container border-none rounded-xl px-3 py-2.5 text-sm font-semibold text-on-surface-variant focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer">
+              class="bg-surface-container border-none rounded-xl pl-3 pr-10 py-2.5 text-sm font-semibold text-on-surface-variant focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer">
               <option value="terbaru" {{ request('sort', 'terbaru') === 'terbaru' ? 'selected' : '' }}>Terbaru</option>
               <option value="terlama" {{ request('sort') === 'terlama' ? 'selected' : '' }}>Terlama</option>
             </select>
@@ -383,11 +383,14 @@
       </div>
     @endif
 
+  </div>
+
+  @push('modals')
     {{-- ===== REVIEW MODAL ===== --}}
     <div id="reviewModal" class="fixed inset-0 z-[100] hidden overflow-y-auto">
       <div class="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity" onclick="closeReviewModal()"></div>
-      <div class="flex min-h-full items-center justify-center p-4">
-        <div class="relative w-full max-w-lg bg-surface-container-lowest rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
+      <div class="flex min-h-full items-start justify-center p-4 sm:items-center">
+        <div class="relative w-full max-w-lg bg-surface-container-lowest rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300 my-auto">
           
           {{-- Header --}}
           <div class="px-6 py-5 border-b border-outline-variant/20 flex items-center justify-between">
@@ -460,8 +463,7 @@
         </div>
       </div>
     </div>
-
-  </div>
+  @endpush
 
   @push('scripts')
   <script>
@@ -470,6 +472,7 @@
     const stars = document.querySelectorAll('.star-icon');
     const ratingInput = document.getElementById('ratingInput');
     const ratingLabel = document.getElementById('ratingLabel');
+    const mainContainer = document.querySelector('main');
     const labels = ['', 'Sangat Buruk', 'Buruk', 'Cukup', 'Baik', 'Sangat Baik'];
 
     function openReviewModal(orderId, review = null) {
@@ -492,12 +495,15 @@
         }
 
         modal.classList.remove('hidden');
+        // Lock both body and main container if it's the scrolling element
         document.body.style.overflow = 'hidden';
+        if (mainContainer) mainContainer.style.overflow = 'hidden';
     }
 
     function closeReviewModal() {
         modal.classList.add('hidden');
-        document.body.style.overflow = 'auto';
+        document.body.style.overflow = '';
+        if (mainContainer) mainContainer.style.overflow = '';
     }
 
     function setRating(val) {

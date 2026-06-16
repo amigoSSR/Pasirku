@@ -93,6 +93,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // User Routes
     Route::middleware(['role:user'])->group(function () {
         Route::get('/MenuUtama', [MenuUtamaController::class, 'index'])->name('MenuUtama');
+        Route::get('/nearby-stores', [MenuUtamaController::class, 'nearbyStores'])->name('nearby-stores');
         Route::get('/keranjang', fn() => view('tampilaUntukUser.keranjang'))->name('keranjang');
         Route::post('/keranjang/konfirmasi', [PesananController::class, 'store'])->name('pesanan.store');
         Route::get('/Pesan', fn() => view('tampilaUntukUser.Pesan'))->name('Pesan');
@@ -106,6 +107,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             return view('tampilaUntukUser.profil', compact('toko'));
         })->name('Profil');
         Route::get('/settings', [ProfileController::class, 'settings'])->name('user.settings');
+        Route::patch('/settings/location', [ProfileController::class, 'updateLocation'])->name('profile.update-location');
         Route::get('/daftarPenjual', [\App\Http\Controllers\StoreRegistrationController::class, 'showForm'])
             ->name('daftarPenjual')
             ->middleware('check.store.registration');
