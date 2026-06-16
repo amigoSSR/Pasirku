@@ -6,7 +6,7 @@
     <link rel="icon" type="image/png" href="{{ asset('img/LogoWebsite.png') }}"/>
   <meta charset="utf-8" />
   <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-  <title>@yield('title', 'Dashboard') | Industrial Hub</title>
+  <title>@yield('title', 'Dashboard') | Pasirku</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
   <!-- Fonts -->

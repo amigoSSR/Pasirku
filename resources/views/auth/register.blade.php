@@ -120,6 +120,11 @@
         input:focus {
             box-shadow: 0 0 0 2px rgba(212, 163, 115, 0.2);
         }
+        /* Sembunyikan icon mata bawaan browser agar tidak double */
+        input::-ms-reveal,
+        input::-ms-clear {
+            display: none;
+        }
     </style>
 </head>
 <body class="bg-background text-on-surface font-body-md min-h-screen flex flex-col overflow-x-hidden">

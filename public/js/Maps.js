@@ -62,6 +62,33 @@
         });
     }
 
+    // Realtime location tracking — terus pantau perubahan lokasi pengguna
+    var watchId = null;
+    if (navigator.geolocation) {
+        watchId = navigator.geolocation.watchPosition(function(pos) {
+            var newLat = pos.coords.latitude;
+            var newLon = pos.coords.longitude;
+
+            // Hanya update jika posisi berubah signifikan (~10 meter)
+            var moved = !userLat || !userLon ||
+                        Math.abs(newLat - userLat) > 0.0001 ||
+                        Math.abs(newLon - userLon) > 0.0001;
+
+            if (moved) {
+                userLat = newLat;
+                userLon = newLon;
+                updateUserMarker(userLat, userLon);
+                fetchNearbyStores();
+            }
+        }, function(err) {
+            console.warn('watchPosition error:', err.message);
+        }, {
+            enableHighAccuracy: true,
+            maximumAge: 10000,
+            timeout: 15000
+        });
+    }
+
     /**
      * Fetch nearby stores via AJAX
      */

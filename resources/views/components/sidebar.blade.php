@@ -10,7 +10,7 @@
     $isStore = \Illuminate\Support\Facades\Auth::check() && (\Illuminate\Support\Facades\Auth::user()->Role === 'store' || \Illuminate\Support\Facades\Auth::user()->Role === 'seller');
     
     // Ambil data toko jika login sebagai seller
-    $storeName = 'Industrial Hub';
+    $storeName = 'Pasirku';
     if ($isStore) {
         $toko = \App\Models\Toko::where('ID_Akun', \Illuminate\Support\Facades\Auth::id())->first();
         if ($toko) {
