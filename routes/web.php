@@ -84,6 +84,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             
         // Komisi Management
         Route::post('/admin/upload-qris', [AdminController::class, 'uploadAdminQris'])->name('admin.uploadQris');
+        Route::delete('/admin/delete-qris', [AdminController::class, 'deleteAdminQris'])->name('admin.deleteQris');
         Route::get('/admin/komisi', [AdminController::class, 'komisiPayments'])->name('admin.komisi');
         Route::put('/admin/komisi/{id}/confirm', [AdminController::class, 'confirmKomisi'])->name('admin.komisi.confirm');
         Route::put('/admin/komisi/{id}/reject', [AdminController::class, 'rejectKomisi'])->name('admin.komisi.reject');

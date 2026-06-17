@@ -71,8 +71,19 @@
         @if(Auth::user()->qris_admin)
         <div class="shrink-0 space-y-2">
           <p class="text-xs font-bold text-on-surface-variant uppercase tracking-wide">QRIS Saat Ini:</p>
-          <div class="w-32 h-32 rounded-xl border border-outline-variant/30 overflow-hidden bg-surface-container-low flex items-center justify-center">
+          <div class="w-32 h-32 rounded-xl border border-outline-variant/30 overflow-hidden bg-surface-container-low flex items-center justify-center relative group">
             <img src="{{ Storage::url(Auth::user()->qris_admin) }}" alt="QRIS Admin" class="w-full h-full object-cover">
+            
+            {{-- Delete Button Overlay --}}
+            <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+              <form action="{{ route('admin.deleteQris') }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus QRIS ini?');">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="bg-error text-on-error p-2 rounded-full hover:bg-red-600 transition-colors shadow-lg flex items-center justify-center" title="Hapus QRIS">
+                  <span class="material-symbols-outlined text-[20px]" style="font-variation-settings:'FILL' 1">delete</span>
+                </button>
+              </form>
+            </div>
           </div>
         </div>
         @endif

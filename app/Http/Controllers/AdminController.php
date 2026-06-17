@@ -223,6 +223,27 @@ class AdminController extends Controller
     }
 
     /**
+     * Hapus QRIS Admin.
+     */
+    public function deleteAdminQris()
+    {
+        $currentAdmin = Auth::user();
+        $oldQris = $currentAdmin->qris_admin;
+
+        // Update SEMUA admin agar QRIS dihapus seragam sebagai settingan platform
+        \App\Models\User::where('Role', 'admin')->update([
+            'qris_admin' => null
+        ]);
+
+        // Hapus file lama jika ada
+        if ($oldQris && \Illuminate\Support\Facades\Storage::disk('public')->exists($oldQris)) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($oldQris);
+        }
+
+        return back()->with('success', 'QRIS Admin berhasil dihapus.');
+    }
+
+    /**
      * Halaman manajemen komisi.
      */
     public function komisiPayments()
