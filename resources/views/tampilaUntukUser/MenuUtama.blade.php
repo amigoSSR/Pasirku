@@ -60,6 +60,13 @@
       <div id="shop-card-list" class="grid grid-cols-1 md:grid-cols-1 xl:grid-cols-2 gap-4">
         @include('tampilaUntukUser.partials.store-list', ['tokoList' => $tokoList])
       </div>
+
+      {{-- Pesan ketika hasil pencarian kosong (client-side) --}}
+      <div id="no-result-msg" class="hidden col-span-full text-center py-16">
+        <span class="material-symbols-outlined text-5xl text-outline mb-3 block">search_off</span>
+        <p class="text-on-surface-variant font-semibold">Toko tidak ditemukan dengan nama tersebut</p>
+        <p class="text-outline text-sm mt-1">Coba gunakan kata kunci lain</p>
+      </div>
     </section>
 
     {{-- Right: Map --}}
