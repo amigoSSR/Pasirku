@@ -66,6 +66,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Store Settings
         Route::get('/store/settings', [\App\Http\Controllers\StoreProfileController::class, 'showSettings'])->name('store.settings');
+
+        // Shipping Rate Routes
+        Route::get('/shipping-rates', [\App\Http\Controllers\ShippingRateController::class, 'index'])->name('shipping-rates.index');
+        Route::post('/shipping-rates', [\App\Http\Controllers\ShippingRateController::class, 'store'])->name('shipping-rates.store');
+        Route::put('/shipping-rates/{id}', [\App\Http\Controllers\ShippingRateController::class, 'update'])->name('shipping-rates.update');
+        Route::patch('/shipping-rates/{id}/toggle', [\App\Http\Controllers\ShippingRateController::class, 'toggleStatus'])->name('shipping-rates.toggle');
+        Route::delete('/shipping-rates/{id}', [\App\Http\Controllers\ShippingRateController::class, 'destroy'])->name('shipping-rates.destroy');
     });
     // Admin Routes
     Route::middleware(['role:admin,cs'])->group(function () {
@@ -117,20 +124,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->name('daftarPenjual.store')
             ->middleware('check.store.registration');
 
-        // Shipping Rate Routes
-        Route::get('/shipping-rates', [\App\Http\Controllers\ShippingRateController::class, 'index'])->name('shipping-rates.index');
-        Route::post('/shipping-rates', [\App\Http\Controllers\ShippingRateController::class, 'store'])->name('shipping-rates.store');
-        Route::put('/shipping-rates/{id}', [\App\Http\Controllers\ShippingRateController::class, 'update'])->name('shipping-rates.update');
-        Route::patch('/shipping-rates/{id}/toggle', [\App\Http\Controllers\ShippingRateController::class, 'toggleStatus'])->name('shipping-rates.toggle');
-        Route::delete('/shipping-rates/{id}', [\App\Http\Controllers\ShippingRateController::class, 'destroy'])->name('shipping-rates.destroy');
-
         // Review Routes
         Route::post('/reviews', [\App\Http\Controllers\ReviewController::class, 'store'])->name('reviews.store');
         Route::put('/reviews/{id}', [\App\Http\Controllers\ReviewController::class, 'update'])->name('reviews.update');
     });
 
-    // Store API Routes
-    Route::get('/api/store/{id}/qris', [Toko::class, 'getQrisApi']); // Assuming this is defined somewhere or moved
+    // Store API Routes (accessible by user role for checkout)
+    Route::get('/api/store/{id}/qris', [QrisController::class, 'getQrisUrl'])->name('api.store.qris');
     Route::get('/api/store/{id}/shipping-rates', function($id) {
         $toko = \App\Models\Toko::findOrFail($id);
         return response()->json([
@@ -148,8 +148,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/api/notifications/count', [NotificationController::class, 'unreadCount'])->name('api.notifications.count');
     Route::get('/api/riwayat/count', [NotificationController::class, 'riwayatCount'])->name('api.riwayat.count');
 
-    // Public API for Checkout (Requires Auth)
-    Route::get('/api/store/{id}/qris', [QrisController::class, 'getQrisUrl'])->name('api.store.qris');
+    // Shipping rates public API
 });
 
 Route::middleware('auth')->group(function () {

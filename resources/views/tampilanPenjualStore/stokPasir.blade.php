@@ -300,14 +300,12 @@ function renderTable(data) {
       <td class="px-5 py-4 text-center">
         <div class="flex flex-col items-center gap-1">
           <span class="text-xs font-semibold text-on-surface-variant">Rp ${Number(p.ongkir_pickup).toLocaleString('id-ID')}</span>
-          <button onclick="openModal('ongkir', ${p.id}, 'pickup')" class="text-[10px] font-bold text-on-surface-variant hover:text-primary underline uppercase tracking-tighter">Ubah</button>
         </div>
       </td>
       <td class="px-5 py-4 text-center font-bold text-on-surface">${p.stock_truck}</td>
       <td class="px-5 py-4 text-center">
         <div class="flex flex-col items-center gap-1">
           <span class="text-xs font-semibold text-on-surface-variant">Rp ${Number(p.ongkir_truck).toLocaleString('id-ID')}</span>
-          <button onclick="openModal('ongkir', ${p.id}, 'truck')" class="text-[10px] font-bold text-on-surface-variant hover:text-primary underline uppercase tracking-tighter">Ubah</button>
         </div>
       </td>
       <td class="px-5 py-4 text-center">

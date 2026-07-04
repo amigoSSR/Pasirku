@@ -35,6 +35,10 @@ class CheckoutController extends Controller
         $maxOngTruck = 0;
         $namaProdukArray = [];
 
+        $shippingRates = \App\Models\ShippingRate::where('ID_Toko', $toko->ID_Toko)->where('is_active', true)->get();
+        $ongkirPickupRate = $shippingRates->where('vehicle_type', 'pickup')->first()?->shipping_cost ?? 0;
+        $ongkirTruckRate = $shippingRates->where('vehicle_type', 'truck')->first()?->shipping_cost ?? 0;
+
         foreach ($items as $item) {
             $lineTotal = $item['harga'] * $item['qty'];
             $totalHarga += $lineTotal;
@@ -43,16 +47,14 @@ class CheckoutController extends Controller
 
             if ($item['type'] === 'pickup') {
                 $qtyPickUp += $item['qty'];
-                $maxOngPick = max($maxOngPick, $item['ongkir'] ?? 0);
             } else {
                 $qtyTruck += $item['qty'];
-                $maxOngTruck = max($maxOngTruck, $item['ongkir'] ?? 0);
             }
         }
 
-        // Shipping Calculation: Use max product ongkir or fallback to store default, multiplied by quantity
-        $ongkirPickUpTotal = $qtyPickUp > 0 ? ($maxOngPick ?: $toko->Ongkir_PickUp) * $qtyPickUp : 0;
-        $ongkirTruckTotal = $qtyTruck > 0 ? ($maxOngTruck ?: $toko->Ongkir_Truck) * $qtyTruck : 0;
+        // Shipping Calculation: Use store's shipping rates multiplied by quantity
+        $ongkirPickUpTotal = $qtyPickUp > 0 ? $ongkirPickupRate * $qtyPickUp : 0;
+        $ongkirTruckTotal = $qtyTruck > 0 ? $ongkirTruckRate * $qtyTruck : 0;
         
         $totalOngkir = $ongkirPickUpTotal + $ongkirTruckTotal;
         $grandTotal = $totalHarga + $totalOngkir;

@@ -254,6 +254,9 @@
           $kubikasiTruck = $produk->Kubikasi_Truck ?? 1;
           $hargaKendaraanPickUp = $produk->Harga * $kubikasiPickUp;
           $hargaKendaraanTruck = $produk->Harga * $kubikasiTruck;
+          
+          $displayHargaPickUp = $hargaKendaraanPickUp + $ongkirPickup;
+          $displayHargaTruck = $hargaKendaraanTruck + $ongkirTruck;
         @endphp
         <div class="stat-card group bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant/30 hover:border-primary/30 transition-all duration-300 flex flex-col overflow-hidden">
 
@@ -265,8 +268,11 @@
             @else
               <span class="material-symbols-outlined text-7xl text-primary/20 group-hover:text-primary/40 transition-all duration-300 group-hover:scale-110 transform">landscape</span>
             @endif
-            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent p-4">
+            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-4">
               <h3 class="font-headline font-bold text-lg text-white tracking-tight drop-shadow-md">{{ $produk->Nama_Pasir }}</h3>
+              @if($produk->Deskripsi)
+                <p class="text-[10px] text-white/80 mt-1 line-clamp-2 leading-relaxed drop-shadow-sm">{{ $produk->Deskripsi }}</p>
+              @endif
             </div>
           </div>
 
@@ -284,7 +290,7 @@
               <div class="flex flex-col gap-0.5">
                 <div class="text-[9px] text-on-surface-variant uppercase font-semibold">Harga per {{ (float)$kubikasiPickUp }} m³</div>
                 <div class="text-base font-headline font-extrabold text-on-surface tracking-tight">
-                  Rp {{ number_format($hargaKendaraanPickUp, 0, ',', '.') }}
+                  Rp {{ number_format($displayHargaPickUp, 0, ',', '.') }}
                 </div>
               </div>
               
@@ -300,17 +306,17 @@
                 @if($produk->Stock_PickUp > 0)
                 <button
                   id="btn-add-pickup-{{ $produk->ID_Isi_Toko }}"
-                  onclick="addToCart('{{ $produk->ID_Isi_Toko }}', 'pickup', {{ $hargaKendaraanPickUp }}, {{ $produk->Stock_PickUp }}, '{{ $produk->Nama_Pasir }}', {{ $produk->Ongkir_PickUp ?? 0 }})"
+                  onclick="addToCart('{{ $produk->ID_Isi_Toko }}', 'pickup', {{ $hargaKendaraanPickUp }}, {{ $produk->Stock_PickUp }}, '{{ $produk->Nama_Pasir }}', 0)"
                   class="qty-control w-full bg-tertiary text-on-tertiary py-1.5 rounded-lg text-xs font-semibold hover:bg-tertiary-container transition-colors flex items-center justify-center gap-1 active:scale-95 duration-200">
                   <span class="material-symbols-outlined text-[14px]">add_shopping_cart</span>
                   Pesan
                 </button>
                 <div id="qty-pickup-{{ $produk->ID_Isi_Toko }}"
                      class="qty-control hidden w-full flex items-center justify-between bg-tertiary text-on-tertiary rounded-lg overflow-hidden">
-                  <button onclick="changeQty('{{ $produk->ID_Isi_Toko }}', 'pickup', -1, {{ $produk->Stock_PickUp }}, '{{ $produk->Nama_Pasir }}', {{ $hargaKendaraanPickUp }}, {{ $produk->Ongkir_PickUp ?? 0 }})"
+                  <button onclick="changeQty('{{ $produk->ID_Isi_Toko }}', 'pickup', -1, {{ $produk->Stock_PickUp }}, '{{ $produk->Nama_Pasir }}', {{ $hargaKendaraanPickUp }}, 0)"
                           class="px-2.5 py-1.5 text-base font-black hover:bg-on-tertiary/10 transition-colors active:bg-on-tertiary/20 select-none">−</button>
                   <span id="qty-num-pickup-{{ $produk->ID_Isi_Toko }}" class="font-bold text-xs">1</span>
-                  <button onclick="changeQty('{{ $produk->ID_Isi_Toko }}', 'pickup', +1, {{ $produk->Stock_PickUp }}, '{{ $produk->Nama_Pasir }}', {{ $hargaKendaraanPickUp }}, {{ $produk->Ongkir_PickUp ?? 0 }})"
+                  <button onclick="changeQty('{{ $produk->ID_Isi_Toko }}', 'pickup', +1, {{ $produk->Stock_PickUp }}, '{{ $produk->Nama_Pasir }}', {{ $hargaKendaraanPickUp }}, 0)"
                           class="px-2.5 py-1.5 text-base font-black hover:bg-on-tertiary/10 transition-colors active:bg-on-tertiary/20 select-none">+</button>
                 </div>
                 @else
@@ -332,7 +338,7 @@
               <div class="flex flex-col gap-0.5">
                 <div class="text-[9px] text-on-surface-variant uppercase font-semibold">Harga per {{ (float)$kubikasiTruck }} m³</div>
                 <div class="text-base font-headline font-extrabold text-on-surface tracking-tight">
-                  Rp {{ number_format($hargaKendaraanTruck, 0, ',', '.') }}
+                  Rp {{ number_format($displayHargaTruck, 0, ',', '.') }}
                 </div>
               </div>
 
@@ -348,17 +354,17 @@
                 @if($produk->Stock_Truck > 0)
                 <button
                   id="btn-add-truck-{{ $produk->ID_Isi_Toko }}"
-                  onclick="addToCart('{{ $produk->ID_Isi_Toko }}', 'truck', {{ $hargaKendaraanTruck }}, {{ $produk->Stock_Truck }}, '{{ $produk->Nama_Pasir }}', {{ $produk->Ongkir_Truck ?? 0 }})"
+                  onclick="addToCart('{{ $produk->ID_Isi_Toko }}', 'truck', {{ $hargaKendaraanTruck }}, {{ $produk->Stock_Truck }}, '{{ $produk->Nama_Pasir }}', 0)"
                   class="qty-control w-full bg-primary text-on-primary py-1.5 rounded-lg text-xs font-semibold hover:bg-primary-container transition-colors flex items-center justify-center gap-1 active:scale-95 duration-200">
                   <span class="material-symbols-outlined text-[14px]">add_shopping_cart</span>
                   Pesan
                 </button>
                 <div id="qty-truck-{{ $produk->ID_Isi_Toko }}"
                      class="qty-control hidden w-full flex items-center justify-between bg-primary text-on-primary rounded-lg overflow-hidden">
-                  <button onclick="changeQty('{{ $produk->ID_Isi_Toko }}', 'truck', -1, {{ $produk->Stock_Truck }}, '{{ $produk->Nama_Pasir }}', {{ $hargaKendaraanTruck }}, {{ $produk->Ongkir_Truck ?? 0 }})"
+                  <button onclick="changeQty('{{ $produk->ID_Isi_Toko }}', 'truck', -1, {{ $produk->Stock_Truck }}, '{{ $produk->Nama_Pasir }}', {{ $hargaKendaraanTruck }}, 0)"
                           class="px-2.5 py-1.5 text-base font-black hover:bg-on-primary/10 transition-colors active:bg-on-primary/20 select-none">−</button>
                   <span id="qty-num-truck-{{ $produk->ID_Isi_Toko }}" class="font-bold text-xs">1</span>
-                  <button onclick="changeQty('{{ $produk->ID_Isi_Toko }}', 'truck', +1, {{ $produk->Stock_Truck }}, '{{ $produk->Nama_Pasir }}', {{ $hargaKendaraanTruck }}, {{ $produk->Ongkir_Truck ?? 0 }})"
+                  <button onclick="changeQty('{{ $produk->ID_Isi_Toko }}', 'truck', +1, {{ $produk->Stock_Truck }}, '{{ $produk->Nama_Pasir }}', {{ $hargaKendaraanTruck }}, 0)"
                           class="px-2.5 py-1.5 text-base font-black hover:bg-on-primary/10 transition-colors active:bg-on-primary/20 select-none">+</button>
                 </div>
                 @else
@@ -410,8 +416,8 @@
       id: {{ $toko->ID_Toko }},
       nama: @json($toko->Nama_Toko),
       lokasi: @json($toko->Lokasi_Toko),
-      ongkirPickUp: {{ $toko->Ongkir_PickUp }},
-      ongkirTruck: {{ $toko->Ongkir_Truck }},
+      ongkirPickUp: {{ $ongkirPickup }},
+      ongkirTruck: {{ $ongkirTruck }},
       latitude: {{ $toko->latitude ?? 'null' }},
       longitude: {{ $toko->longitude ?? 'null' }},
     };

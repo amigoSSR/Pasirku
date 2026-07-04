@@ -80,7 +80,7 @@
             @empty
               <tr>
                 <td colspan="6" class="px-6 py-20 text-center">
-                  <span class="material-symbols-outlined text-5xl text-outline-variant mb-4">local_shipping</span>
+                  <span class="material-symbols-outlined text-5xl text-outline-variant mb-4 block">local_shipping</span>
                   <p class="text-on-surface-variant font-medium">Belum ada tarif ongkir yang diatur.</p>
                 </td>
               </tr>
@@ -92,7 +92,8 @@
   </div>
 
   {{-- Add Modal --}}
-  <div id="addRateModal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+  <div id="addRateModal" class="fixed inset-0 z-[100] hidden" style="display:none">
+    <div class="flex items-center justify-center min-h-full w-full p-4 bg-black/60 backdrop-blur-sm">
     <div class="bg-surface-container-lowest rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in duration-200">
       <div class="px-6 py-5 border-b flex justify-between items-center">
         <h3 class="text-xl font-black text-on-surface">Tambah Tarif Ongkir</h3>
@@ -118,13 +119,19 @@
         <div>
           <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-2">Satuan Harga</label>
           <div class="grid grid-cols-2 gap-3">
-             <label class="flex items-center gap-2 p-3 rounded-xl bg-surface-container cursor-pointer border-2 border-transparent has-[:checked]:border-primary/50 has-[:checked]:bg-primary/5 transition-all">
-               <input type="radio" name="unit" value="per_trip" checked class="hidden">
-               <span class="text-xs font-bold text-on-surface">Per Perjalanan</span>
+             <label class="relative flex items-center justify-between p-3 rounded-xl bg-surface-container cursor-pointer border-2 border-transparent has-[:checked]:border-primary/50 has-[:checked]:bg-primary/5 transition-all duration-300 active:scale-95 hover:bg-surface-container-high">
+               <input type="radio" name="unit" value="per_trip" checked class="hidden peer">
+               <span class="text-xs font-bold text-on-surface peer-checked:text-primary transition-colors duration-300">Per Perjalanan</span>
+               <div class="w-5 h-5 rounded-full border-2 border-on-surface-variant/30 flex items-center justify-center peer-checked:border-primary peer-checked:bg-primary transition-all duration-300">
+                 <span class="material-symbols-outlined text-[14px] text-white opacity-0 scale-50 peer-checked:opacity-100 peer-checked:scale-100 transition-all duration-300 delay-75">check</span>
+               </div>
              </label>
-             <label class="flex items-center gap-2 p-3 rounded-xl bg-surface-container cursor-pointer border-2 border-transparent has-[:checked]:border-primary/50 has-[:checked]:bg-primary/5 transition-all">
-               <input type="radio" name="unit" value="per_km" class="hidden">
-               <span class="text-xs font-bold text-on-surface">Per KM</span>
+             <label class="relative flex items-center justify-between p-3 rounded-xl bg-surface-container cursor-pointer border-2 border-transparent has-[:checked]:border-primary/50 has-[:checked]:bg-primary/5 transition-all duration-300 active:scale-95 hover:bg-surface-container-high">
+               <input type="radio" name="unit" value="per_km" class="hidden peer">
+               <span class="text-xs font-bold text-on-surface peer-checked:text-primary transition-colors duration-300">Per KM</span>
+               <div class="w-5 h-5 rounded-full border-2 border-on-surface-variant/30 flex items-center justify-center peer-checked:border-primary peer-checked:bg-primary transition-all duration-300">
+                 <span class="material-symbols-outlined text-[14px] text-white opacity-0 scale-50 peer-checked:opacity-100 peer-checked:scale-100 transition-all duration-300 delay-75">check</span>
+               </div>
              </label>
           </div>
         </div>
@@ -134,9 +141,11 @@
       </form>
     </div>
   </div>
+  </div>
 
   {{-- Edit Modal --}}
-  <div id="editRateModal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+  <div id="editRateModal" class="fixed inset-0 z-[100] hidden" style="display:none">
+    <div class="flex items-center justify-center min-h-full w-full p-4 bg-black/60 backdrop-blur-sm">
     <div class="bg-surface-container-lowest rounded-3xl shadow-2xl w-full max-w-md overflow-hidden">
       <div class="px-6 py-5 border-b flex justify-between items-center">
         <h3 class="text-xl font-black text-on-surface">Edit Tarif Ongkir</h3>
@@ -162,13 +171,19 @@
         <div>
           <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-2">Satuan Harga</label>
           <div class="grid grid-cols-2 gap-3">
-             <label class="flex items-center gap-2 p-3 rounded-xl bg-surface-container cursor-pointer border-2 border-transparent has-[:checked]:border-primary/50 has-[:checked]:bg-primary/5 transition-all">
-               <input type="radio" name="unit" value="per_trip" id="edit_unit_trip" class="hidden">
-               <span class="text-xs font-bold text-on-surface">Per Perjalanan</span>
+             <label class="relative flex items-center justify-between p-3 rounded-xl bg-surface-container cursor-pointer border-2 border-transparent has-[:checked]:border-primary/50 has-[:checked]:bg-primary/5 transition-all duration-300 active:scale-95 hover:bg-surface-container-high">
+               <input type="radio" name="unit" value="per_trip" id="edit_unit_trip" class="hidden peer">
+               <span class="text-xs font-bold text-on-surface peer-checked:text-primary transition-colors duration-300">Per Perjalanan</span>
+               <div class="w-5 h-5 rounded-full border-2 border-on-surface-variant/30 flex items-center justify-center peer-checked:border-primary peer-checked:bg-primary transition-all duration-300">
+                 <span class="material-symbols-outlined text-[14px] text-white opacity-0 scale-50 peer-checked:opacity-100 peer-checked:scale-100 transition-all duration-300 delay-75">check</span>
+               </div>
              </label>
-             <label class="flex items-center gap-2 p-3 rounded-xl bg-surface-container cursor-pointer border-2 border-transparent has-[:checked]:border-primary/50 has-[:checked]:bg-primary/5 transition-all">
-               <input type="radio" name="unit" value="per_km" id="edit_unit_km" class="hidden">
-               <span class="text-xs font-bold text-on-surface">Per KM</span>
+             <label class="relative flex items-center justify-between p-3 rounded-xl bg-surface-container cursor-pointer border-2 border-transparent has-[:checked]:border-primary/50 has-[:checked]:bg-primary/5 transition-all duration-300 active:scale-95 hover:bg-surface-container-high">
+               <input type="radio" name="unit" value="per_km" id="edit_unit_km" class="hidden peer">
+               <span class="text-xs font-bold text-on-surface peer-checked:text-primary transition-colors duration-300">Per KM</span>
+               <div class="w-5 h-5 rounded-full border-2 border-on-surface-variant/30 flex items-center justify-center peer-checked:border-primary peer-checked:bg-primary transition-all duration-300">
+                 <span class="material-symbols-outlined text-[14px] text-white opacity-0 scale-50 peer-checked:opacity-100 peer-checked:scale-100 transition-all duration-300 delay-75">check</span>
+               </div>
              </label>
           </div>
         </div>
@@ -178,15 +193,18 @@
       </form>
     </div>
   </div>
+  </div>
 
   @push('scripts')
   <script>
     function openModal(id) {
-      document.getElementById(id).classList.replace('hidden', 'flex');
+      const el = document.getElementById(id);
+      el.style.display = 'block';
       document.body.style.overflow = 'hidden';
     }
     function closeModal(id) {
-      document.getElementById(id).classList.replace('flex', 'hidden');
+      const el = document.getElementById(id);
+      el.style.display = 'none';
       document.body.style.overflow = '';
     }
     function openEditModal(rate) {

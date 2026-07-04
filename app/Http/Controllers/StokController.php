@@ -42,6 +42,12 @@ class StokController extends Controller
 
         $query = IsiToko::where('ID_Toko', $toko->ID_Toko);
 
+        $shippingRates = \App\Models\ShippingRate::where('ID_Toko', $toko->ID_Toko)
+            ->where('is_active', true)
+            ->get();
+        $ongkirPickup = $shippingRates->where('vehicle_type', 'pickup')->first()?->shipping_cost ?? 0;
+        $ongkirTruck = $shippingRates->where('vehicle_type', 'truck')->first()?->shipping_cost ?? 0;
+
         // Filter pencarian
         if ($request->filled('search')) {
             $query->where('Nama_Pasir', 'like', '%' . $request->search . '%');
@@ -52,7 +58,7 @@ class StokController extends Controller
             $query->where('Kategori', $request->kategori);
         }
 
-        $produk = $query->get()->map(function ($p) {
+        $produk = $query->get()->map(function ($p) use ($ongkirPickup, $ongkirTruck) {
             $totalStok   = $p->Stock_PickUp + $p->Stock_Truck;
             $stokMasuk   = LogStok::where('ID_Isi_Toko', $p->ID_Isi_Toko)
                 ->where('tipe', 'masuk')
@@ -76,8 +82,8 @@ class StokController extends Controller
                 'kategori'           => $p->Kategori ?? '-',
                 'stock_pickup'       => (int) $p->Stock_PickUp,
                 'stock_truck'        => (int) $p->Stock_Truck,
-                'ongkir_pickup'      => (int) ($p->Ongkir_PickUp ?? 0),
-                'ongkir_truck'       => (int) ($p->Ongkir_Truck ?? 0),
+                'ongkir_pickup'      => (int) $ongkirPickup,
+                'ongkir_truck'       => (int) $ongkirTruck,
                 'harga'              => (int) ($p->Harga ?? 0),
                 'total_stok'         => (int) $totalStok,
                 'stok_masuk'         => (int) $stokMasuk,

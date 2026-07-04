@@ -30,6 +30,10 @@ class MarketPlaceController extends Controller
         // Recent reviews
         $recentReviews = $toko->reviews()->with('akun')->latest()->take(5)->get();
 
+        $shippingRates = \App\Models\ShippingRate::where('ID_Toko', $id)->where('is_active', true)->get();
+        $ongkirPickup = $shippingRates->where('vehicle_type', 'pickup')->first()?->shipping_cost ?? 0;
+        $ongkirTruck = $shippingRates->where('vehicle_type', 'truck')->first()?->shipping_cost ?? 0;
+
         return view('tampilaUntukUser.MarketPlace', compact(
             'toko', 
             'isiToko', 
@@ -37,7 +41,9 @@ class MarketPlaceController extends Controller
             'totalReviews', 
             'ratingDistribution', 
             'totalBuyers',
-            'recentReviews'
+            'recentReviews',
+            'ongkirPickup',
+            'ongkirTruck'
         ));
     }
 
