@@ -68,11 +68,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/store/settings', [\App\Http\Controllers\StoreProfileController::class, 'showSettings'])->name('store.settings');
     });
     // Admin Routes
-    Route::middleware(['role:admin'])->group(function () {
+    Route::middleware(['role:admin,cs'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
     Route::get('/admin/menuutama', [AdminController::class, 'index'])->name('MenuUtamaAdmin');
     Route::get('/admin/shop-registration', [AdminController::class, 'shopeRegistry'])->name('ShopeRegistry');
     Route::get('/admin/user-registry', [ShoopeRegistryController::class, 'index'])->name('UserRegistry');
+    Route::put('/admin/user-registry/{id}/role', [ShoopeRegistryController::class, 'updateRole'])->name('admin.user.updateRole');
     Route::get('/admin/query-toko', [AdminController::class, 'queryToko'])->name('admin.queryToko');
     Route::get('/admin/profil', [AdminController::class, 'profile'])->name('ProfilAdmin');
     Route::get('/admin/settings', [AdminController::class, 'settings'])->name('admin.settings');

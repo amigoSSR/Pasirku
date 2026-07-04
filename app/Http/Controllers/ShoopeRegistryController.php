@@ -14,4 +14,17 @@ class ShoopeRegistryController extends Controller
 
         return view('admin.user-registry', compact('users'));
     }
+
+    public function updateRole(Request $request, $id)
+    {
+        $request->validate([
+            'role' => 'required|in:user,store,admin,cs'
+        ]);
+
+        DB::table('informasi_akun')
+            ->where('ID_Akun', $id)
+            ->update(['Role' => $request->role]);
+
+        return back()->with('success', 'Role pengguna berhasil diperbarui.');
+    }
 }

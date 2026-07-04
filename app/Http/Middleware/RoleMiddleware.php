@@ -30,7 +30,7 @@ class RoleMiddleware
 
         if (!in_array($userRole, $roles)) {
             // Redirect based on the actual role of the user
-            if ($userRole === 'admin') {
+            if ($userRole === 'admin' || $userRole === 'cs') {
                 return redirect()->route('admin.dashboard');
             } elseif ($userRole === 'store') {
                 return redirect()->route('MenuUtamaStore');

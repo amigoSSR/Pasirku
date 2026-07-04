@@ -12,6 +12,12 @@
             </div>
         </div>
 
+        @if(session('success'))
+        <div class="mb-4 flex items-center gap-3 p-4 bg-green-50 text-green-800 rounded-xl border border-green-200 text-sm font-semibold">
+            <span class="material-symbols-outlined text-green-600" style="font-variation-settings:'FILL' 1">check_circle</span>
+            {{ session('success') }}
+        </div>
+        @endif
         {{-- Table --}}
         <div class="bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant/20 overflow-hidden">
             <div class="px-6 py-5 border-b border-outline-variant/20 flex items-center justify-between">
@@ -44,10 +50,16 @@
                                 <p class="text-xs text-on-surface-variant">{{ $user->Nomer_Telepon }}</p>
                             </td>
                             <td class="px-6 py-4">
-                                <span class="px-2.5 py-1 rounded-full text-[10px] font-black uppercase 
-                                    {{ $user->Role === 'admin' ? 'bg-primary/10 text-primary' : ($user->Role === 'store' ? 'bg-secondary/10 text-secondary' : 'bg-surface-container-high text-on-surface-variant') }}">
-                                    {{ $user->Role }}
-                                </span>
+                                <form action="{{ route('admin.user.updateRole', $user->ID_Akun) }}" method="POST" class="flex items-center gap-2">
+                                    @csrf
+                                    @method('PUT')
+                                    <select name="role" class="text-xs font-semibold rounded-lg border-outline-variant/30 bg-surface focus:ring-primary focus:border-primary px-3 py-1.5 min-w-[110px]" onchange="this.form.submit()">
+                                        <option value="user" {{ $user->Role === 'user' ? 'selected' : '' }}>User</option>
+                                        <option value="store" {{ $user->Role === 'store' ? 'selected' : '' }}>Store</option>
+                                        <option value="admin" {{ $user->Role === 'admin' ? 'selected' : '' }}>Admin</option>
+                                        <option value="cs" {{ $user->Role === 'cs' ? 'selected' : '' }}>CS</option>
+                                    </select>
+                                </form>
                             </td>
                             <td class="px-6 py-4 text-xs text-on-surface-variant">
                                 {{ \Carbon\Carbon::parse($user->created_at)->translatedFormat('d M Y') }}

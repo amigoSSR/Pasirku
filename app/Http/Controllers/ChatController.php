@@ -46,14 +46,22 @@ class ChatController extends Controller
             })->whereNull('toko_id')->exists();
 
             if ($chattedWithAdmin) {
-                $admin = User::where('Role', 'admin')->first();
-                if ($admin) {
+                $existingMessage = Message::where(function($q) use ($user) {
+                    $q->where('sender_id', $user->ID_Akun)
+                      ->orWhere('receiver_id', $user->ID_Akun);
+                })->whereNull('toko_id')->first();
+
+                if ($existingMessage) {
+                    $adminId = $existingMessage->sender_id === $user->ID_Akun 
+                                ? $existingMessage->receiver_id 
+                                : $existingMessage->sender_id;
+                    
                     $rooms[] = [
-                        'id' => 'admin_' . $admin->ID_Akun,
+                        'id' => 'admin_' . $adminId,
                         'name' => 'Customer Support',
                         'type' => 'admin',
                         'toko_id' => null,
-                        'user_id' => $admin->ID_Akun,
+                        'user_id' => $adminId,
                     ];
                 }
             }
@@ -78,8 +86,8 @@ class ChatController extends Controller
                 }
             }
 
-        } elseif ($user->Role === 'admin') {
-            // Admin: chat dengan semua user yang nge-chat admin
+        } elseif ($user->Role === 'admin' || $user->Role === 'cs') {
+            // Admin/CS: chat dengan semua user yang nge-chat admin/cs
             $chattedUserIds = Message::whereNull('toko_id')
                 ->where('sender_id', '!=', $user->ID_Akun)
                 ->pluck('sender_id')->unique();
@@ -112,26 +120,46 @@ class ChatController extends Controller
 
         if ($tokoId) {
             $query->where('toko_id', $tokoId);
+            // Ambil percakapan antara saya dan user lain untuk toko tertentu
+            $query->where(function($q) use ($user, $otherUserId) {
+                $q->where(function($q1) use ($user, $otherUserId) {
+                    $q1->where('sender_id', $user->ID_Akun)->where('receiver_id', $otherUserId);
+                })->orWhere(function($q2) use ($user, $otherUserId) {
+                    $q2->where('sender_id', $otherUserId)->where('receiver_id', $user->ID_Akun);
+                });
+            });
         } else {
             $query->whereNull('toko_id');
+            // Jika chat CS (toko_id null):
+            if ($user->Role === 'admin' || $user->Role === 'cs') {
+                // CS/Admin dapat melihat semua chat dari user yang bersangkutan dengan semua CS/Admin
+                $query->where(function($q) use ($otherUserId) {
+                    $q->where('sender_id', $otherUserId)
+                      ->orWhere('receiver_id', $otherUserId);
+                });
+            } else {
+                // User biasa melihat semua chatnya dengan CS/Admin siapapun
+                $query->where(function($q) use ($user) {
+                    $q->where('sender_id', $user->ID_Akun)
+                      ->orWhere('receiver_id', $user->ID_Akun);
+                });
+            }
         }
-
-        // Ambil percakapan antara saya dan user lain
-        $query->where(function($q) use ($user, $otherUserId) {
-            $q->where(function($q1) use ($user, $otherUserId) {
-                $q1->where('sender_id', $user->ID_Akun)->where('receiver_id', $otherUserId);
-            })->orWhere(function($q2) use ($user, $otherUserId) {
-                $q2->where('sender_id', $otherUserId)->where('receiver_id', $user->ID_Akun);
-            });
-        });
 
         $messages = $query->orderBy('created_at', 'asc')->get();
 
-        // Tandai pesan sebagai dibaca (kalau saya penerimanya)
-        Message::whereIn('id', $messages->pluck('id'))
-            ->where('receiver_id', $user->ID_Akun)
-            ->where('is_read', false)
-            ->update(['is_read' => true]);
+        // Tandai pesan sebagai dibaca (kalau saya penerimanya atau ini inbox CS)
+        if ($user->Role === 'admin' || $user->Role === 'cs') {
+            Message::whereIn('id', $messages->pluck('id'))
+                ->where('sender_id', $otherUserId)
+                ->where('is_read', false)
+                ->update(['is_read' => true]);
+        } else {
+            Message::whereIn('id', $messages->pluck('id'))
+                ->where('receiver_id', $user->ID_Akun)
+                ->where('is_read', false)
+                ->update(['is_read' => true]);
+        }
 
         return response()->json($messages);
     }
@@ -157,10 +185,10 @@ class ChatController extends Controller
                 return response()->json(['error' => 'Unauthorized'], 403);
             }
         }
-        // 2. Jika Admin, pastikan toko_id null
-        if ($user->Role === 'admin') {
+        // 2. Jika Admin atau CS, pastikan toko_id null
+        if ($user->Role === 'admin' || $user->Role === 'cs') {
             if ($request->toko_id !== null) {
-                return response()->json(['error' => 'Admin cannot chat as store'], 403);
+                return response()->json(['error' => 'Admin/CS cannot chat as store'], 403);
             }
         }
 
@@ -216,16 +244,32 @@ class ChatController extends Controller
      */
     public function startChatWithAdmin(Request $request)
     {
-        $admin = User::where('Role', 'admin')->first();
+        $user = Auth::user();
+
+        // Cek apakah user sudah punya riwayat chat dengan CS/Admin sebelumnya
+        $existingMessage = Message::whereNull('toko_id')
+            ->where(function($q) use ($user) {
+                $q->where('sender_id', $user->ID_Akun)
+                  ->orWhere('receiver_id', $user->ID_Akun);
+            })->first();
+
+        if ($existingMessage) {
+            $adminId = $existingMessage->sender_id === $user->ID_Akun 
+                        ? $existingMessage->receiver_id 
+                        : $existingMessage->sender_id;
+            $admin = User::find($adminId);
+        } else {
+            // Jika belum ada, assign hanya ke CS acak
+            $admin = User::where('Role', 'cs')->inRandomOrder()->first();
+        }
+
         if (!$admin) {
             return back()->with('error', 'Layanan Customer Service sedang tidak tersedia.');
         }
 
-        $user = Auth::user();
-
-        // Pastikan user tidak chat dirinya sendiri jika dia admin
+        // Pastikan user tidak chat dirinya sendiri jika dia admin/cs
         if ($admin->ID_Akun === $user->ID_Akun) {
-            return back()->with('error', 'Anda adalah admin.');
+            return back()->with('error', 'Anda adalah CS/Admin.');
         }
 
         $initialMessage = $request->query('initial_msg', 'Halo Customer Service, saya butuh bantuan.');
