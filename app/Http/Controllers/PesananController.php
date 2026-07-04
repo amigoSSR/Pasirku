@@ -21,7 +21,8 @@ class PesananController extends Controller
     {
         // ── 1. Validasi ──────────────────────────────────────────────
         $request->validate([
-            'bukti_pembayaran'   => 'required|image|mimes:jpeg,jpg,png,webp,bmp,gif|max:5120',
+            'bukti_pembayaran'   => 'nullable|image|mimes:jpeg,jpg,png,webp,bmp,gif|max:5120',
+            'metode_pembayaran'  => 'required|in:cod,qris',
             'id_toko'            => 'required|integer',
             'lokasi_pengantaran' => 'required|string|max:500',
             'detail_lokasi'      => 'nullable|string|max:500',
@@ -33,7 +34,6 @@ class PesananController extends Controller
             'tipe_pengiriman'    => 'required|string',
             'cart_items'         => 'required|string',
         ], [
-            'bukti_pembayaran.required' => 'Bukti pembayaran wajib diunggah.',
             'bukti_pembayaran.image'    => 'File harus berupa gambar.',
             'bukti_pembayaran.max'      => 'Ukuran gambar maksimal 5 MB.',
             'lokasi_pengantaran.required' => 'Lokasi pengantaran wajib diisi.',
@@ -43,41 +43,45 @@ class PesananController extends Controller
             'cart_items.required'        => 'Data produk dalam keranjang wajib disertakan.',
         ]);
 
-        // ── 2. Konversi gambar → WebP ──────────────────────────────────
-        $file    = $request->file('bukti_pembayaran');
-        $tmpPath = $file->getRealPath();
-        $mime    = $file->getMimeType();
-
-        // Buat resource GD dari berbagai format sumber
-        $source = match (true) {
-            str_contains($mime, 'jpeg') => imagecreatefromjpeg($tmpPath),
-            str_contains($mime, 'png')  => imagecreatefrompng($tmpPath),
-            str_contains($mime, 'webp') => imagecreatefromwebp($tmpPath),
-            str_contains($mime, 'gif')  => imagecreatefromgif($tmpPath),
-            str_contains($mime, 'bmp')  => imagecreatefrombmp($tmpPath),
-            default                     => imagecreatefromjpeg($tmpPath),
-        };
-
-        // ── 3. Buat nama file terformat ───────────────────────────────
-        // Format: (dd-mm-yyyy)_(BP+6char)_(8char).webp
-        $tanggal     = now()->format('d-m-Y');
-        $kodeBukti   = 'BP' . strtoupper(Str::random(6));   // mis. BPAB3C4D
-        $kodeUnik    = strtoupper(Str::random(8));           // mis. E5F6G7H8
-        $namaFile    = "{$tanggal}_{$kodeBukti}_{$kodeUnik}.webp";
-
-        // ── 4. Simpan WebP ke storage ──────────────────────────────────
-        $folder  = 'bukti_pembayaran';
-        $diskPath = storage_path("app/public/{$folder}");
-        if (! is_dir($diskPath)) {
-            mkdir($diskPath, 0755, true);
+        // Validasi tambahan: jika metode QRIS, bukti wajib diunggah
+        if ($request->metode_pembayaran === 'qris' && !$request->hasFile('bukti_pembayaran')) {
+            return back()->withErrors(['bukti_pembayaran' => 'Bukti pembayaran QRIS wajib diunggah.'])->withInput();
         }
 
-        $fullPath = "{$diskPath}/{$namaFile}";
-        imagewebp($source, $fullPath, 80);   // kualitas WebP 80
-        imagedestroy($source);
+        // ── 2. Proses upload bukti pembayaran (hanya untuk QRIS) ───────────
+        $storagePath = null;
+        if ($request->metode_pembayaran === 'qris' && $request->hasFile('bukti_pembayaran')) {
+            $file    = $request->file('bukti_pembayaran');
+            $tmpPath = $file->getRealPath();
+            $mime    = $file->getMimeType();
 
-        // Path relatif untuk DB dan URL
-        $storagePath = "{$folder}/{$namaFile}";  // bukti_pembayaran/xxx.png
+            // Buat resource GD dari berbagai format sumber
+            $source = match (true) {
+                str_contains($mime, 'jpeg') => imagecreatefromjpeg($tmpPath),
+                str_contains($mime, 'png')  => imagecreatefrompng($tmpPath),
+                str_contains($mime, 'webp') => imagecreatefromwebp($tmpPath),
+                str_contains($mime, 'gif')  => imagecreatefromgif($tmpPath),
+                str_contains($mime, 'bmp')  => imagecreatefrombmp($tmpPath),
+                default                     => imagecreatefromjpeg($tmpPath),
+            };
+
+            $tanggal     = now()->format('d-m-Y');
+            $kodeBukti   = 'BP' . strtoupper(Str::random(6));
+            $kodeUnik    = strtoupper(Str::random(8));
+            $namaFile    = "{$tanggal}_{$kodeBukti}_{$kodeUnik}.webp";
+
+            $folder  = 'bukti_pembayaran';
+            $diskPath = storage_path("app/public/{$folder}");
+            if (! is_dir($diskPath)) {
+                mkdir($diskPath, 0755, true);
+            }
+
+            $fullPath = "{$diskPath}/{$namaFile}";
+            imagewebp($source, $fullPath, 80);
+            imagedestroy($source);
+
+            $storagePath = "{$folder}/{$namaFile}";
+        }
 
         // ── 5. Ambil info toko dan isi toko ───────────────────────────
         $toko = DB::table('informasi_toko')->where('ID_Toko', $request->id_toko)->first();
@@ -122,7 +126,7 @@ class PesananController extends Controller
                 'nama_produk'        => $request->nama_produk,
                 'cart_items'         => $request->cart_items,
                 'tipe_pengiriman'    => $request->tipe_pengiriman,
-                'Status_Pembayaran'  => 'Belum Dikonfirmasi',
+                'Status_Pembayaran'  => $request->metode_pembayaran === 'cod' ? 'COD' : 'Belum Dikonfirmasi',
                 'Status_Pesanan'     => 'Belum Diterima Toko',
                 'Bukti_Pembayaran'   => $storagePath,
                 'Tanggal_Pengiriman' => $request->tanggal_pengiriman,

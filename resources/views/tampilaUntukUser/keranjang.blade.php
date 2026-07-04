@@ -227,16 +227,65 @@
           <!-- Payment Section -->
           <div class="bg-surface-container-lowest p-6 md:p-8 rounded-3xl shadow-xl border border-outline-variant/30">
             <h3 class="text-lg font-headline font-extrabold text-on-surface mb-6 flex items-center gap-2">
-              <span class="material-symbols-outlined text-primary" style="font-variation-settings:'FILL' 1">qr_code_2</span>
-              Pembayaran QRIS
+              <span class="material-symbols-outlined text-primary" style="font-variation-settings:'FILL' 1">payments</span>
+              Metode Pembayaran
             </h3>
 
-            <div id="qris_wrapper" class="flex flex-col items-center mb-8">
-              <div id="qris_loading" class="flex flex-col items-center justify-center py-10 gap-4 w-full bg-surface-container-low/30 rounded-2xl border border-dashed border-outline-variant/50">
-                <div class="w-10 h-10 rounded-full border-[3px] border-primary/20 border-t-primary animate-spin"></div>
-                <p class="text-[10px] text-on-surface-variant font-bold uppercase tracking-widest">Memuat QRIS Toko...</p>
+            <!-- Payment Method Selector -->
+            <div class="grid grid-cols-2 gap-3 mb-6">
+
+              <!-- COD Card -->
+              <button type="button" id="btn-method-cod"
+                onclick="selectPaymentMethod('cod')"
+                class="payment-method-card flex flex-col items-center gap-2.5 p-4 rounded-2xl border-2 border-primary bg-primary/5 transition-all duration-200 cursor-pointer group">
+                <div class="w-11 h-11 bg-primary/15 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <span class="material-symbols-outlined text-primary text-[24px]" style="font-variation-settings:'FILL' 1">payments</span>
+                </div>
+                <div class="text-center">
+                  <p class="font-headline font-bold text-xs text-on-surface">Bayar di Tempat</p>
+                  <p class="text-[9px] text-on-surface-variant font-medium mt-0.5">COD</p>
+                </div>
+                <span id="check-cod" class="w-5 h-5 rounded-full bg-primary flex items-center justify-center shadow-sm">
+                  <span class="material-symbols-outlined text-on-primary text-[14px]" style="font-variation-settings:'wght' 700">check</span>
+                </span>
+              </button>
+
+              <!-- QRIS Card -->
+              <button type="button" id="btn-method-qris"
+                onclick="selectPaymentMethod('qris')"
+                class="payment-method-card flex flex-col items-center gap-2.5 p-4 rounded-2xl border-2 border-outline-variant/50 bg-surface-container-low transition-all duration-200 cursor-pointer group hover:border-primary/40">
+                <div class="w-11 h-11 bg-surface-container rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <span class="material-symbols-outlined text-on-surface-variant text-[24px]" id="qris-icon" style="font-variation-settings:'FILL' 1">qr_code_2</span>
+                </div>
+                <div class="text-center">
+                  <p class="font-headline font-bold text-xs text-on-surface">Transfer QRIS</p>
+                  <p class="text-[9px] text-on-surface-variant font-medium mt-0.5">Scan & Bayar</p>
+                </div>
+                <span id="check-qris" class="w-5 h-5 rounded-full border-2 border-outline-variant/50 bg-surface-container flex items-center justify-center">
+                  <span class="material-symbols-outlined text-on-surface-variant text-[14px] opacity-0" style="font-variation-settings:'wght' 700">check</span>
+                </span>
+              </button>
+
+            </div>
+
+            <!-- COD Info Box -->
+            <div id="cod-info-box" class="mb-6 bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-start gap-3">
+              <span class="material-symbols-outlined text-amber-600 text-[22px] mt-0.5 shrink-0" style="font-variation-settings:'FILL' 1">info</span>
+              <div>
+                <p class="text-xs font-bold text-amber-900">Bayar di Tempat (COD)</p>
+                <p class="text-[10px] text-amber-700 mt-1 leading-relaxed">Siapkan uang tunai sesuai total tagihan saat kurir tiba. Pesanan akan langsung dikonfirmasi tanpa bukti pembayaran terlebih dahulu.</p>
               </div>
-              <div id="qris_content" class="hidden w-full flex flex-col items-center gap-3"></div>
+            </div>
+
+            <!-- QRIS Block (hidden by default) -->
+            <div id="qris-block" class="hidden mb-6">
+              <div id="qris_wrapper" class="flex flex-col items-center">
+                <div id="qris_loading" class="flex flex-col items-center justify-center py-10 gap-4 w-full bg-surface-container-low/30 rounded-2xl border border-dashed border-outline-variant/50">
+                  <div class="w-10 h-10 rounded-full border-[3px] border-primary/20 border-t-primary animate-spin"></div>
+                  <p class="text-[10px] text-on-surface-variant font-bold uppercase tracking-widest">Memuat QRIS Toko...</p>
+                </div>
+                <div id="qris_content" class="hidden w-full flex flex-col items-center gap-3"></div>
+              </div>
             </div>
 
             <!-- FORM KONFIRMASI PESANAN -->
@@ -257,45 +306,49 @@
               <input type="hidden" name="nama_produk"        id="h-nama-produk">
               <input type="hidden" name="tipe_pengiriman"    id="h-tipe-pengiriman">
               <input type="hidden" name="cart_items"         id="h-cart-items">
+              <input type="hidden" name="metode_pembayaran" id="h-metode-pembayaran" value="cod">
 
               <input type="file" id="input-bukti" name="bukti_pembayaran"
                      accept="image/*" class="hidden">
 
-              <button type="button" id="btn-upload-bukti"
-                      onclick="document.getElementById('input-bukti').click()"
-                      class="w-full flex flex-col items-center justify-center gap-2 bg-surface-container-low border-2 border-dashed border-outline-variant/50 py-8 rounded-2xl font-bold hover:bg-surface-container-high hover:border-primary/50 transition-all group">
-                <span class="material-symbols-outlined text-4xl text-outline group-hover:text-primary group-hover:scale-110 transition-all">cloud_upload</span>
-                <span id="upload-label" class="text-xs text-on-surface-variant group-hover:text-primary transition-colors">Unggah Bukti Pembayaran (Max 5MB)</span>
-              </button>
+              <!-- Upload Bukti (only for QRIS) -->
+              <div id="upload-section" class="hidden">
+                <button type="button" id="btn-upload-bukti"
+                        onclick="document.getElementById('input-bukti').click()"
+                        class="w-full flex flex-col items-center justify-center gap-2 bg-surface-container-low border-2 border-dashed border-outline-variant/50 py-8 rounded-2xl font-bold hover:bg-surface-container-high hover:border-primary/50 transition-all group">
+                  <span class="material-symbols-outlined text-4xl text-outline group-hover:text-primary group-hover:scale-110 transition-all">cloud_upload</span>
+                  <span id="upload-label" class="text-xs text-on-surface-variant group-hover:text-primary transition-colors">Unggah Bukti Pembayaran (Max 5MB)</span>
+                </button>
 
-              <div id="preview-bukti" class="hidden rounded-2xl overflow-hidden border border-primary/30 bg-primary/5 p-4 animate-fadeUp">
-                <div class="flex items-center gap-4">
-                  <div class="relative flex-shrink-0">
-                    <img id="preview-img" src="" alt="Preview Bukti"
-                         class="w-16 h-16 object-cover rounded-xl shadow-md border-2 border-white">
-                    <div class="absolute -top-1.5 -right-1.5 bg-green-500 text-white rounded-full p-0.5 shadow-sm">
-                      <span class="material-symbols-outlined text-[14px]" style="font-variation-settings:'wght' 700">check</span>
+                <div id="preview-bukti" class="hidden rounded-2xl overflow-hidden border border-primary/30 bg-primary/5 p-4 animate-fadeUp">
+                  <div class="flex items-center gap-4">
+                    <div class="relative flex-shrink-0">
+                      <img id="preview-img" src="" alt="Preview Bukti"
+                           class="w-16 h-16 object-cover rounded-xl shadow-md border-2 border-white">
+                      <div class="absolute -top-1.5 -right-1.5 bg-green-500 text-white rounded-full p-0.5 shadow-sm">
+                        <span class="material-symbols-outlined text-[14px]" style="font-variation-settings:'wght' 700">check</span>
+                      </div>
                     </div>
-                  </div>
-                  <div class="flex-1 min-w-0">
-                    <p class="text-xs font-bold text-on-surface truncate" id="preview-filename"></p>
-                    <p class="text-[10px] text-on-surface-variant font-medium mt-0.5" id="preview-filesize"></p>
-                    <div class="flex items-center gap-1.5 mt-1.5">
-                      <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
-                      <p class="text-[9px] text-green-700 font-bold uppercase tracking-wider">Siap Unggah</p>
+                    <div class="flex-1 min-w-0">
+                      <p class="text-xs font-bold text-on-surface truncate" id="preview-filename"></p>
+                      <p class="text-[10px] text-on-surface-variant font-medium mt-0.5" id="preview-filesize"></p>
+                      <div class="flex items-center gap-1.5 mt-1.5">
+                        <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+                        <p class="text-[9px] text-green-700 font-bold uppercase tracking-wider">Siap Unggah</p>
+                      </div>
                     </div>
+                    <button type="button" id="btn-ganti-file"
+                            onclick="resetUpload()"
+                            class="flex-shrink-0 text-on-surface-variant hover:text-error transition-colors p-2 hover:bg-error/10 rounded-xl">
+                      <span class="material-symbols-outlined text-[22px]">delete</span>
+                    </button>
                   </div>
-                  <button type="button" id="btn-ganti-file"
-                          onclick="resetUpload()"
-                          class="flex-shrink-0 text-on-surface-variant hover:text-error transition-colors p-2 hover:bg-error/10 rounded-xl">
-                    <span class="material-symbols-outlined text-[22px]">delete</span>
-                  </button>
                 </div>
-              </div>
 
-              @error('bukti_pembayaran')
-                <p class="text-xs text-error font-bold px-1">{{ $message }}</p>
-              @enderror
+                @error('bukti_pembayaran')
+                  <p class="text-xs text-error font-bold px-1">{{ $message }}</p>
+                @enderror
+              </div>
 
               <button type="submit" id="btn-konfirmasi"
                       class="w-full bg-primary text-on-primary py-5 rounded-2xl font-headline font-black text-lg shadow-lg hover:bg-primary-container hover:scale-[1.01] active:scale-95 transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100">
@@ -304,7 +357,7 @@
               </button>
 
               <p class="text-[9px] text-center text-on-surface-variant font-medium px-4">
-                Dengan mengklik Konfirmasi, Anda menyetujui <span class="text-primary hover:underline cursor-pointer">Syarat & Ketentuan</span> pengiriman pasir.
+                Dengan mengklik Konfirmasi, Anda menyetujui <span class="text-primary hover:underline cursor-pointer">Syarat &amp; Ketentuan</span> pengiriman pasir.
               </p>
             </form>
           </div>
@@ -328,6 +381,62 @@
       if (bytes < 1024) return bytes + ' B';
       if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
       return (bytes / 1048576).toFixed(1) + ' MB';
+    }
+
+    /* ── Payment Method Selector ──────────────────────────── */
+    let currentPaymentMethod = 'cod';
+
+    function selectPaymentMethod(method) {
+      currentPaymentMethod = method;
+      document.getElementById('h-metode-pembayaran').value = method;
+
+      const codBtn = document.getElementById('btn-method-cod');
+      const qrisBtn = document.getElementById('btn-method-qris');
+      const checkCod = document.getElementById('check-cod');
+      const checkQris = document.getElementById('check-qris');
+      const qrisIcon = document.getElementById('qris-icon');
+      const codInfoBox = document.getElementById('cod-info-box');
+      const qrisBlock = document.getElementById('qris-block');
+      const uploadSection = document.getElementById('upload-section');
+
+      if (method === 'cod') {
+        // Style COD as active
+        codBtn.className = 'payment-method-card flex flex-col items-center gap-2.5 p-4 rounded-2xl border-2 border-primary bg-primary/5 transition-all duration-200 cursor-pointer group';
+        checkCod.className = 'w-5 h-5 rounded-full bg-primary flex items-center justify-center shadow-sm';
+        checkCod.querySelector('span').className = 'material-symbols-outlined text-on-primary text-[14px]';
+        checkCod.querySelector('span').style.opacity = '1';
+
+        // Style QRIS as inactive
+        qrisBtn.className = 'payment-method-card flex flex-col items-center gap-2.5 p-4 rounded-2xl border-2 border-outline-variant/50 bg-surface-container-low transition-all duration-200 cursor-pointer group hover:border-primary/40';
+        checkQris.className = 'w-5 h-5 rounded-full border-2 border-outline-variant/50 bg-surface-container flex items-center justify-center';
+        checkQris.querySelector('span').className = 'material-symbols-outlined text-on-surface-variant text-[14px] opacity-0';
+        if (qrisIcon) { qrisIcon.className = 'material-symbols-outlined text-on-surface-variant text-[24px]'; }
+
+        codInfoBox.classList.remove('hidden');
+        qrisBlock.classList.add('hidden');
+        uploadSection.classList.add('hidden');
+
+        // Clear the file input so it's not submitted
+        document.getElementById('input-bukti').value = '';
+        resetUpload();
+
+      } else {
+        // Style QRIS as active
+        qrisBtn.className = 'payment-method-card flex flex-col items-center gap-2.5 p-4 rounded-2xl border-2 border-primary bg-primary/5 transition-all duration-200 cursor-pointer group';
+        checkQris.className = 'w-5 h-5 rounded-full bg-primary flex items-center justify-center shadow-sm';
+        checkQris.querySelector('span').className = 'material-symbols-outlined text-on-primary text-[14px]';
+        checkQris.querySelector('span').style.opacity = '1';
+        if (qrisIcon) { qrisIcon.className = 'material-symbols-outlined text-primary text-[24px]'; }
+
+        // Style COD as inactive
+        codBtn.className = 'payment-method-card flex flex-col items-center gap-2.5 p-4 rounded-2xl border-2 border-outline-variant/50 bg-surface-container-low transition-all duration-200 cursor-pointer group hover:border-primary/40';
+        checkCod.className = 'w-5 h-5 rounded-full border-2 border-outline-variant/50 bg-surface-container flex items-center justify-center';
+        checkCod.querySelector('span').className = 'material-symbols-outlined text-on-surface-variant text-[14px] opacity-0';
+
+        codInfoBox.classList.add('hidden');
+        qrisBlock.classList.remove('hidden');
+        uploadSection.classList.remove('hidden');
+      }
     }
 
     /* ── Render QRIS dari API ────────────────────────────────── */
@@ -876,8 +985,8 @@
         document.getElementById('h-tanggal').value = document.getElementById('tanggal-pengiriman').value;
         document.getElementById('h-jam-tiba').value = document.getElementById('estimasi-label').textContent;
 
-        if (!document.getElementById('input-bukti').files[0]) {
-          e.preventDefault(); return alert('Harap upload bukti pembayaran!');
+        if (currentPaymentMethod === 'qris' && !document.getElementById('input-bukti').files[0]) {
+          e.preventDefault(); return alert('Harap upload bukti pembayaran QRIS!');
         }
 
         // Save location for next time
