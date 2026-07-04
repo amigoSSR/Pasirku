@@ -47,11 +47,27 @@ class QrisController extends Controller
 
         // Buat resource GD dari berbagai format sumber
         $source = match (true) {
-            str_contains($mime, 'jpeg') => imagecreatefromjpeg($tmpPath),
-            str_contains($mime, 'png')  => imagecreatefrompng($tmpPath),
-            str_contains($mime, 'webp') => imagecreatefromwebp($tmpPath),
-            default                     => imagecreatefromjpeg($tmpPath),
+            str_contains($mime, 'jpeg') => @imagecreatefromjpeg($tmpPath),
+            str_contains($mime, 'png')  => @imagecreatefrompng($tmpPath),
+            str_contains($mime, 'webp') => @imagecreatefromwebp($tmpPath),
+            default                     => @imagecreatefromjpeg($tmpPath),
         };
+
+        if (!$source) {
+            return back()->withErrors(['qris_image' => 'File gambar tidak valid atau format tidak didukung.']);
+        }
+
+        $width = imagesx($source);
+        $height = imagesy($source);
+
+        // Buat canvas baru dengan background putih
+        // Menghindari error atau background hitam pekat saat konversi PNG transparan ke WebP
+        $canvas = imagecreatetruecolor($width, $height);
+        $white = imagecolorallocate($canvas, 255, 255, 255);
+        imagefilledrectangle($canvas, 0, 0, $width, $height, $white);
+        
+        // Gabungkan gambar sumber ke atas canvas putih
+        imagecopy($canvas, $source, 0, 0, 0, 0, $width, $height);
 
         // ── Buat nama file terformat ─────────────────────────────────
         // Format: (dd-mm-yyyy)_(QRIS+6char)_(8char).webp
@@ -68,8 +84,10 @@ class QrisController extends Controller
         }
 
         $fullPath = "{$diskPath}/{$namaFile}";
-        imagewebp($source, $fullPath, 80);  // kualitas 80
+        imagewebp($canvas, $fullPath, 80);  // kualitas 80
+        
         imagedestroy($source);
+        imagedestroy($canvas);
 
         // Path relatif untuk DB
         $storagePath = "{$folder}/{$namaFile}";
